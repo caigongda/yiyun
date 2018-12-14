@@ -21,20 +21,12 @@ var bytes = Crypto.HMAC(Crypto.SHA1, message, accesskey, { asBytes: true }) ;
 var signature = Crypto.util.bytesToBase64(bytes);
 
 function check_object_radio() {
-    var tt = document.getElementsByName('myradio');
-    for (var i = 0; i < tt.length ; i++ )
-    {
-        if(tt[i].checked)
-        {
-            g_object_name_type = tt[i].value;
-            break;
-        }
-    }
+    g_object_name_type="random_name";
 }
 
 function get_dirname()
 {
-    dir = "images/";
+    dir = "video/";
     if (dir != '' && dir.indexOf('/') != dir.length - 1)
     {
         dir = dir + '/'
@@ -115,6 +107,7 @@ function set_upload_param(up, filename, ret)
     up.start();
 }
 
+var sw;
 var uploader = new plupload.Uploader({
 	runtimes : 'html5,flash,silverlight,html4',
 	browse_button : 'selectfiles',
@@ -129,12 +122,10 @@ var uploader = new plupload.Uploader({
 		},
 
 		FilesAdded: function(up, files) {
-			plupload.each(files, function(file) {
-				document.getElementById('ossfile').innerHTML += '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ')<b></b>'
-				+'<div class="progress"><div class="progress-bar" style="width: 0%"></div></div>'
-				+'</div>';
-			});
             up.start();
+			mui.plusReady(function(){
+				sw=plus.nativeUI.showWaiting("正在上传，请等待...\n");
+			})
 		},
 
 		BeforeUpload: function(up, file) {
@@ -144,23 +135,30 @@ var uploader = new plupload.Uploader({
         },
 
 		UploadProgress: function(up, file) {
-			var d = document.getElementById(file.id);
-			d.getElementsByTagName('b')[0].innerHTML = '<span>' + file.percent + "%</span>";
-            var prog = d.getElementsByTagName('div')[0];
-			var progBar = prog.getElementsByTagName('div')[0]
-			progBar.style.width= 2*file.percent+'px';
-			progBar.setAttribute('aria-valuenow', file.percent);
+			mui.plusReady(function(){
+				sw.setTitle("正在上传，请等待...\n"+file.percent + "%");
+			})
 		},
 
 		FileUploaded: function(up, file, info) {
-            console.log(up, file, info);
-            if (info.status == 200)
-            {
-                document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = 'upload to oss success, object name:' + get_uploaded_object_name(file.name);
-            }
-            else
-            {
-                document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = info.response;
+			sw.close();
+            if (info.status == 200){
+				mui.toast("上传成功");
+				if(!reportvideo){
+					reportvideo = plus.webview.getWebviewById('reportvideo');
+				}
+				mui.fire(reportvideo,'url',{
+					fileinfo:g_object_name
+				});       
+				mui.openWindow({
+					id:'reportvideo',
+					show:{
+						duration:250,
+						aniShow:"slide-in-bottom"
+					}
+				});
+			}else{
+				mui.toast("网络错误");
             } 
 		},
 

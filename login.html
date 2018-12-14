@@ -287,6 +287,7 @@
 							}
 						},20);
 					};
+					//localStorage.clear();
 					//检查 "登录状态/锁屏状态" 开始
 					if (settings.token) {//自动登录判断
 						if(settings.username){
@@ -300,7 +301,6 @@
 								}
 							},20);
 						}else{
-							toMain();
 							mui.hideLoading();
 							/* mui.toast("请完善信息");
 							setinfo(); */
@@ -394,7 +394,7 @@
 								if(res.code==200){
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
 									getinfo();
-									if(!res.username){
+									if(!res.userinfo.username){
 										mui.toast("请完善信息");
 										setinfo();
 									}else{
@@ -413,16 +413,10 @@
 							password: passwordBox1.value
 						};
 						app.login1(loginInfo, function(err) {
-							console.log(loginInfo);
 							if (err) {
 								plus.nativeUI.toast(err);
 								return;
 							}
-							console.log(JSON.stringify({
-								phone:loginInfo.account,
-								code:loginInfo.password,
-								role:role
-							}));
 							mui.showLoading();
 							yyajax("index/user/codelogin",{
 								phone:loginInfo.account,
@@ -431,10 +425,15 @@
 							},function(res){
 								mui.hideLoading();
 								if(res.code==200){
-									mui.toast("登录成功");
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
 									getinfo();
-									toMain();
+									if(!res.userinfo.username){
+										mui.toast("请完善信息");
+										setinfo();
+									}else{
+										mui.toast("登录成功");
+										toMain();
+									}
 								}else{
 									mui.toast(res.msg);
 								}

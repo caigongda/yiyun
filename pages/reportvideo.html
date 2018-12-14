@@ -52,8 +52,8 @@
 			window.addEventListener('url',function(event){
 				//获得事件参数
 				var fileinfo=event.detail.fileinfo;
-				$(".video-wrap video").attr("src",myurl+"images/"+fileinfo.name);
-				console.log(myurl+"images/"+fileinfo.name);
+				$(".video-wrap video").attr("src",uploadurl+fileinfo);
+				console.log(uploadurl+fileinfo);
 				if(mui.os.android){
 					$(".video-wrap video").css("transform","rotate(180deg)");
 				}

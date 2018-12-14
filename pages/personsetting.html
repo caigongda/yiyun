@@ -91,6 +91,11 @@
 			z-index: 5;
 			color: #fff;
 		}
+		#userhead{
+			position: absolute;
+			z-index: -10;
+			width: 0;
+		}
 	</style>
 	<body>
 		<header class="mui-bar mui-bar-nav common-header">
@@ -100,6 +105,7 @@
 		<div class="person-setting mui-content-padded" id="app">
 			<div class="person-header-bg">
 				<div class="edit-img" id="edit-img">
+					<input type="file" name="file" id="userhead" value="" accept="image/*" multiple="" onchange="uploadhead(this);">
 					<span class="mui-icon mui-icon-compose"></span>更换头像
 				</div>
 				<img src="../images/user-head.png" id="user-head"/>
@@ -117,25 +123,25 @@
 				</div>
 				<div class="info-item">
 					<label>性别：</label>
-					<p class="mui-input-row"><input type="text" id="sex-picker" v-model="form.genderdata" class="mui-input-clear" placeholder="请选择性别" readonly="readonly"/></p>
+					<p class="mui-input-row"><input type="text" id="sex-picker" class="mui-input-clear" placeholder="请选择性别" readonly="readonly"/></p>
 				</div>
 			</div>
 			<div class="other-info">
 				<div class="info-item">
 					<label>毕业院校：</label>
-					<p><input type="text" placeholder="毕业院校" id="school-picker" v-model="form.teacheracademy_id" readonly="readonly"/></p>
+					<p><input type="text" placeholder="毕业院校" id="school-picker" readonly="readonly"/></p>
 				</div>
 				<div class="info-item">
 					<label>所在城市：</label>
-					<p><input type="text" id="city-picker" v-model="form.location_id" placeholder="请选择所在城市" readonly="readonly"/></p>
+					<p><input type="text" id="city-picker" placeholder="请选择所在城市" readonly="readonly"/></p>
 				</div>
 				<div class="info-item">
 					<label>家乡地：</label>
-					<p><input type="text" id="birth-picker" v-model="form.home_id" placeholder="请选择家乡地" readonly="readonly"/></p>
+					<p><input type="text" id="birth-picker" placeholder="请选择家乡地" readonly="readonly"/></p>
 				</div>
 			</div>
 			<div class="other-info">
-				<div class="info-item">
+				<div class="info-item" v-if="islogin=='true'">
 					<label>手机号码：</label>
 					<p class="mui-input-row"><input type="text" v-model="form.mobile" placeholder="请输入您的手机号码" class="mui-input-clear" /></p>
 				</div>
@@ -151,6 +157,7 @@
 			<button type="button" class="mui-btn mui-btn-purple mui-btn-block btn-padding" id="setting-create" @click="saveinfo">提交</button>
 			<!-- <button type="button" class="mui-btn mui-btn-red mui-btn-block btn-padding" id="loginout">退出登录</button> -->
 		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/mui.picker.min.js"></script>
 		<script src="../js/app.js"></script>
@@ -187,42 +194,75 @@
 					callback();
 				})
 			};
+			var uploadimgurl=myurl+'index/Ajax/upload';
+			function uploadhead(self){
+				var oFile = document.getElementById('userhead').files[0];    //读取文件
+				var formdata=new FormData();
+				//formdata.append('name', 'uploadImage');
+				formdata.append('file',oFile);
+				$.ajax({
+					url:uploadimgurl,
+					type:'post',
+					contentType:false,
+					data:formdata,
+					processData:false,
+					success:function(info){
+						Vm.form.avatarimage=myurl+info.data.url;
+						document.getElementById("user-head").src=Vm.form.avatarimage;
+					},
+					error:function(err){
+						console.log(JSON.stringify(err))
+					}
+				});
+			}
 			var main=null;
 			mui.plusReady(function(){
 				mui.preload({
 					id: 'main',
 					url: 'main.html'
 				});
-				var sex=["男","女"];
+				var sex=[{value:"1",text:"男"},{value:"2",text:"女"}];
 				pubpicker("sex-picker",1,sex,function(items){
-					Vm.form.genderdata = items;
+					document.getElementById("sex-picker").value=items[0].text;
+					Vm.form.genderdata = items[0].value;
 				});
 				pubpicker("school-picker",2,school(),function(items){
-					Vm.form.teacheracademy_id = items[0].text + " - " + items[1].text;
+					document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
+					Vm.form.teacheracademy_id = items[1].value;
 				});
 				pubpicker("city-picker",2,cityData(),function(items){
-					Vm.form.location_id = items[0].text + " - " + items[1].text;
+					document.getElementById("city-picker").value=items[0].text + " - " + items[1].text;
+					Vm.form.location_id = items[1].value;
 				});
 				pubpicker("birth-picker",2,cityData(),function(items){
-					Vm.form.home_id = items[0].text + " - " + items[1].text;
+					document.getElementById("birth-picker").value=items[0].text + " - " + items[1].text;
+					Vm.form.home_id = items[1].value;
 				});
 				/* pubtap("loginout",function(){
 					//退出登录
 				}); */
 				pubtap("edit-img",function(){
-					plus.gallery.pick(function(p) {
+					document.getElementById('userhead').click();
+					/* plus.gallery.pick(function(p) {
 						plus.io.resolveLocalFileSystemURL(p, function(entry) {
 							console.log(entry.toLocalURL());
 							var imgurl=entry.toLocalURL();
 							document.getElementById("user-head").src=imgurl;
+							upload();
 						}, function(e) {
 							
 						});
 					}, function(a) {}, {
 						filter: "image",multiple:false,system:false
-					})
+					}) */
 				})
-			})
+			});
+			window.addEventListener('islogin',function(event){
+				//获得事件参数
+				var userinfo=app.getSettings();
+				Vm.islogin = event.detail.islogin;
+				Vm.form.mobile=userinfo.mobile;
+			});
 			var Vm = new Vue({
 				el: '#app',
 				data(){
@@ -234,7 +274,6 @@
 							name:"",
 							genderdata:"",//性别
 							teacheracademy_id:"",
-							jobname:"",
 							location_id:"",
 							home_id:"",
 							mobile:"",
@@ -244,48 +283,48 @@
 					}
 				},
 				mounted(){
-					var self=this;
-					window.addEventListener('islogin',function(event){
-						//获得事件参数
-						self.islogin = event.detail.islogin;
-					});
 				},
 				methods:{
 					saveinfo(){
 						var self=this;
 						var userinfo=app.getSettings();
-						console.log(JSON.stringify(app.getSettings()));
 						for(key in this.form ){   //variable 为属性名
 						  if(this.form[key]==""){
+							  console.log(key);
 							  mui.toast("不能为空哦！");
 							  return false;
-						  }else{
-							  var formdata=this.form;
-							  formdata.id=userinfo.id;
-							  formdata.id=userinfo.role;
-							  formdata.id=userinfo.token;
-							  yyajax('index/user/settings',formdata,function(res){
-								  if(res.code=="200"){
-									  if(self.islogin=='true'){
-										  assignobj(userinfo,formdata);
-										  localStorage.setItem('$state', JSON.stringify(userinfo));
-										  mui.toast("提交成功");
-										  if(!main){
-										  	main = plus.webview.getWebviewById('main');
-										  }     
-										  mui.openWindow({
-										  	id:'main',
-										  	show:{
-										  		duration:250
-										  	}
-										  });
-									  }else{
-										  mui.toast("已设置");
-									  }
-								  }
-							  })
 						  }
 						}
+						var formdata=this.form;
+						formdata.id=userinfo.id;
+						formdata.role=userinfo.role;
+						formdata.token=userinfo.token;
+						console.log(JSON.stringify(formdata));
+						yyajax('index/user/settings',formdata,function(res){
+							console.log(JSON.stringify(res));
+							if(res.code==200){
+								console.log(self.islogin);
+								if(self.islogin==true){
+									assignobj(userinfo,formdata);
+									console.log(JSON.stringify(userinfo));
+									localStorage.setItem('$state', JSON.stringify(userinfo));
+									mui.toast("提交成功");
+									if(!main){
+									main = plus.webview.getWebviewById('main');
+									}     
+									mui.openWindow({
+									id:'main',
+									show:{
+										duration:250
+									}
+									});
+								}else{
+									mui.toast("已设置");
+								}
+							}else{
+								mui.toast("网络错误");
+							}
+						})
 					}
 				}
 			});
