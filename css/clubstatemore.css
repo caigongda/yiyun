@@ -1,0 +1,100 @@
+.common-input{
+	width: calc(100% - 50px);
+	margin-left: 0.35rem;
+}
+.common-header{
+	box-shadow: 0 0 0;
+}
+.common-condition-wrap {
+	height: 33px;
+	margin-top: calc(44px + 0.18rem);
+	position: relative;
+}
+.condition-wrap{
+	width: 100%;
+	padding: 0 20%;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 0.28rem;
+	color: #6E6E6E;
+}
+.selone{
+	background: #eeeeee;
+}
+.shade-bg{
+	position: absolute;
+	width: 100%;
+	height: calc(100% - 77px - 0.18rem);
+	background: rgba(0,0,0,.6);
+	z-index:3;
+}
+.dance-wrap>div{
+	width: 100% !important;
+}
+#clublistparent{
+	top: calc(77px + 0.18rem);
+}
+.club-list{
+	padding: 0;
+}
+.club-list .mui-table-view:after{
+	display: none;
+}
+.scroll-parent{
+	position: absolute;
+	top: calc(77px + 0.18rem);
+	width: 100%;
+	height: calc(100% - 77px - 0.18rem);
+	overflow: hidden;
+}
+#commonListWrap{
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+.city-wrap>div{
+	width: 50% !important;
+}
+.city-wrap>div:last-child{
+	left: 50%;
+}
+#citydata1{
+	background: #fff;
+}
+#citydata2{
+	background: #e2e2e2;
+}
+#citydata2>li{
+	border-bottom: 1px solid #D8D8D8;
+}
+.teacher-video-wrap{
+	width: 100%;
+	height: calc(100% + 70px);
+	margin-bottom: 50px;
+}
+.teacher-video-wrap>div:first-child{
+	margin-top: 0.2rem;
+	padding: 0 0.2rem;
+	display: flex;
+	justify-content: space-between;
+	background: #fff;
+}
+.teacher-video-wrap>div:last-child{
+	top: 0 !important;
+}
+.scroll-parent{
+	position: absolute;
+	top: calc(77px + 0.18rem);
+	width: 100%;
+	height: calc(100% - 44px);
+	overflow: hidden;
+}
+#commonListWrap{
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}

@@ -1,0 +1,69 @@
+body{background: #fff;width: 100%;height: 100%;overflow: hidden;}
+.common-input{
+	width: calc(100% - 50px);
+	margin-left: 0.35rem;
+}
+.common-header{
+	box-shadow: 0 0 0;
+}
+
+.common-condition-wrap{
+	height: 100%;
+	margin-top: calc(44px + 0.18rem);
+	position: relative;
+}
+.condition-wrap{
+	width: 100%;
+	padding: 0 10%;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-size: 0.28rem;
+	color: #6E6E6E;
+}
+
+.city-wrap>div{
+	width: 50% !important;
+}
+.city-wrap>div:last-child{
+	left: 50%;
+}
+#citydata1{
+	background: #fff;
+}
+#citydata2{
+	background: #e2e2e2;
+}
+#citydata2>li{
+	border-bottom: 1px solid #D8D8D8;
+}
+.selone{
+	background: #eeeeee;
+}
+.shade-bg{
+	position: absolute;
+	width: 100%;
+	height: calc(100% - 44px - 0.68rem);
+	background: rgba(0,0,0,.6);
+	z-index:3;
+}
+.dance-wrap>div{
+	width: 100% !important;
+}
+.more-wrap>div{
+	width: 100% !important;
+}
+.scroll-parent{
+	position: absolute;
+	top: calc(77px + 0.18rem);
+	width: 100%;
+	height: calc(100% - 77px - 0.18rem);
+	overflow: hidden;
+}
+#commonListWrap{
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}

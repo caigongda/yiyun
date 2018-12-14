@@ -1,0 +1,31 @@
+.common-input{
+	width: 100%;
+}
+.teacher-video-wrap{
+	width: 100%;
+	height: calc(100% + 70px);
+	margin-bottom: 50px;
+}
+.teacher-video-wrap>div:first-child{
+	margin-top: 0.2rem;
+	padding: 0 0.2rem;
+	display: flex;
+	justify-content: space-between;
+	background: #fff;
+}
+.teacher-video-wrap>div:last-child{
+	top: 0 !important;
+}
+.scroll-parent{
+	position: absolute;
+	top: 44px;
+	width: 100%;
+	height: calc(100% - 44px);
+	overflow: hidden;
+}
+#commonListWrap{
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}

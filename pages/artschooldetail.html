@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/artschooldetail.css" rel="stylesheet" />
+		<link href="../css/previewimage.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="app">
+			<header class="mui-bar mui-bar-nav common-header">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<h1 class="mui-title">院校详情</h1>
+			</header>
+			<div class="art-detail">
+				<div class="art-detail-header">
+					<img src="../images/user-head.png"/>
+					<div>
+						<h4>小天鹅舞蹈学院</h4>
+						<p>官网网址：http:www.xiaotiane.com</p>
+					</div>
+				</div>
+			</div>
+			<div class="list-title art-detail-title">
+				<h4>招生信息</h4>
+			</div>
+			<div class="art-detail-img ripple">
+				<img src="../images/classbanner.jpeg" data-preview-src="" data-preview-group="1"/>
+			</div>
+			<div class="art-detail-img ripple">
+				<img src="../images/classbanner.jpeg" data-preview-src="" data-preview-group="1"/>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui.previewImage({issave:true});
+			var app = new Vue({
+				el: '#app',
+				data(){
+					return{
+						message: '1'
+					}
+				},
+				mounted(){
+					var self=this;
+					window.addEventListener('clubId',function(event){
+						//获得事件参数
+						self.message = event.detail.id;
+					});
+				},
+				methods:{
+					video:function(){
+						this.curtab=1;
+					},
+					state:function(){
+						this.curtab=2;
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

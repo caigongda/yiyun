@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/clubclass.css" rel="stylesheet" />
+	</head>
+	<body>
+	<div id="app" v-cloak>
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="mui-input-row common-input" id="inputc">
+				<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
+				<span class="mui-icon mui-icon-search common-search-icon"></span>
+			</div>
+		</header>
+			<div class="common-condition-wrap">
+				<div class="condition-wrap">
+					<div class="selcity" @click="selcity">所在城市<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
+					<div class="seldance" @click="seldance">职位要求<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+					<div class="morecond" @click="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
+				</div>
+				<div class="city-wrap" id="scroll-ul" v-show="iscity">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul id="citydata1">
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name)">{{item.name}}</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="dance-wrap" id="scroll-ul" v-show="isdance">
+					<div class="mui-scroll-wrapper scroll-ul">
+						<div class="mui-scroll">
+							<ul id="dancedata">
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="more-wrap" id="scroll-ul" v-show="morecond">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul id="dancedata">
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="shade-bg" v-if="iscity||isdance||morecond" @click="closeall"></div>
+			<div class="scroll-parent">
+				<div id="commonListWrap">
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index">
+							<a href="javascript:;">
+								<div class="state-top">
+									<img :src="item.head" id="club-index">
+									<div class="state-auth-info">
+										<p>{{item.name}}</p>
+										<span class="mui-badge mui-badge-success">{{item.tag}}</span>
+									</div>
+								</div>
+								<p class="mui-ellipsis-2 state-con-info">
+									{{item.content}}
+								</p>
+								<div class="state-img-wrap">
+									<img v-for="value in item.imgs" :src="value" />
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/city.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			mui.ready(function() {
+			//初始化区域滚动
+				var scroll = mui(".mui-scroll-wrapper").scroll();
+			})
+			mui.plusReady(function(){
+				mui("#commonListWrap").pullRefresh({
+					down : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							setTimeout(function () {
+								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
+							}, 1500);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							loadMore(this);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				})
+				function loadMore(pullRefresh) {
+					// 如果没有更多数据了，则关闭上拉加载
+					//pullRefresh.endPullupToRefresh(true);
+					// 如果有更多数据，则继续
+					setTimeout(function () {
+						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
+					}, 1500);
+					//pullRefresh.endPullupToRefresh(false);
+				};
+			});
+			var app = new Vue({
+				el: '#app',
+				data(){
+					return{
+						cityone:city,
+						citytwo:city[0]['sub'],
+						iscity:false,
+						isdance:false,
+						morecond:false,
+						curone:"北京",
+						datalist:[
+							{
+								head:"../images/user-head.png",
+								tag:"金牌合作",
+								name:"有理想的胖子",
+								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+							},
+							{
+								head:"../images/user-head.png",
+								tag:"金牌合作",
+								name:"有理想的胖子",
+								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+							},
+							{
+								head:"../images/user-head.png",
+								tag:"金牌合作",
+								name:"有理想的胖子",
+								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+							},
+							{
+								head:"../images/user-head.png",
+								tag:"金牌合作",
+								name:"有理想的胖子",
+								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+							}
+						]
+					}
+				},
+				mounted(){
+					
+				},
+				methods:{
+					selcity:function(){
+						this.iscity=!this.iscity;
+						this.isdance=false;
+						this.morecond=false;
+					},
+					seldance:function(){
+						this.isdance=!this.isdance;
+						this.iscity=false;
+						this.morecond=false;
+					},
+					selstepone:function(val,index){
+						this.curone=val;
+						this.citytwo=city[index]['sub'];
+					},
+					selmorecond:function(){
+						this.morecond=!this.morecond;
+						this.iscity=false;
+						this.isdance=false;
+					},
+					closeall:function(){
+						this.iscity=false;
+						this.isdance=false;
+						this.morecond=false;
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.mui-content{
+				width: 5.68rem;
+				margin: 0 auto;
+				padding-top: 1.03rem;
+				background: #fff;
+			}
+			.mui-input-group:before,.mui-input-group:after{
+				display: none;
+			}
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			.mui-input-row:after{
+				background-color:#fff !important;
+			}
+			.line-row:after{
+				height: 2px !important;
+				background-color: #C8ACF8 !important;
+				transform: none !important;
+				left: 0 !important;
+			}
+			.line-row input{
+				font-size: 0.24rem;
+				padding: 10px 0 0 15px;
+			}
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			.mui-btn {
+				padding: 10px;
+			}
+			.radio-wrap{
+				display: flex;
+				margin-top: 0.16rem;
+				display: flex;
+				align-items: center;
+			}
+			.radio-wrap input{
+				left: 0 !important;
+			}
+			.radio-wrap>.mui-radio{
+				display: flex;
+				align-items: center;
+			}
+			.radio-wrap input:before{
+				font-size: 0.24rem !important;
+			}
+			.radio-wrap label{
+				padding-left: 0.3rem !important;
+				color: #9B9B9B;
+				font-size: 0.24rem;
+			}
+			.radio-wrap .mui-radio input[type=radio]{
+				top: 8px !important;
+			}
+			.radio-wrap .mui-radio input[type=radio]:checked:before{
+				color: #C8ACF8 !important;
+			}
+			.register-btn{
+				width: 5.5rem;
+				height: 0.66rem;
+				margin:0 auto;
+				padding: 0;
+				font-size: 0.25rem;
+				line-height: 0.56rem;
+				text-align: center;
+				background: #C8ACF8;
+				border-color: #C8ACF8;
+				color: #FFFFFF;
+				margin-top: 0.23rem;
+			}
+			.code-row{
+				position: relative;
+			}
+			.code-row.mui-input-row .mui-input-clear~.mui-icon-clear{
+				right: 1.39rem;
+			}
+			.send-code{
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: 1.5rem;
+				padding: 0;
+				margin-top: 5px;
+				height: 0.6rem;
+				font-size: 0.25rem;
+				color: #C8ACF8;
+				border-radius: 2px;
+				text-align: center;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				border: none;
+			}
+			.mui-input-row .mui-input-clear~.mui-icon-clear{
+				top: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">注册</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row line-row">
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+				</div>
+				<div class="mui-input-row line-row code-row">
+					<input id='yzm' type="text" class="mui-input-clear mui-input" placeholder="请输入短信验证码">
+					<div id="send_code" class="send-code">发送验证码</div>
+				</div>
+				<div class="mui-input-row line-row">
+					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请设置6-16位密码">
+				</div>
+				<div class="radio-wrap">
+					<div class="mui-input-row mui-radio mui-left">
+						<label>老师</label>
+						<input name="radio1" type="radio" checked="checked" value="1">
+					</div>
+					<div class="mui-input-row mui-radio mui-left">
+						<label>俱乐部</label>
+						<input name="radio1" type="radio" value="2">
+					</div>
+				</div>
+				<!-- <div class="mui-input-row">
+					<label>确认</label>
+					<input id='password_confirm' type="password" class="mui-input-clear mui-input" placeholder="请确认密码">
+				</div> -->
+				<!-- <div class="mui-input-row">
+					<input id='email' type="email" class="mui-input-clear mui-input" placeholder="请输入邮箱">
+				</div> -->
+			</form>
+			<div class="">
+				<button id='reg' class="mui-btn mui-btn-block mui-btn-royal register-btn">注册</button>
+			</div>
+			<div class="mui-content-padded">
+				<p></p>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script>
+			(function($, doc) {
+				$.init();
+				$.plusReady(function() {
+					var radio=document.getElementsByName("radio1");
+					var role=null;   //  selectvalue为radio中选中的值
+					for(var i=0;i<radio.length;i++){
+						if(radio[i].checked==true) {
+							role=radio[i].value;
+							break;
+						}
+					}
+					var settings = app.getSettings();
+					var regButton = doc.getElementById('reg');
+					var accountBox = doc.getElementById('account');
+					var yzm = doc.getElementById('yzm');
+					var passwordBox = doc.getElementById('password');
+					var passwordConfirmBox = doc.getElementById('password_confirm');
+					var emailBox = doc.getElementById('email');
+					var sendCode = doc.getElementById('send_code');
+					/* 发送验证码 */
+					var time=60;
+					var issend=false;
+					var timer;
+					sendCode.addEventListener('tap',function(e){
+						if(accountBox.value==""){
+							mui.toast('请输入手机号！');
+							return false;
+						}
+						if (!isPone(accountBox.value)){
+							mui.toast('请输入有效的手机号码');
+							return false;
+						}
+						if(issend){
+							mui.toast('已发送验证码');
+							return false;
+						}
+						mui.showLoading();
+						sendcode(accountBox.value,"1",function(res){
+							mui.hideLoading();
+							if(res.code==200){
+								mui.toast("获取成功");
+								issend=true;
+								sendCode.innerHTML="重新发送("+time+"s)";
+								timer=setInterval(function(){
+									time-=1;
+									sendCode.innerHTML="重新发送("+time+"s)";
+									if(time==0){
+										clearInterval(timer);
+										time=60;
+										issend=false;
+										sendCode.innerHTML="发送验证码";
+									}
+								},1000);
+							}else{
+								mui.toast(res.msg);
+							}
+						});
+					});
+					regButton.addEventListener('tap', function(event) {
+						var regInfo = {
+							account: accountBox.value,
+							yzm:yzm.value,
+							password: passwordBox.value
+						};
+						//var passwordConfirm = passwordConfirmBox.value;
+						if (regInfo.password=="") {
+							mui.toast('请输入密码');
+							return;
+						}
+						if (regInfo.yzm=="") {
+							mui.toast('请输入验证码');
+							return;
+						}
+						app.reg(regInfo, function(err) {
+							if (err) {
+								mui.toast(err);
+								return;
+							}
+							yyajax("/index/user/register",{
+								phone:regInfo.account,
+								code:regInfo.yzm,
+								pass:regInfo.password,
+								role:role,
+							},function(res){
+								if(res.code==200){
+									mui.toast('注册成功');
+									plus.webview.getLaunchWebview().show("pop-in",200,function () {
+										plus.webview.currentWebview().close("none");
+									});
+								}else{
+									mui.toast(res.msg);
+								}
+							})
+							/*
+							 * 注意：
+							 * 1、因本示例应用启动页就是登录页面，因此注册成功后，直接显示登录页即可；
+							 * 2、如果真实案例中，启动页不是登录页，则需修改，使用mui.openWindow打开真实的登录页面
+							 */
+							//若启动页不是登录页，则需通过如下方式打开登录页
+//							$.openWindow({
+//								url: 'login.html',
+//								id: 'login',
+//								show: {
+//									aniShow: 'pop-in'
+//								}
+//							});
+						});
+					});
+				});
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,436 @@
+.ui-page-login,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+.mui-content{height: 100%;}
+@font-face {
+  font-family: 'iconfont';  /* project id 930702 */
+  src: url('../icon/font/iconfont.eot');
+  src: url('../icon/font/iconfont.eot?#iefix') format('embedded-opentype'),
+  url('../icon/font/iconfont.woff') format('woff'),
+  url('../icon/font/iconfont.ttf') format('truetype'),
+  url('../icon/font/iconfont.svg#iconfont') format('svg');
+}
+[v-cloak]{display: none}
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon-wode:before { content: "\e637"; }
+.icon-fenlei:before { content: "\e612"; }
+.icon-laoshi:before { content: "\e608"; }
+.icon-rvideo:before { content: "\e65f"; }
+.icon-rstate:before { content: "\e61d"; }
+.icon-card:before { content: "\e741"; }
+.icon-list:before { content: "\e609"; }
+
+.mcolor{color:#C8ACF8 !impotant}/* 主色 */
+.scolor{color: #6E4FC4;}/* 深色 */
+.mui-pull-left{color: #6E4FC4;}
+
+
+.main-wrap{
+		width: calc(100% - 20px);
+		margin: 0 auto;
+	}
+.list-title{
+		display: flex;
+		justify-content: space-between;
+		margin-top: 0.22rem;
+		align-items: center;
+	}
+	.list-title h4{
+		color: rgba(0, 0, 0, 1);
+		font-size: 0.3rem;
+		text-align: left;
+		margin: 0;
+		padding: 5px 0;
+		position: relative;
+	}
+	.list-title h4:after{
+		content: "";
+		width: 100%;
+		height: 30%;
+		left: 0;
+		position: absolute;
+		top: 60%;
+		background: #C8ACF8;
+		border-radius: 10px;
+		z-index: -1;
+		filter:blur(3px);
+		-webkit-filter:blur(3px);
+	}
+	.list-title span{
+		font-size: 0.24rem;
+		color: rgba(196,196,196,1);
+	}
+#banner{
+		width: 100%;
+		background: #fff;
+		margin:0 auto;
+		padding-bottom: 20px;
+	}
+	#banner>div{
+		width: 100%;
+	}
+	#banner .mui-slider-item{
+		width: 100%;
+	}
+	#banner .baner-item{
+		width: calc(100% - 0.2rem);
+		margin:0 auto;
+		-webkit-box-shadow:5px 10px 12px #ddd; box-shadow:5px 10px 12px #ddd;
+		border-radius: 10px;
+	}
+	#banner a{
+		text-align: center;
+	}
+	#banner img{
+		width: 100%;
+		height: 3rem;
+		margin:0 auto;
+		border-radius: 10px;
+	}
+
+/* 按钮点击效果 */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+.ripple:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #d1d1d1 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .3s, opacity .5s;
+}
+.ripple:active:after {
+    transform: scale(0, 0);
+    opacity: .3;
+    transition: 0s;
+}
+/* comon-header */
+.common-header{
+	background: #FFF;
+	display: flex;
+	align-items: center;
+	font-size: 30px;
+}
+.common-input{
+	height: 100%;
+	display: flex;
+    align-items: center;
+	position: relative;
+	flex-direction:column ;
+	justify-content: center;
+}
+.mui-input-row .mui-input-clear~.mui-icon-clear{
+	height: 44px !important;
+	display: flex;
+	align-items: center;
+}
+.common-search-icon{
+	position: absolute !important;
+	top: 0;
+	left: 0;
+	width: 60px;
+	text-align: center;
+	color: #A5A5A5;
+	font-weight: bold;
+}
+.common-input input{
+	width: 100%;
+	height: 32px;
+	border-radius: 100px;
+	background: #EAEAEA;
+	border:none;
+	font-size: 12px;
+	padding-left: 40px;
+	margin-bottom: 0;
+	align-self:flex-start;
+}
+.mui-badge{
+	border-radius: 3px;
+}
+.cheng-color{
+	background-color: #FF8B04;
+	color:#fff;
+}
+.lan-color{
+	background-color: #509CFF;
+	color:#fff;
+}
+
+/* 俱乐部状态列表样式 */
+.state-wrap{
+	margin-top: 0.37rem;
+	padding: 0 0.2rem;
+	width: 100%;
+}
+#club-state-list li{
+		padding: 11px 0 0 0;
+}
+#club-state-list a{
+	padding: 0;
+	width: 100%;
+	margin:0 auto;
+}
+.state-top{
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+.state-top img{
+	width: 1.1rem;
+	height: 1.1rem;
+	border-radius: 50%;
+}
+.state-auth-info{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin-left: 0.2rem;
+}
+.state-auth-info p{
+	font-size: 0.28rem;
+	color: #333;
+	font-weight: 550;
+}
+.state-auth-info span{
+	width: auto;
+	background: #6E4FC4;
+	align-self: baseline;
+	border-radius:0;
+	margin-top:0.1rem ;
+}
+.state-con-info{
+	-webkit-line-clamp:3;
+	color: #333;
+	margin: 0.16rem 0;
+	font-size: 0.22rem;
+}
+.state-img-wrap{
+	width: 100%;
+	display: flex;
+	height: 1.44rem;
+	margin:0.16rem 0;
+}
+.state-img-wrap img{
+	flex: 0 0 24%;
+	height: 100%;
+	border-radius: 2px;
+}
+.state-img-wrap img:not(:last-child){
+	margin-right: calc(4%/3);
+}
+/* 视频列表样式 */
+.teacher-video-left,.teacher-video-right{
+	width: 48.5%;
+}
+.teacher-video-list{
+	width: 100%;
+	float: left;
+	margin-bottom: 0.2rem;
+	box-shadow: 5px 5px 12px #ddd;
+	-webkit-box-shadow: 5px 5px 12px #ddd;
+	border-bottom-right-radius:10px;
+	border-bottom-left-radius:10px;
+	position: relative;
+}
+.img-wrap{
+	width: 100%;
+	height: 4.16rem;
+	position: relative;
+}
+.play-icon{
+	position: absolute;
+	display: inline-block;
+	width: 0.36rem;
+	height: 0.36rem;
+	top: 0.3rem;
+	right: 0.3rem;
+	background: url(../images/play.png) no-repeat;
+	background-size: 0.36rem 0.36rem;
+}
+.img-wrap img{
+	width: 100%;
+	height: 100%;
+	border-top-left-radius:10px;
+	border-top-right-radius:10px;
+}
+.teacher-video-right .teacher-video-list:nth-child(1) .img-wrap{
+	height: 3.6rem;
+}
+.auth-wrap{
+	width: 100%;
+	height: 1.08rem;
+}
+.auth-wrap h4{
+	font-size: 0.24rem;
+	font-weight: normal;
+	margin: 0.2rem 0 0.2rem 0.2rem;
+	color: #333;
+}
+.auth-wrap p{
+	margin: 0 0 0.2rem 0.2rem;
+	display: flex;
+	align-items: center;
+	color: #333;
+	font-size: 0.2rem;
+}
+.auth-wrap img{
+	width: 0.3rem;
+	height: 0.3rem;
+}
+.auth-wrap span{
+	font-size: 0.2rem;
+	margin-left: 0.12rem;
+}
+/* 俱乐部列表 */
+#clublist .mui-media-body{
+		padding-top: 5px;
+	}
+	#clublist span{
+		font-size: 0.3rem;
+		font-weight: bold;
+	}
+	#clublist li{
+		padding: 11px 10px 0 10px;
+		width: 100%;
+	}
+	#clublist li:after{
+		display: none;
+	}
+	#clublist a{
+		padding: 0;
+		width: 100%;
+		margin:0 auto;
+	}
+	#clublist img{
+		width: 2.72rem;
+		max-width: 2.72rem;
+		height: 1.8rem;
+		border-radius: 10px;
+	}
+	#clublist p{
+		color: #333;
+		font-size: 0.24rem;
+		margin-top: 0.05rem;
+		line-height: initial;
+	}
+	#clublist .zpinfo{
+		margin-top: 0.22rem;
+		letter-spacing: 2px;
+		font-size: 0.24rem;
+	}
+	
+	#club-state-list li{
+		padding: 11px 0 0 0;
+	}
+	#club-state-list a{
+		padding: 0;
+		width: 100%;
+		margin:0 auto;
+	}
+	/* 滚动ul */
+	#scroll-ul{
+		display: flex;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	#scroll-ul>div{
+		height: 5.1rem;
+		background: #fff;
+		z-index: 5;
+	}
+	#scroll-ul ul{
+		width: 100%;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	#scroll-ul ul>li{
+		padding: 5px 0;
+		font-size: 0.23rem;
+		border-bottom: 1px solid #ddd;
+		text-align: center;
+		color: #333;
+	}
+	.mui-table-view:after{
+		display: none;
+	}
+	/*----------------mui.showLoading---------------*/
+.mui-show-loading {
+    position: fixed;
+    padding: 5px;
+    width: 120px;
+    min-height: 120px;
+    top: 45%;
+    left: 50%;
+    margin-left: -60px;
+    background: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    border-radius: 5px;
+    color: #FFFFFF;
+    visibility: hidden;
+    margin: 0;
+    z-index: 2000;
+
+    -webkit-transition-duration: .2s;
+    transition-duration: .2s;
+    opacity: 0;
+    -webkit-transform: scale(0.9) translate(-50%, -50%);
+    transform: scale(0.9) translate(-50%, -50%);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.mui-show-loading.loading-visible {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: scale(1) translate(-50%, -50%);
+    transform: scale(1) translate(-50%, -50%);
+}
+.mui-show-loading .mui-spinner{
+    margin-top: 24px;
+    width: 36px;
+    height: 36px;
+}
+.mui-show-loading .text {
+    line-height: 1.6;
+    font-family: -apple-system-font,"Helvetica Neue",sans-serif;
+    font-size: 14px;
+    margin: 10px 0 0;
+    color: #fff;
+}
+
+.mui-show-loading-mask {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+.mui-show-loading-mask-hidden{
+    display: none !important;
+}
+
+.mui-table-view-cell:after{
+	left: 0 !important;
+}

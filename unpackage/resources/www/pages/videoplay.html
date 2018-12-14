@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css" />
+    <link href="../css/ddfullscreenslider.css" rel="stylesheet"/>
+    <style>	
+	.play-header{position: absolute;z-index: 1111;background: rgba(0,0,0,0);box-shadow: 0 0 0;color: #fff;height: 0;}
+	.play-header a{color: #fff;}
+	section.dd_fullscreenslider article.slide .video{ width: 100%; height:100%;position:absolute; z-index:-1; } 
+	section.dd_fullscreenslider article.slide .videodiv{ position:absolute; width: 100%; height: 100%; z-index:2; overflow: hidden;}
+	section.dd_fullscreenslider article.slide .right_user{position:absolute; z-index:10;  bottom:0; width:70px; height:320px; right: 10px; }	
+	section.dd_fullscreenslider article.slide .userhead{ height:75px; position: relative; text-align: center; }
+	section.dd_fullscreenslider article.slide .userhead img{ width:65px; height:65px; border-radius:65px;}
+	section.dd_fullscreenslider article.slide .userhead .useradd{ position: absolute; bottom:0px; left:22px; width:23px; height:23px; text-align: center; line-height:23px; border-radius: 20px; background-color:#ff2b54;}
+    section.dd_fullscreenslider article.slide .right_ico{ text-align: center; margin-top:20px; line-height: 16px;}
+    section.dd_fullscreenslider article.slide .right_ico img{ width:35px; margin: 0;}
+    section.dd_fullscreenslider article.slide .right_ico span{ font-size: 12px; display: block;} 
+    section.dd_fullscreenslider article.slide .user_name{position: absolute; z-index:10;  bottom:12px; height: 50px; padding-left: 15px;}
+    section.dd_fullscreenslider article.slide .user_name p{ margin:0; padding:0px; color: #fff; line-height: 23px;}
+    section.dd_fullscreenslider article.slide .user_name p.name{ font-weight: bold; font-size: 17px;}
+    section.dd_fullscreenslider article.slide .play{ width: 80px; position: absolute;left:40%;top:44%; z-index:1; opacity: 0;}
+    section.dd_fullscreenslider article.slide .spinner{ position: absolute; z-index: 999; text-align: center; width: 100%; top:50%;}
+    section.dd_fullscreenslider article.slide .spinner .ltxt{ font-size: 14px; position: relative; left: 5px; top: -7px; color: #797979;}
+    </style>
+</head>
+<body class="mui-fullscreen">
+<header class="mui-bar mui-bar-nav play-header">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+</header>
+<section id="dowebok" class="dd_fullscreenslider">
+<div class="slidewrapper" ></div>
+</section>
+<script src="../js/mui.min.js" charset="UTF-8"></script>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/ddfullscreenslider.js"></script>
+<script>
+var fss;
+mui.init({
+	swipeBack:true,
+	beforeback: function(){
+		var slidewrapper=document.querySelector(".slidewrapper");
+		slidewrapper.innerHTML='';
+		mui.plusReady(function() {
+			if(mui.os.ios){
+				plus.navigator.setFullscreen(false);
+			}else{
+				plus.navigator.setFullscreen(false);
+			}
+		});
+		return true;
+	}
+});
+//$(function() {
+	var memberinfo=null;
+$(function() {
+	/* mui.plusReady(function(){
+		plus.navigator.setStatusBarStyle( style );
+	}) */
+	mui.plusReady(function(){
+		mui.preload({
+				id: 'memberinfo',
+				url: 'memberinfo.html'
+		});
+	});
+	fss = new ddfullscreenslider({
+		sliderid: 'dowebok',
+		addHash:true,
+		onslide: function($slide, index){
+			var video=document.querySelectorAll("video");
+			if(video.length>9){
+				mui.each(video,function(index,tem){	
+					 tem.remove();
+				});
+			}
+			mui.each(video,function(index,tem){
+				 tem.currentTime=0;
+				 tem.pause();
+			});
+			setVideo(index);
+			var slidewrapper=document.querySelectorAll(".videodiv");
+			if(slidewrapper.length-index<4){
+				window.addEventListener('userId',function(event){
+					getjson(2); //加载更多数据
+				})
+			}
+		}
+	});
+	mui("body").on("tap",".videodiv",function(event){
+		event.stopPropagation();
+		var _video=this.querySelector("video");
+		if(_video.currentTime>0){
+			if (_video.paused || _video.ended){ //当暂停或结束
+					_video.play();  
+					this.querySelector(".play").style.opacity=0;    
+			}else{//否则暂停播放 
+					_video.pause(); 
+					this.querySelector(".play").style.opacity=1;
+			}
+		}
+	});
+	mui(".slidewrapper").on("tap",".userhead",function(event){//点击头像
+		event.stopPropagation();
+		var _video=$(this).parents(".slide").find(".video");
+		_video.trigger("pause");
+		if(mui.os.ios){
+			plus.navigator.setFullscreen(false);
+		}else{
+			plus.navigator.setFullscreen(false);
+		}
+		var userid=this.dataset.userid;
+		if(!memberinfo){
+			memberinfo = plus.webview.getWebviewById('memberinfo');
+		}
+		mui.fire(memberinfo,'userId',{
+			userid:userid
+		});
+		mui.openWindow({
+			id:'memberinfo',
+			show:{
+				duration:250
+			}
+		});
+	})
+	mui(".slidewrapper").on("tap",".addcol",function(event){//点击收藏
+		event.stopPropagation();
+		var userid=this.dataset.userid;
+		$(this).children("img").attr("src","../icon/saved.png");
+	})
+	mui(".slidewrapper").on("tap",".invite",function(event){
+		event.stopPropagation();
+		$(this).children("img").attr("src","../icon/shared.png");
+	});
+	///
+});
+window.addEventListener('userId',function(event){
+	mui.plusReady(function() {
+		plus.navigator.setFullscreen(true);
+		if(mui.os.ios){
+			plus.navigator.setFullscreen(true);
+		}else{
+			plus.navigator.setFullscreen(true);
+		}
+		//plus.navigator.closeSplashscreen();
+	});
+	getjson(1);
+})
+//获得短视频数据
+function getjson(page){
+	  var slidewrapper=document.querySelector(".slidewrapper");
+	  if(page==1){
+			slidewrapper.innerHTML='';
+	  }
+	  mui.ajax("../js/data.json",{
+	  	data:{},
+			dataType:'json',//服务器返回json格式数据
+			type:'get',//HTTP请求类型
+			timeout:10000,//超时时间设置为10秒；
+			success:function(data){
+			    if(data.code=="000000"){
+					var arr=data.list;
+					mui.each(arr,function(index,tem){
+						var article=document.createElement("article");
+						article.className="slide";
+						article.style.backgroundImage='url('+tem["vimg"]+')';
+						article.innerHTML='<div class="videodiv" data-url="'+tem["video"]+'" data-img="'+tem["vimg"]+'"><div class="spinner"><span class="mui-spinner"></span><span class="ltxt">加载中...</span></div> <div class="right_user"><div class="userhead" data-userid="'+index+'"><img src="'+tem["head"]+'" alt="" /></div><div class="right_ico addcol" data-userid="'+index+'"><img src="../icon/live.png"/><span>'+tem["live"]+'</span></div><div class="right_ico invite" data-userid="'+index+'"><img src="../icon/share.png" /></div></div><img  src="../icon/play.png?p=12" class="play" /><div class="user_name">\<p class="name">@'+tem["username"]+'</p>\<p>'+tem["txt"]+'</p></div></div>';
+						slidewrapper.appendChild(article);	
+					});
+			   	fss.reloadSlides();
+			   	if(page==1){ //第一次加载，让第一个视频播放
+	         	   setVideo(0);
+				}
+			   }
+			},
+			error:function(xhr,type,errorThrown){
+				 mui.toast("~网络连接失败~");
+			}
+		});	
+}
+
+//打乱顺序，随机播放
+function shuffle(a) {
+    var b = [];
+    while (a.length > 0) {
+        var index = parseInt(Math.random() * (a.length - 1));
+        b.push(a[index]);
+        a.splice(index, 1);
+    }
+    return b;
+}
+
+//给对应的页面，添加视频播放
+function setVideo(index){
+	var videodiv=document.querySelectorAll(".videodiv");
+		if(videodiv[index] && !videodiv[index].querySelector("video")){
+			var vid=document.createElement("video");
+			vid.className="video";
+			vid.poster=videodiv[index].getAttribute("data-img");
+			vid.setAttribute("preload","auto");
+			vid.setAttribute("webkit-playsinline","webkit-playsinline");
+			vid.setAttribute("playsinline","playsinline");
+			vid.setAttribute("controlslist","nodownload");
+			vid.setAttribute("loop","loop");
+			vid.setAttribute("autoplay","autoplay");
+			var sssrc=videodiv[index].getAttribute("data-url");
+			vid.setAttribute("src",sssrc);
+			vid.addEventListener("playing", function(){
+				 videodiv[index].querySelector(".spinner").style.display="none";       		            
+			});
+			videodiv[index].appendChild(vid);
+			videodiv[index].querySelector(".play").style.opacity=0;
+		}else if(videodiv[index]){
+			videodiv[index].querySelector(".play").style.opacity=0;
+			videodiv[index].querySelector("video").currentTime=0;
+			videodiv[index].querySelector("video").play();
+		}
+}
+</script>
+
+</body>
+</html>

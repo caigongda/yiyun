@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<style>
+			.invitelist{
+				margin-top: 10px;
+			}
+			.invitelist li img{
+				display: inline;
+				width: 40px;
+				height: 40px;
+			}
+			.invitelist li{
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.invitelist li>div{
+				display: flex;
+				align-items: center;
+			}
+			.invitelist li>div>span{
+				font-size: 0.26rem;
+				margin-left: 10px;
+			}
+			.mui-table-view-cell:after{
+				left: 0;
+			}
+			.invitelist:after{
+				position: absolute;
+				right: 0;
+				left: 0;
+				height: 1px;
+				content: '';
+				-webkit-transform: scaleY(.5);
+				transform: scaleY(.5);
+				background-color: #c8c7cc;
+				top: -1px;
+			}
+			.scroll-parent{
+				position: absolute;
+				top: 44px;
+				width: 100%;
+				height: calc(100% - 44px);
+				overflow: hidden;
+			}
+			#commonListWrap{
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">邀请</h1>
+		</header>
+		<div id="app">
+			<div class="scroll-parent">
+				<div id="commonListWrap">
+					<ul class="mui-table-view invitelist">
+						<li class="mui-table-view-cell">
+							<div>
+								<img src="../images/user-head.png"/>
+								<span>愤怒的小鸟</span>
+							</div>
+							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
+						</li>
+						<li class="mui-table-view-cell">
+							<div>
+								<img src="../images/user-head.png"/>
+								<span>愤怒的小鸟</span>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div>
+								<img src="../images/user-head.png"/>
+								<span>愤怒的小鸟</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<ul class="mui-table-view invitelist">
+				<li class="mui-table-view-cell">
+					暂无数据
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			/* mui.plusReady(function(){
+				mui("#commonListWrap").pullRefresh({
+					down : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							setTimeout(function () {
+								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
+							}, 1500);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							loadMore(this);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				})
+				function loadMore(pullRefresh) {
+					// 如果没有更多数据了，则关闭上拉加载
+					//pullRefresh.endPullupToRefresh(true);
+					setTimeout(function () {
+						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
+					}, 1500);
+					// 如果有更多数据，则继续
+					//pullRefresh.endPullupToRefresh(false);
+				};
+			}); */
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			var app = new Vue({
+				el: '#app',
+				data(){
+					return{
+						curtab: '1'
+					}
+				},
+				methods:{
+					video:function(){
+						this.curtab=1;
+					},
+					state:function(){
+						this.curtab=2;
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

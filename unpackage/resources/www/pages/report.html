@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/report.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="img-wrap">
+		</div>
+		<input type="file" name="videofile" class="hidden" id="videofile" accept="video/*" capture="camera"/>
+		<div class="btn-wrap" id="container">
+			<button type="button" class="mui-btn mui-btn-royal report-video" id="selectfiles">
+				<span class="iconfont icon-rvideo"></span>发布视频作品</button>
+			<button type="button" class="mui-btn mui-btn-royal report-state">
+				<span class="iconfont icon-rstate"></span>发布求职动态</button> 
+		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript" src="../js/lib/crypto1/crypto/crypto.js"></script>
+		<script type="text/javascript" src="../js/lib/crypto1/hmac/hmac.js"></script>
+		<script type="text/javascript" src="../js/lib/crypto1/sha1/sha1.js"></script>
+		<script type="text/javascript" src="../js/lib/base64.js"></script>	
+		<script type="text/javascript" src="../js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
+		<script type="text/javascript" src="../js/upload.js"></script>
+		<script>
+			/* //监听右滑事件，若侧滑菜单未显示，右滑要显示菜单；
+			window.addEventListener("swiperight", function(e) {
+				console.log(e.detail.angle)
+				//默认滑动角度在-45度到45度之间，都会触发右滑菜单，为避免误操作，可自定义限制滑动角度；
+				if (Math.abs(e.detail.angle) < 4) {
+					console.log(e.detail.angle)
+				}
+			}); */
+			var reportvideo=null;
+			var reportclubstate=null;
+			var reportteacherstate=null;
+			mui.plusReady(function(){
+				mui.preload({
+						id: 'reportvideo',
+						url: 'reportvideo.html'
+				});
+				mui.preload({
+						id: 'reportclubstate',
+						url: 'reportclubstate.html'
+				});
+				mui.preload({
+						id: 'reportteacherstate',
+						url: 'reportteacherstate.html'
+				});
+				mui(".btn-wrap").on("tap",".report-state",function(){
+					if(false){
+						var id = this.dataset.id;
+						if(!reportclubstate){
+							reportclubstate = plus.webview.getWebviewById('reportclubstate');
+						}
+						mui.fire(reportclubstate,'url',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'reportclubstate',
+							show:{
+								duration:250,
+								aniShow:"slide-in-bottom"
+							}
+						});
+					}else{
+						var id = this.dataset.id;
+						if(!reportteacherstate){
+							reportteacherstate = plus.webview.getWebviewById('reportteacherstate');
+						}
+						mui.fire(reportteacherstate,'url',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'reportteacherstate',
+							show:{
+								duration:250,
+								aniShow:"slide-in-bottom"
+							}
+						});
+					}
+					/* plus.gallery.pick(function(p) {
+						plus.io.resolveLocalFileSystemURL(p, function(entry) {
+							console.log(entry.toLocalURL());
+							if(!reportclubstate){
+								reportclubstate = plus.webview.getWebviewById('reportclubstate');
+							}
+							mui.fire(reportclubstate,'url',{
+								url:entry.toLocalURL()
+							});       
+							mui.openWindow({
+								id:'reportclubstate',
+								show:{
+									duration:250
+								}
+							});
+						}, function(e) {
+							
+						});
+					}, function(a) {}, {
+						filter: "image",multiple:false,system:false
+					}) */
+				})
+			})
+		</script>
+	</body>
+
+</html>

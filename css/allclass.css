@@ -1,0 +1,55 @@
+.nav-wrap{
+	padding: 0.38rem 0.41rem;
+	display: flex;
+	justify-content: space-between;
+}
+.nav-wrap div{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+.nav-wrap div>span{
+	margin-top: 0.18rem;
+	font-size: 0.24rem;
+	color:#333333;
+}
+.nav-wrap img{
+	width: 0.9rem;
+	height: 0.9rem;
+}
+.dance-cloth{
+	margin-top: 0.38rem;
+}
+.dance-cloth .mui-scroll-wrapper{
+	height:3.05rem;
+}
+.dance-cloth .mui-scroll{
+	top: 0;
+	height: 100% !important;
+}
+.dance-cloth ul{
+	margin:0;
+	padding: 0;
+}
+.dance-cloth li{
+	display: inline-block;
+	width:2.5rem;
+	height: 3.05rem;
+	margin-right: 0.25rem;
+}
+.dance-cloth li div{
+	display: flex;
+	flex-direction: column;
+	text-align: left;
+	border-radius: 10px;
+}
+.dance-cloth li div>span{
+	font-size: 0.28rem;
+	margin-top: 0.15rem;
+	color: #333333;
+}
+.dance-cloth li img{
+	width:2.5rem;
+	height: 2.5rem;
+	border-radius: 10px;
+}

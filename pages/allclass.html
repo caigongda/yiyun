@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/allclass.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="app">
+			<div class="mui-slider" id="banner">
+				<div class="mui-slider-group mui-slider-loop">
+				<!--支持循环，需要重复图片节点-->
+					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
+					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
+					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
+				</div>
+			</div>
+			<div class="nav-wrap">
+				<div id="teacherclass">
+					<img src="../images/teacher-icon.jpg" />
+					<span>老师</span>
+				</div>
+				<div id="clubclass">
+					<img src="../images/club.png" />
+					<span>俱乐部</span>
+				</div>
+				<div id="artschool">
+					<img src="../images/school.png" />
+					<span>艺术院校</span>
+				</div>
+				<div id="workcenter">
+					<img src="../images/center.png" />
+					<span>创业中心</span>
+				</div>
+				<div id="gamecontact">
+					<img src="../images/contact.png" />
+					<span>比赛交流</span>
+				</div>
+			</div>
+			<div class="main-wrap">
+				<div class="list-title">
+					<h4>舞服</h4>
+					<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
+				</div>
+				<div class="dance-cloth">
+					<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div class="mui-scroll">
+							<ul>
+								<li>
+									<div>
+										<img src="../images/cloth1.jpg"/>
+										<span>¥218</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/cloth2.jpg"/>
+										<span>¥218</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/cloth3.jpg"/>
+										<span>¥218</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/cloth4.jpg"/>
+										<span>¥218</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="list-title">
+					<h4>舞鞋</h4>
+					<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
+				</div>
+				<div class="dance-cloth">
+					<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div class="mui-scroll">
+							<ul>
+								<li>
+									<div>
+										<img src="../images/shoes1.png"/>
+										<span>¥218</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/shoes2.png"/>
+										<span>¥118</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/shoes3.png"/>
+										<span>¥166</span>
+									</div>
+								</li>
+								<li>
+									<div>
+										<img src="../images/shoes1.png"/>
+										<span>¥299</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			var teacherclass=null;
+			var clubclass=null;
+			var artschool=null;
+			var workcenter=null;
+			var gamecontact=null;
+			mui.plusReady(function() {
+				mui.preload({
+						id: 'teacherclass',
+						url: 'teacherclass.html'
+				});
+				mui.preload({
+						id: 'clubclass',
+						url: 'clubclass.html'
+				});
+				mui.preload({
+						id: 'artschool',
+						url: 'artschool.html'
+				});
+				mui.preload({
+						id: 'workcenter',
+						url: 'workcenter.html'
+				});
+				mui.preload({
+						id: 'gamecontact',
+						url: 'gamecontact.html'
+				});
+				var teacherClass = document.getElementById('teacherclass');
+				var clubClass = document.getElementById('clubclass');
+				var artSchool = document.getElementById('artschool');
+				var workCenter = document.getElementById('workcenter');
+				var gameContact = document.getElementById('gamecontact');
+				teacherClass.addEventListener('tap', function(event) {
+					var id = this.getAttribute('id');
+					if(!teacherclass){
+						teacherclass = plus.webview.getWebviewById('teacherclass');
+					}
+					mui.fire(teacherclass,'clubId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'teacherclass',
+						show:{
+							duration:250
+						}
+					});
+				}, false);
+				clubClass.addEventListener('tap', function(event) {
+					var id = this.getAttribute('id');
+					if(!clubclass){
+						clubclass = plus.webview.getWebviewById('clubclass');
+					}
+					mui.fire(clubclass,'clubId',{
+						id:id
+					});
+					mui.openWindow({
+						id:'clubclass',
+						show:{
+							duration:250
+						}
+					});
+				}, false);
+				artSchool.addEventListener('tap', function(event) {
+					var id = this.getAttribute('id');
+					if(!artschool){
+						artschool = plus.webview.getWebviewById('artschool');
+					}
+					mui.fire(artschool,'clubId',{
+						id:id
+					});
+					mui.openWindow({
+						id:'artschool',
+						show:{
+							duration:250
+						}
+					});
+				}, false);
+				workCenter.addEventListener('tap', function(event) {
+					var id = this.getAttribute('id');
+					if(!workcenter){
+						workcenter = plus.webview.getWebviewById('workcenter');
+					}
+					mui.fire(workcenter,'clubId',{
+						id:id
+					});
+					mui.openWindow({
+						id:'workcenter',
+						show:{
+							duration:250
+						}
+					});
+				}, false);
+				gameContact.addEventListener('tap', function(event) {
+					var id = this.getAttribute('id');
+					if(!gamecontact){
+						gamecontact = plus.webview.getWebviewById('gamecontact');
+					}
+					mui.fire(gamecontact,'clubId',{
+						id:id
+					});
+					mui.openWindow({
+						id:'gamecontact',
+						show:{
+							duration:250
+						}
+					});
+				}, false);
+			});
+			var app = new Vue({
+				el: '#app',
+				data(){
+					return{
+						
+					}
+				},
+				methods:{
+					
+				}
+			});
+		</script>
+	</body>
+
+</html>

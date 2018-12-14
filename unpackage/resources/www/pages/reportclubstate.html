@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/report.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+	</head>
+	<style>
+		.form-item{
+			margin: 10px;
+			background: #fff;
+			border-radius: 5px;
+			font-size: 0.3rem;
+		}
+		.form-item label{
+			padding: 0;
+			height: 40px;
+			line-height: 40px;
+			padding: 0 0 0 15px;
+		}
+		.form-item input{
+			font-size: 0.3rem;
+			padding: 0;
+		}
+	</style>
+	<body>
+		<div class="report-page-header"><div class="page-cancel">取消</div><div class="page-fb">发表</div></div>
+		<div class="report-page">
+			<div class="form-item mui-input-row">
+				<label>毕业院校：</label>
+				<input type="text" class="mui-input-clear school" placeholder="请输入毕业院校"/>
+				<label>所教舞种：</label>
+				<input type="text" class="mui-input-clear dancetype" id="dance-picker" placeholder="请选择期望工作地" readonly="readonly"/>
+			</div>
+			<div class="form-item mui-input-row">
+				<label>所在地：</label>
+				<input type="text" class="mui-input-clear curplace" placeholder="请输入毕业院校"/>
+				<label>期望工作地：</label>
+				<input type="text" class="mui-input-clear likeplace" placeholder="请选择期望工作地"/>
+			</div>
+			<div class="report-content-wrap">
+				<p>我的介绍</p>
+				<textarea class="repot-content introduce" autoHeight="true" placeholder="请输入我的介绍..."></textarea>
+			</div>
+			<div class="report-userinfo">
+				<p>我的详情</p>
+				<div class="report-state-wrap">
+					<div class="state-img-main ripple img-sel">
+						<span class="mui-icon mui-icon-plusempty"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script>
+			/* //监听右滑事件，若侧滑菜单未显示，右滑要显示菜单；
+			window.addEventListener("swiperight", function(e) {
+				console.log(e.detail.angle)
+				//默认滑动角度在-45度到45度之间，都会触发右滑菜单，为避免误操作，可自定义限制滑动角度；
+				if (Math.abs(e.detail.angle) < 4) {
+					console.log(e.detail.angle)
+				}
+			}); */
+			function insertimg(url){
+				var _html="<div class='state-img-main ripple img-common'>"
+					_html+="<span class='mui-icon mui-icon-closeempty del-img'></span>"
+					_html+="<img src='"+url+"'/></div>"
+				$(".img-sel").before(_html);
+			}
+			function pubpicker(elem,type,data,callback){
+				var cityPicker = new mui.PopPicker({
+					layer: type
+				});
+				cityPicker.setData(data);
+				var showCityPickerButton = document.getElementById(elem);
+				var cityResult = document.getElementById(elem);
+				showCityPickerButton.addEventListener('tap', function(event) {
+					var self=this;
+					cityPicker.show(function(items) {
+						callback(self,items);
+						//返回 false 可以阻止选择框的关闭
+						//return false;
+					});
+				}, false);
+			};
+			/* window.addEventListener('url',function(event){
+				//获得事件参数
+				var url=event.detail.url;
+				insertimg(url);
+			}); */
+			mui.plusReady(function(){
+				var dance=["瑜伽","拉丁","芭蕾"]
+				pubpicker("dance-picker",1,dance,function(self,items){
+					console.log(self);
+					self.value=items;
+				});
+				mui(".report-state-wrap").on("tap",".del-img",function(){
+					$(this).parent().remove();
+				});
+				mui(".report-state-wrap").on("tap",".img-sel",function(){
+					plus.gallery.pick(function(p) {
+						plus.io.resolveLocalFileSystemURL(p, function(entry) {
+							var _url=entry.toLocalURL();
+							insertimg(_url);
+						}, function(e) {
+							
+						});
+					}, function(a) {}, {
+						filter: "image",multiple:false,system:false
+					})
+				});
+				mui(".report-page-header").on("tap",".page-cancel",function(){
+					$(".repot-content").val("");
+					$(".img-common").remove();
+					mui.back();
+				});
+				mui(".report-page-header").on("tap",".page-fb",function(){
+					var school=$(".school").val();
+					var dancetype=$(".dancetype").val();
+					var curplace=$(".curplace").val();
+					var likeplace=$(".likeplace").val();
+					if(school==""||dancetype==""||curplace==""||likeplace==""){
+						mui.toast("不能为空哦！");
+					}
+				});
+				mui(".report-page").on("tap",".post-img",function(){
+					plus.gallery.pick(function(p) {
+						plus.io.resolveLocalFileSystemURL(p, function(entry) {
+							console.log(entry.toLocalURL());
+							$(".post-img-wrap img").attr("src",entry.toLocalURL());
+							$(".post-img").attr("title","更换封面");
+							$(".post-img-wrap").show();
+						}, function(e) {
+							
+						});
+					}, function(a) {}, {
+						filter: "image",multiple:false,system:false
+					})
+				});
+			})
+		</script>
+	</body>
+
+</html>

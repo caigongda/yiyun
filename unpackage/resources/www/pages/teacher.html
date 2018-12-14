@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/teacher.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="teacher">
+			<header class="mui-bar mui-bar-nav common-header">
+				<!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
+				<div class="mui-input-row common-input" id="inputc">
+					<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
+					<span class="mui-icon mui-icon-search common-search-icon"></span>
+				</div>
+			</header>
+			<div class="scroll-parent">
+				<div id="commonListWrap">
+					<div class="teacher-video-wrap">
+						<div>
+							<div class="teacher-video-left">
+								<div class="teacher-video-list ripple">
+									<div class="img-wrap">
+										<img src="../images/teacher-video.jpg" />
+										<span class="play-icon"></span>
+									</div>
+									<div class="auth-wrap">
+										<h4 class="mui-ellipsis">传统舞会</h4>
+										<p>
+											<img src="../images/user-head.png"/>
+											<span class="mui-ellipsis">有理想的胖子</span>
+										</p>
+									</div>
+								</div>
+								<div class="teacher-video-list">
+									<div class="img-wrap">
+										<img src="../images/teacher-video.jpg" />
+										<span class="play-icon"></span>
+									</div>
+									<div class="auth-wrap">
+										<h4 class="mui-ellipsis">传统舞会</h4>
+										<p>
+											<img src="../images/user-head.png"/>
+											<span class="mui-ellipsis">有理想的胖子</span>
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="teacher-video-right">
+								<div class="teacher-video-list">
+									<div class="img-wrap">
+										<img src="../images/teacher-video1.jpg" />
+										<span class="play-icon"></span>
+									</div>
+									<div class="auth-wrap">
+										<h4 class="mui-ellipsis">传统舞会</h4>
+										<p>
+											<img src="../images/user-head.png"/>
+											<span class="mui-ellipsis">有理想的胖子</span>
+										</p>
+									</div>
+								</div>
+								<div class="teacher-video-list">
+									<div class="img-wrap">
+										<img src="../images/teacher-video.jpg" />
+										<span class="play-icon"></span>
+									</div>
+									<div class="auth-wrap">
+										<h4 class="mui-ellipsis">传统舞会</h4>
+										<p>
+											<img src="../images/user-head.png"/>
+											<span class="mui-ellipsis">有理想的胖子</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/vue.js"></script>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script>
+			var videoplay = null;
+			mui.plusReady(function() {
+				mui.preload({
+						id: 'videoplay',
+						url: 'videoplay.html'
+				});
+				mui("#commonListWrap").pullRefresh({
+					down : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							setTimeout(function () {
+								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
+							}, 1500);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up : {
+						height:50,// 可选.默认50.触发上拉加载拖动距离
+						auto:false,// 可选,默认false.自动上拉加载一次
+						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback : function() {
+							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+							// 加载更多的内容
+							loadMore(this);
+						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				})
+				function loadMore(pullRefresh) {
+					// 如果没有更多数据了，则关闭上拉加载
+					//pullRefresh.endPullupToRefresh(true);
+					setTimeout(function () {
+						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
+					}, 1500);
+					// 如果有更多数据，则继续
+					//pullRefresh.endPullupToRefresh(false);
+				};
+				mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
+					var id = this.getAttribute('class');
+					if(!videoplay){
+						videoplay = plus.webview.getWebviewById('videoplay');
+					}
+					mui.fire(videoplay,'userId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'videoplay',
+						show:{
+							duration:250
+						}
+					});
+				})
+			})
+			var player = null;
+			var app = new Vue({
+				el: '#teacher',
+				data(){
+					return{
+						
+					}
+				},
+				methods:{
+					
+				}
+			});
+		</script>
+	</body>
+
+</html>

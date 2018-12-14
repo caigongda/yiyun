@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/person.css" rel="stylesheet" />
+		<style>
+			.person-header-bg{
+				top: 44px;
+			}
+			.person-info-card{
+				margin-top: calc(0.83rem + 44px);
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">个人详情</h1>
+		</header>
+		<div id="video">
+			<div class="person-header-bg"></div>
+			<div class="person-info-card">
+				<div class="person-info-top">
+					<img src="../images/user-head.png" >
+					<div>
+						<p id="personsetting"><span class="person-name">有理想的胖子</span><span class="person-setting">个人设置</span></p>
+						<p id="personphone"><span class="person-id">艺舞ID：123612034</span><span class="person-contact">联系方式</span></p>
+					</div>
+				</div>
+				<div class="person-prod-count">
+					<div>
+						<p>55222</p>
+						<p>作品</p>
+					</div>
+					<div id="invite">
+						<p>55222</p>
+						<p>邀请</p>
+					</div>
+					<div id="collection">
+						<p>55222</p>
+						<p>收藏</p>
+					</div>
+				</div>
+				<div class="person-prod-tab">
+					<div v-bind:class="{curactiveTab:curtab=='1'}" @click="video">
+							视频
+					</div>
+					<div v-bind:class="{curactiveTab:curtab=='2'}" @click="state">
+							动态
+					</div>
+				</div>
+			</div>
+			<div class="video-wrap" v-show="curtab=='1'">
+				<div class="teacher-video-left">
+					<div class="teacher-video-list">
+							<div class="img-wrap">
+								<img src="../images/teacher-video.jpg" />
+								<span class="play-icon"></span>
+							</div>
+							<div class="auth-wrap">
+								<h4 class="mui-ellipsis">传统舞会</h4>
+								<p>
+									<img src="../images/user-head.png"/>
+									<span class="mui-ellipsis">有理想的胖子</span>
+								</p>
+							</div>
+					</div>
+					<div class="teacher-video-list">
+							<div class="img-wrap">
+								<img src="../images/teacher-video.jpg" />
+								<span class="play-icon"></span>
+							</div>
+							<div class="auth-wrap">
+								<h4 class="mui-ellipsis">传统舞会</h4>
+								<p>
+									<img src="../images/user-head.png"/>
+									<span class="mui-ellipsis">有理想的胖子</span>
+								</p>
+							</div>
+					</div>
+				</div>
+				<div class="teacher-video-right">
+					<div class="teacher-video-list">
+							<div class="img-wrap">
+								<img src="../images/teacher-video1.jpg" />
+								<span class="play-icon"></span>
+							</div>
+							<div class="auth-wrap">
+								<h4 class="mui-ellipsis">传统舞会</h4>
+								<p>
+									<img src="../images/user-head.png"/>
+									<span class="mui-ellipsis">有理想的胖子</span>
+								</p>
+							</div>
+					</div>
+					<div class="teacher-video-list">
+							<div class="img-wrap">
+								<img src="../images/teacher-video.jpg" />
+								<span class="play-icon"></span>
+							</div>
+							<div class="auth-wrap">
+								<h4 class="mui-ellipsis">传统舞会</h4>
+								<p>
+									<img src="../images/user-head.png"/>
+									<span class="mui-ellipsis">有理想的胖子</span>
+								</p>
+							</div>
+					</div>
+				</div>
+			</div>
+			<div class="state-wrap" v-if="curtab=='2'">
+				<div id="club-state-list">
+					<ul class="mui-table-view" id="person-state-list">
+						<li class="mui-table-view-cell mui-media">
+							<a href="javascript:;">
+								<div class="state-top">
+									<img src="../images/user-head.png" >
+									<div class="state-auth-info">
+										<p>有理想的胖子</p>
+										<span class="mui-badge mui-badge-success">合作合作</span>
+									</div>
+								</div>
+								<p class="mui-ellipsis-2 state-con-info">
+									从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！
+								</p>
+								<div class="state-img-wrap">
+									<img src="../images/state1.png"/>
+									<img src="../images/state2.jpg"/>
+									<img src="../images/state3.png"/>
+									<img src="../images/state4.png"/>
+								</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell mui-media">
+							<a href="javascript:;">
+								<div class="state-top">
+									<img src="../images/user-head.png" >
+									<div class="state-auth-info">
+										<p>有理想的胖子</p>
+										<span class="mui-badge mui-badge-success">合作合作</span>
+									</div>
+								</div>
+								<p class="mui-ellipsis-2 state-con-info">
+									从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！
+								</p>
+								<div class="state-img-wrap">
+									<img src="../images/state1.png"/>
+									<img src="../images/state2.jpg"/>
+									<img src="../images/state3.png"/>
+									<img src="../images/state4.png"/>
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			mui.init({
+				swipeBack:true ,//启用右滑关闭功能
+				beforeback: function(){
+					mui.plusReady(function() {
+						if(mui.os.ios){
+							plus.navigator.setFullscreen(true);
+						}else{
+							plus.navigator.setFullscreen(true);
+						}
+					});
+					return true;
+				}
+			});
+			$(function(){
+				$(window).scroll(function(){
+					 var scrollTop = $(this).scrollTop();    //滚动条距离顶部的高度
+					 var scrollHeight = $(document).height();   //当前页面的总高度
+					 var clientHeight = $(this).height();    //当前可视的页面高度
+					 // console.log("top:"+scrollTop+",doc:"+scrollHeight+",client:"+clientHeight);
+					 if(scrollTop + clientHeight >= scrollHeight){   //距离顶部+当前高度 >=文档总高度 即代表滑动到底部 
+						 //滚动条到达底部
+						 //alert(3)
+					 }else if(scrollTop<=0){
+						//滚动条到达顶部
+						 //alert(4)
+					 //滚动条距离顶部的高度小于等于0 TODO
+					 }
+				 });
+			});
+			function todetail(){
+				mui("#person-state-list").on("tap","li",function(){
+					
+				})
+			};
+			var invite = null;
+			var collection = null;
+			var personsetting = null;
+			var videoplay = null;
+			var personcontact = null;//联系方式
+			mui.plusReady(function() {
+				mui.preload({
+						id: 'invite',
+						url: 'invite.html'
+				});
+				mui.preload({
+						id: 'collection',
+						url: 'collection.html'
+				});
+				mui.preload({
+						id: 'personsetting',
+						url: 'personsetting.html'
+				});
+				mui.preload({
+						id: 'videoplay',
+						url: 'videoplay.html'
+				});
+				mui.preload({
+						id: 'personcontact',
+						url: 'personcontact.html'
+				});
+				mui(".person-prod-count").on("tap","#invite",function(){
+					var id = this.getAttribute('class');
+					if(!invite){
+						invite = plus.webview.getWebviewById('invite');
+					}
+					mui.fire(invite,'userId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'invite',
+						show:{
+							duration:250
+						}
+					});
+				});
+				mui(".person-prod-count").on("tap","#collection",function(){
+					var id = this.getAttribute('class');
+					if(!collection){
+						collection = plus.webview.getWebviewById('collection');
+					}
+					mui.fire(collection,'userId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'collection',
+						show:{
+							duration:250
+						}
+					});
+				});
+				mui("#video").on("tap","#personsetting",function(){
+					var id = this.getAttribute('class');
+					if(!personsetting){
+						personsetting = plus.webview.getWebviewById('personsetting');
+					}
+					mui.fire(personsetting,'userId',{
+						id:id
+					});
+					mui.openWindow({
+						id:'personsetting',
+						show:{
+							duration:250
+						}
+					});
+				});
+				mui("#video").on("tap",".teacher-video-list",function(){
+					var id = this.getAttribute('class');
+					if(!videoplay){
+						videoplay = plus.webview.getWebviewById('videoplay');
+					}
+					mui.fire(videoplay,'userId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'videoplay',
+						show:{
+							duration:250
+						}
+					});
+				});
+				mui("#video").on("tap","#personphone",function(){
+					var id = this.getAttribute('class');
+					if(!personcontact){
+						personcontact = plus.webview.getWebviewById('personcontact');
+					}
+					mui.fire(personcontact,'userId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'personcontact',
+						show:{
+							duration:250
+						}
+					});
+				})
+			})
+			var app = new Vue({
+				el: '#video',
+				data(){
+					return{
+						curtab: '1'
+					}
+				},
+				methods:{
+					video:function(){
+						this.curtab=1;
+					},
+					state:function(){
+						this.curtab=2;
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

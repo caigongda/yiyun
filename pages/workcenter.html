@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/workcenter.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<header class="mui-bar mui-bar-nav common-header">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<div class="mui-input-row common-input" id="inputc">
+					<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
+					<span class="mui-icon mui-icon-search common-search-icon"></span>
+				</div>
+			</header>
+			<div class="work-center">
+				<div class="club-list" id="clublistparent">
+					<div class="scroll-parent">
+						<div id="commonListWrap">
+							<div>
+								<ul class="mui-table-view" id="clublist">
+									<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in list" :key="index" :data-id="index">
+										<a href="javascript:;">
+											<img class="mui-media-object mui-pull-left" :src="item.img">
+											<div class="mui-media-body">
+												<span>{{item.name}}</span>
+												<p class='mui-ellipsis-2'>{{item.info}}</p>
+												<p class="zpinfo">{{item.time}}</p>
+											</div>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			mui.init({
+				swipeBack:true //启用右滑关闭功能
+			});
+			var articledetail=null;
+			mui.plusReady(function(){
+				mui.preload({
+						id: 'articledetail',
+						url: 'articlesdetail.html'
+				});
+				function freshlist(){
+					mui("#commonListWrap").pullRefresh({
+						down : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								setTimeout(function () {
+									mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
+								}, 1500);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					})
+				};
+				freshlist();
+				function loadMore(pullRefresh) {
+					// 如果没有更多数据了，则关闭上拉加载
+					//pullRefresh.endPullupToRefresh(true);
+						setTimeout(function () {
+							app.list.push({
+										img:"../images/work2.png",
+										name:"创业中心-发挥创意",
+										info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+										time:"2018-12-09"
+									},{
+										img:"../images/work3.jpg",
+										name:"创业中心-发挥创意",
+										info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+										time:"2018-12-09"
+									})
+							mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
+							mui('#commonListWrap').pullRefresh().refresh(true);
+							gotodetail();
+						}, 1500);
+					// 如果有更多数据，则继续
+					//pullRefresh.endPullupToRefresh(false);
+				};
+				function gotodetail(){
+					mui("#clublist").on('tap',"li", function(event) {
+						var id = this.dataset.id;
+						if(!articledetail){
+							articledetail = plus.webview.getWebviewById('articledetail');
+						}
+						mui.fire(articledetail,'clubId',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'articledetail',
+							show:{
+								duration:250
+							}
+						});
+					}, false);
+				}
+				gotodetail();
+			});
+			
+			var app = new Vue({
+				el: '#app',
+				data(){
+					return{
+						list:[{
+								img:"../images/work2.png",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work3.jpg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work4.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work1.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work2.png",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work3.jpg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work4.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work1.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work2.png",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work3.jpg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work4.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work1.jpeg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work2.png",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							},{
+								img:"../images/work3.jpg",
+								name:"创业中心-发挥创意",
+								info:"面向全国普通高校大学生创业者开放，通过提供免费的创业办公场所、办公设施及全面周到的创业服务",
+								time:"2018-12-09"
+							}
+						]
+					}
+				},
+				mounted(){
+					//console.log(this.list.length);
+				},
+				methods:{
+					video:function(){
+						this.curtab=1;
+					},
+					state:function(){
+						this.curtab=2;
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

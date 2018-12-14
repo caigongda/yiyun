@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.mui-content{
+				background: #FFFFFF;
+				padding-top: 1.37rem;
+			}
+			.logo-wrap{
+				width: 2.46rem;
+				height: 2.46rem;
+				border-radius: 50%;
+				background: #B387FF;
+				margin:0 auto;
+			}
+			.logo-title{
+				text-align: center;
+				font-size: 0.48rem;
+				color: #010101;
+				margin-top: 0.31rem;
+			}
+			.login-form{
+				margin-top: 1.17rem;
+			}
+			.login-form:before{
+				display: none;
+			}
+			.login-form:after{
+				display: none;
+			}
+			.phone-row{
+				width: 5.7rem;
+				margin:0 auto;
+				border-bottom: 2px solid #C8ACF8;
+				height: 0.8rem;
+				position: relative;
+			}
+			.phone-row label{
+				width: 0.7rem !important;
+				display: flex;
+				align-items: center;
+				height: 100%;
+				justify-content: center;
+				color: #9B9B9B;
+			}
+			.phone-row input{
+				width: 5rem !important;
+				font-size: 0.24rem !important;
+			}
+			.mui-input-row:after{
+				display: none;
+			}
+			.login-btn{
+				width: 5.2rem;
+				height: 0.66rem;
+				margin:0 auto;
+				padding: 0;
+				font-size: 0.28rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				background: #C8ACF8;
+				border-color: #C8ACF8;
+			}
+			.radio-wrap{
+				display: flex;
+				padding-left: 1.17rem;
+				margin-top: 0.16rem;
+				display: flex;
+				align-items: center;
+			}
+			.radio-wrap input{
+				left: 0 !important;
+			}
+			.radio-wrap>.mui-radio{
+				display: flex;
+				align-items: center;
+			}
+			.radio-wrap input:before{
+				font-size: 0.24rem !important;
+			}
+			.radio-wrap label{
+				padding-left: 0.3rem !important;
+				color: #9B9B9B;
+				font-size: 0.24rem;
+			}
+			.radio-wrap .mui-radio input[type=radio]{
+				top: 8px !important;
+			}
+			.radio-wrap .mui-radio input[type=radio]:checked:before{
+				color: #C8ACF8 !important;
+			}
+			.link-area{
+				width: 100%;
+				text-align: center;
+				margin-top: 15px;
+				font-size: 0.26rem;
+			}
+			.link-area a{
+				color: #9B9B9B !important;
+			}
+			.link-area span{
+				color: #9B9B9B !important;
+				padding: 0 5px;
+			}
+			.msg-login,.gener-login{
+				color: #9B9B9B !important;
+				font-size: 0.24rem;
+				margin-left: 1.04rem;
+			}
+			.mui-input-row .mui-input-clear~.mui-icon-clear{
+				top: 0;
+			}
+			.smslogin{
+				display: none;
+			}
+			.code-get{
+				position: absolute;
+				right: 0;
+				border: 0;
+				top: 5px;
+				color: #C8ACF8;
+				font-size: 0.25rem;
+			}
+			.send-code-row .mui-input-clear~.mui-icon-clear{
+				right: 1.42rem;
+			}
+			#loginwrap2{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="mui-content">
+			<div class="logo-wrap"></div>
+			<h4 class="logo-title">艺 芸</h4>
+			<form id='login-form1' class="mui-input-group generlogin login-form">
+				<div class="mui-input-row phone-row">
+					<label><span class="mui-icon mui-icon-contact"></span></label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+				</div>
+				<div class="mui-input-row phone-row">
+					<label><span class="mui-icon mui-icon-locked"></span></label>
+					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+				<div class="radio-wrap">
+					<div class="mui-input-row mui-radio mui-left">
+						<label>老师</label>
+						<input name="radio1" type="radio" checked="checked">
+					</div>
+					<div class="mui-input-row mui-radio mui-left">
+						<label>俱乐部</label>
+						<input name="radio1" type="radio">
+					</div>
+					<a class="msg-login">短信验证码登录</a>
+				</div>
+			</form>
+			<form id='login-form2' class="mui-input-group smslogin login-form">
+				<div class="mui-input-row phone-row">
+					<label><span class="mui-icon mui-icon-contact"></span></label>
+					<input id='account1' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+				</div>
+				<div class="mui-input-row phone-row send-code-row">
+					<label><span class="mui-icon mui-icon-locked"></span></label>
+					<input id='password1' type="password" class="mui-input-clear mui-input" placeholder="请输入验证码">
+					<button class="code-get">获取验证码</button>
+				</div>
+				<div class="radio-wrap">
+					<div class="mui-input-row mui-radio mui-left">
+						<label>老师</label>
+						<input name="radio2" type="radio" checked="checked" value="1">
+					</div>
+					<div class="mui-input-row mui-radio mui-left">
+						<label>俱乐部</label>
+						<input name="radio2" type="radio" value="2">
+					</div>
+					<a class="gener-login">账号密码登录</a>
+				</div>
+			</form>
+			<!-- <form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						自动登录
+						<div id="autoLogin" class="mui-switch">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form> -->
+			<div class="mui-content-padded" id="loginwrap1">
+				<button id='login1' class="mui-btn mui-btn-block mui-btn-royal login-btn">登录</button>
+				<div class="link-area"></span> <a id='forgetPassword'>忘记密码?</a><span>|</span><a id='reg'>注册账号</a> <span class="spliter">
+				</div>
+			</div>
+			<div class="mui-content-padded" id="loginwrap2">
+				<button id='login2' class="mui-btn mui-btn-block mui-btn-royal login-btn">登录</button>
+				<div class="link-area"></span> <a id='forgetPassword'>忘记密码?</a><span>|</span><a id='reg'>注册账号</a> <span class="spliter">
+				</div>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.enterfocus.js"></script>
+		<script src="js/app.js"></script>
+		<script>
+			var first = null;
+					mui.showLoading();
+			mui.plusReady(function() {
+				mui.back = function() {
+					if(!first){
+						first = new Date().getTime();
+						mui.toast('再按一次退出应用');
+						setTimeout(function(){
+							first = null;
+						},1000);
+					}else{
+						if(new Date().getTime()-first<1000){
+							plus.runtime.quit();
+						}
+					}
+				}
+			});
+			(function($, doc) {
+				$.init({
+					statusBarBackground: '#f7f7f7'
+				});
+				$(".generlogin").on("tap",".msg-login",function(){
+					document.getElementsByClassName("generlogin")[0].style.display="none";
+					document.getElementsByClassName("smslogin")[0].style.display="block";
+					document.getElementById("loginwrap1").style.display="none";
+					document.getElementById("loginwrap2").style.display="block";
+				});
+				$(".smslogin").on("tap",".gener-login",function(){
+					document.getElementsByClassName("generlogin")[0].style.display="block";
+					document.getElementsByClassName("smslogin")[0].style.display="none";
+					document.getElementById("loginwrap1").style.display="block";
+					document.getElementById("loginwrap2").style.display="none";
+				});
+				/* 发送验证码 */
+				var time=60;
+				var issend=false;
+				var timer;
+				
+				var role=null;   //  selectvalue为radio中选中的值
+				var personsetting = null;
+				$.plusReady(function() {
+					mui.preload({
+							id: 'personsetting',
+							url: '/pages/personsetting.html'
+					});
+					var radio=document.getElementsByName("radio2");
+					for(var i=0;i<radio.length;i++){
+						if(radio[i].checked==true) {
+							role=radio[i].value;
+							break;
+						}
+					}
+					plus.screen.lockOrientation("portrait-primary");
+					var settings = app.getSettings();
+					var state = app.getState();
+					var mainPage = plus.webview.getWebviewById("main");
+					var main_loaded_flag = false;
+					if(!mainPage){
+						mainPage = $.preload({
+							"id": 'main',
+							"url": 'main.html'
+						});
+					}else{
+						main_loaded_flag = true;
+					}
+					
+					mainPage.addEventListener("loaded",function () {
+						main_loaded_flag = true;
+					});
+					var toMain = function() {
+						//使用定时器的原因：
+						//可能执行太快，main页面loaded事件尚未触发就执行自定义事件，此时必然会失败
+						var id = setInterval(function () {
+							if(main_loaded_flag){
+								clearInterval(id);
+								$.fire(mainPage, 'show', null);
+								mainPage.show("pop-in");
+							}
+						},20);
+					};
+					//检查 "登录状态/锁屏状态" 开始
+					if (settings.token) {//自动登录判断
+						if(settings.username){
+							getinfo();
+							var id = setInterval(function () {
+								if(main_loaded_flag){
+									mui.hideLoading();
+									clearInterval(id);
+									$.fire(mainPage, 'show', null);
+									mainPage.show("pop-in");
+								}
+							},20);
+						}else{
+							toMain();
+							mui.hideLoading();
+							/* mui.toast("请完善信息");
+							setinfo(); */
+						}
+					} else {
+						mui.hideLoading();
+						app.setState(null);
+					}
+					// close splash
+					setTimeout(function() {
+						//关闭 splash
+						plus.navigator.closeSplashscreen();
+					}, 600);
+					//检查 "登录状态/锁屏状态" 结束
+					var loginButton = doc.getElementById('login1');
+					var loginButton2 = doc.getElementById('login2');
+					var accountBox = doc.getElementById('account');
+					var passwordBox = doc.getElementById('password');
+					var accountBox1 = doc.getElementById('account1');
+					var passwordBox1 = doc.getElementById('password1');
+					var autoLoginButton = doc.getElementById("autoLogin");
+					var regButton = doc.getElementById('reg');
+					var forgetButton = doc.getElementById('forgetPassword');
+					$(".smslogin").on("tap",".code-get",function(){
+						var self=this;
+						if(accountBox1.value==""){
+							mui.toast('请输入手机号！');
+							return false;
+						}
+						if (!isPone(accountBox1.value)){
+							mui.toast('请输入有效的手机号码');
+							return false;
+						}
+						if(issend){
+							mui.toast('已发送验证码');
+							return false;
+						}
+						mui.showLoading();
+						sendcode(accountBox1.value,"2",function(res){
+							mui.hideLoading();
+							if(res.code==200){
+								mui.toast("获取成功");
+								issend=true;
+								self.innerHTML="重新发送("+time+"s)";
+								timer=setInterval(function(){
+									time-=1;
+									self.innerHTML="重新发送("+time+"s)";
+									if(time==0){
+										clearInterval(timer);
+										time=60;
+										issend=false;
+										self.innerHTML="发送验证码";
+									}
+								},1000);
+							}else{
+								mui.toast(res.msg);
+							}
+						});
+					});
+					function setinfo(){
+						if(!personsetting){
+							personsetting = plus.webview.getWebviewById('personsetting');
+						}
+						mui.fire(personsetting,'islogin',{
+							islogin:true
+						});
+						mui.openWindow({
+							id:'personsetting',
+							show:{
+								duration:250
+							}
+						});
+					};
+					loginButton.addEventListener('tap', function(event) {
+						var loginInfo = {
+							account: accountBox.value,
+							password: passwordBox.value
+						};
+						app.login(loginInfo, function(err) {
+							if (err) {
+								plus.nativeUI.toast(err);
+								return;
+							}
+							mui.showLoading();
+							yyajax("index/user/login",{
+								phone:loginInfo.account,
+								pass:loginInfo.password,
+								role:role
+							},function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									localStorage.setItem('$state', JSON.stringify(res.userinfo));
+									getinfo();
+									if(!res.username){
+										mui.toast("请完善信息");
+										setinfo();
+									}else{
+										mui.toast("登录成功");
+										toMain();
+									}
+								}else{
+									mui.toast(res.msg);
+								}
+							})
+						});
+					});
+					loginButton2.addEventListener('tap', function(event) {
+						var loginInfo = {
+							account: accountBox1.value,
+							password: passwordBox1.value
+						};
+						app.login1(loginInfo, function(err) {
+							console.log(loginInfo);
+							if (err) {
+								plus.nativeUI.toast(err);
+								return;
+							}
+							console.log(JSON.stringify({
+								phone:loginInfo.account,
+								code:loginInfo.password,
+								role:role
+							}));
+							mui.showLoading();
+							yyajax("index/user/codelogin",{
+								phone:loginInfo.account,
+								code:loginInfo.password,
+								role:role
+							},function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									mui.toast("登录成功");
+									localStorage.setItem('$state', JSON.stringify(res.userinfo));
+									getinfo();
+									toMain();
+								}else{
+									mui.toast(res.msg);
+								}
+							})
+						});
+					});
+					$.enterfocus('.login-form input', function() {
+						$.trigger(loginButton, 'tap');
+					});
+					/* autoLoginButton.classList[settings.autoLogin ? 'add' : 'remove']('mui-active')
+					autoLoginButton.addEventListener('toggle', function(event) {
+						setTimeout(function() {
+							var isActive = event.detail.isActive;
+							settings.autoLogin = isActive;
+							app.setSettings(settings);
+						}, 50);
+					}, false); *///自动登录按钮切换事件
+					regButton.addEventListener('tap', function(event) {
+						$.openWindow({
+							url: 'reg.html',
+							id: 'reg',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					forgetButton.addEventListener('tap', function(event) {
+						$.openWindow({
+							url: 'forget_password.html',
+							id: 'forget_password',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					//
+					/* window.addEventListener('resize', function() {
+						oauthArea.style.display = document.body.clientHeight > 400 ? 'block' : 'none';
+					}, false); */
+					//
+					var backButtonPress = 0;
+					$.back = function(event) {
+						backButtonPress++;
+						if (backButtonPress > 1) {
+							plus.runtime.quit();
+						} else {
+							plus.nativeUI.toast('再按一次退出应用');
+						}
+						setTimeout(function() {
+							backButtonPress = 0;
+						}, 1000);
+						return false;
+					};
+				});
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

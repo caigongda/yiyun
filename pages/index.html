@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+		<link href="../css/index.css" rel="stylesheet" />
+	</head>
+	<body>
+	<div id="app" v-cloak>
+			<div class="mui-slider" id="banner">
+			  <div class="mui-slider-group mui-slider-loop">
+				<!--支持循环，需要重复图片节点-->
+				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
+				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
+				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
+			  </div>
+			</div>
+			<div class="main-wrap">
+			<div class="list-title">
+				<h4>精选俱乐部</h4>
+				<span id="club-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+			</div>
+			<ul class="mui-table-view" id="clublist">
+				<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" :src="item.img">
+						<div class="mui-media-body">
+							<span>{{item.title}}</span>
+							<p class='mui-ellipsis-2'>{{item.content}}</p>
+							<p class="zpinfo">{{item.count}}</p>
+						</div>
+					</a>
+				</li>
+			</ul>
+			<div class="list-title">
+				<h4>俱乐部动态</h4>
+				<span id="clubdetail-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+			</div>
+			<div id="club-state-list">
+				<ul class="mui-table-view" id="statelist">
+					<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="index">
+						<a href="javascript:;">
+							<div class="state-top">
+								<img :src="item.head" id="club-index">
+								<div class="state-auth-info">
+									<p>{{item.name}}</p>
+									<span class="mui-badge mui-badge-success">{{item.tag}}</span>
+								</div>
+							</div>
+							<p class="mui-ellipsis-2 state-con-info">
+								{{item.content}}
+							</p>
+							<div class="state-img-wrap">
+								<img v-for="value in item.imgs" :src="value" />
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/vue.js"></script>
+		<script>
+			var gallery = mui('.mui-slider');
+			gallery.slider({
+			  interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+			});
+				var clubdetail = null;
+				var clubmore = null;
+				var clubstatedetail = null;
+				var clubstatemore = null;
+				mui.plusReady(function() {
+					mui.preload({
+							id: 'clubdetail',
+							url: 'clubdetail.html'
+					});
+					mui.preload({
+							id: 'clubmore',
+							url: 'clubmore.html'
+					});
+					mui.preload({
+							id: 'clubstatedetail',
+							url: 'clubstatedetail.html'
+					});
+					mui.preload({
+							id: 'clubstatemore',
+							url: 'clubstatemore.html'
+					});
+					var clubMore = document.getElementById('club-more');
+					var clubdetailMore = document.getElementById('clubdetail-more');
+					mui("#clublist").on("tap",".club-detail",function(){
+						var id = this.getAttribute('id');
+						if(!clubdetail){
+							clubdetail = plus.webview.getWebviewById('clubdetail');
+						}
+						mui.fire(clubdetail,'clubId',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'clubdetail',
+							show:{
+								duration:250
+							}
+						});
+					});
+					clubMore.addEventListener('tap', function(event) {
+						var id = this.getAttribute('id');
+						if(!clubmore){
+							clubmore = plus.webview.getWebviewById('clubmore');
+						}
+						mui.fire(clubmore,'clubId',{
+							id:id
+						});
+						mui.openWindow({
+							id:'clubmore',
+							show:{
+								duration:250
+							}
+						});
+					}, false);
+					mui("#statelist").on("tap",".statedetail",function(){//俱乐部状态详情
+						var id = this.dataset.id;
+						if(!clubstatedetail){
+							clubstatedetail = plus.webview.getWebviewById('clubstatedetail');
+						}
+						mui.fire(clubstatedetail,'clubId',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'clubstatedetail',
+							show:{
+								duration:250
+							}
+						});
+					});
+					clubdetailMore.addEventListener('tap', function(event) {//俱乐部状态更多
+						var id = this.getAttribute('id');
+						if(!clubstatemore){
+							clubstatemore = plus.webview.getWebviewById('clubstatemore');
+						}
+						mui.fire(clubstatemore,'clubId',{
+							id:id
+						});
+						mui.openWindow({
+							id:'clubstatemore',
+							show:{
+								duration:250
+							}
+						});
+					}, false);
+				});
+				var app = new Vue({
+					el: '#app',
+					data(){
+						return{
+							datalist:[
+								{
+									img:"../images/club.jpg",
+									title:"舞蹈俱乐部",
+									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
+									count:"招聘信息10条",
+								},
+								{
+									img:"../images/club1.jpg",
+									title:"舞蹈俱乐部",
+									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
+									count:"招聘信息10条",
+								},
+								{
+									img:"../images/club2.png",
+									title:"舞蹈俱乐部",
+									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
+									count:"招聘信息10条",
+								}],
+								statelist:[
+									{
+										head:"../images/user-head.png",
+										tag:"金牌合作",
+										name:"有理想的胖子",
+										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+									},
+									{
+										head:"../images/user-head.png",
+										tag:"金牌合作",
+										name:"有理想的胖子",
+										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+									},
+									{
+										head:"../images/user-head.png",
+										tag:"金牌合作",
+										name:"有理想的胖子",
+										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
+										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+									}
+								]
+						}
+					},
+					mounted(){
+						
+					},
+					methods:{
+						
+					}
+				});
+		</script>
+	</body>
+
+</html>
