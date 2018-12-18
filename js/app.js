@@ -5,6 +5,7 @@
  **/
  var uploadurl="http://www.woaiyiyun.com/";
  var myurl="http://admin.woaiyiyun.com/";
+ var imgurl="http://admin.woaiyiyun.com/";
  function yyajax(url,data,callback){
 	 mui.ajax(myurl+url,{
 		data:data,
@@ -38,10 +39,11 @@
 	 }
 	 return child;
  }
- function getinfo(){
+ function getinfo(cb){
 	 var userinfo=app.getState();
 	 yyajax("index/user/siteinfo",{id:userinfo.id,role:userinfo.role,token:userinfo.token},function(res){
 		 app.setInfo(res.msg);
+		 cb();
 	 });
 	 //获取地址
 	var cityplace=[];
@@ -85,6 +87,32 @@
 				obj1[key]=obj2[key];
 			}
 		}
+ }
+ var uploadimgurl=myurl+'index/Ajax/upload';
+ function uploadhead(idelem,cb,errcb){//file dom元素,成功回调，错误回调
+ 	var oFile = document.getElementById(idelem).files[0];    //读取文件
+ 	var formdata=new FormData();
+ 	//formdata.append('name', 'uploadImage');
+ 	formdata.append('file',oFile);
+ 	$.ajax({
+ 		url:uploadimgurl,
+ 		type:'post',
+ 		contentType:false,
+ 		data:formdata,
+ 		processData:false,
+ 		success:function(info){
+			console.log(JSON.stringify(info));
+			if(info.code==1){
+				var url=myurl+info.data.url;
+				cb(url);
+			}else{
+				mui.toast(info.msg);
+			}
+ 		},
+ 		error:function(err){
+ 			errcb(err)
+ 		}
+ 	});
  }
 (function($, owner) {
 	/**
@@ -182,7 +210,7 @@
 		//owner.setSettings(settings);
 	};
 	/* 获取信息 */
-	owner.getInfo = function() {
+	owner.getInfo = function() {//网站信息
 		var stateText = localStorage.getItem('$info') || "{}";
 		return JSON.parse(stateText);
 	};
@@ -255,7 +283,7 @@
 	/**
 	 * 获取应用本地配置
 	 **/
-	owner.setSettings = function(settings) {
+	owner.setSettings = function(settings) {//获取用户信息
 		settings = settings || {};
 		localStorage.setItem('$settings', JSON.stringify(settings));
 	}

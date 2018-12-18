@@ -290,7 +290,6 @@
 						var userinfo=app.getSettings();
 						for(key in this.form ){   //variable 为属性名
 						  if(this.form[key]==""){
-							  console.log(key);
 							  mui.toast("不能为空哦！");
 							  return false;
 						  }
@@ -299,15 +298,11 @@
 						formdata.id=userinfo.id;
 						formdata.role=userinfo.role;
 						formdata.token=userinfo.token;
-						console.log(JSON.stringify(formdata));
 						yyajax('index/user/settings',formdata,function(res){
-							console.log(JSON.stringify(res));
 							if(res.code==200){
-								console.log(self.islogin);
+								assignobj(userinfo,formdata);
+								localStorage.setItem('$state', JSON.stringify(userinfo));
 								if(self.islogin==true){
-									assignobj(userinfo,formdata);
-									console.log(JSON.stringify(userinfo));
-									localStorage.setItem('$state', JSON.stringify(userinfo));
 									mui.toast("提交成功");
 									if(!main){
 									main = plus.webview.getWebviewById('main');

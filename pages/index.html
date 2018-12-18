@@ -9,13 +9,11 @@
 		<link href="../css/index.css" rel="stylesheet" />
 	</head>
 	<body>
-	<div id="app" v-cloak>
+	<div id="app-index" v-cloak>
 			<div class="mui-slider" id="banner">
 			  <div class="mui-slider-group mui-slider-loop">
 				<!--支持循环，需要重复图片节点-->
-				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
-				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
-				<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/banner1.jpg" /></div></a></div>
+				<div class="mui-slider-item" v-for="(item,index) in bannerlist" :key="index"><a href="#"><div class="baner-item"><img :src="url+item.bannerimage" /></div></a></div>
 			  </div>
 			</div>
 			<div class="main-wrap">
@@ -26,11 +24,11 @@
 			<ul class="mui-table-view" id="clublist">
 				<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index">
 					<a href="javascript:;">
-						<img class="mui-media-object mui-pull-left" :src="item.img">
+						<img class="mui-media-object mui-pull-left" :src="url+item.image">
 						<div class="mui-media-body">
-							<span>{{item.title}}</span>
-							<p class='mui-ellipsis-2'>{{item.content}}</p>
-							<p class="zpinfo">{{item.count}}</p>
+							<span>{{item.name}}</span>
+							<p class='mui-ellipsis-2'>{{item.abstract}}</p>
+							<p class="zpinfo">{{item.setup.toString()}}</p>
 						</div>
 					</a>
 				</li>
@@ -40,25 +38,33 @@
 				<span id="clubdetail-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
 			</div>
 			<div id="club-state-list">
-				<ul class="mui-table-view" id="statelist">
-					<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="index">
-						<a href="javascript:;">
-							<div class="state-top">
-								<img :src="item.head" id="club-index">
-								<div class="state-auth-info">
-									<p>{{item.name}}</p>
-									<span class="mui-badge mui-badge-success">{{item.tag}}</span>
-								</div>
-							</div>
-							<p class="mui-ellipsis-2 state-con-info">
-								{{item.content}}
-							</p>
-							<div class="state-img-wrap">
-								<img v-for="value in item.imgs" :src="value" />
-							</div>
-						</a>
-					</li>
-				</ul>
+				<div class="scroll-parent">
+					<div id="commonListWrap">
+						<ul class="mui-table-view" id="statelist">
+							<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="index">
+								<a href="javascript:;">
+									<div class="state-top">
+										<img :src="url+item.avatarimage" id="club-index">
+										<div class="state-auth-info">
+											<p>{{item.clubname}}</p>
+											<div style="display: flex;">
+												<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
+													{{otherinfo.setup[val]}}
+												</span>
+											</div>
+										</div>
+									</div>
+									<p class="mui-ellipsis-2 state-con-info">
+										{{item.content}}
+									</p>
+									<div class="state-img-wrap">
+										<img v-for="value in item.images.split(',')" :src="url+value" />
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -66,15 +72,67 @@
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
-			var gallery = mui('.mui-slider');
-			gallery.slider({
-			  interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
-			});
 				var clubdetail = null;
 				var clubmore = null;
 				var clubstatedetail = null;
 				var clubstatemore = null;
+				var ws=null;
+				var list=null;
+				// 处理沉浸式状态栏
+				var topoffset=0;
+				var ms=(/Html5Plus\/.+\s\(.*(Immersed\/(\d+\.?\d*).*)\)/gi).exec(navigator.userAgent);
+				if(ms&&ms.length>=3){
+					topoffset=parseFloat(ms[2]);
+				}
 				mui.plusReady(function() {
+					ws=plus.webview.currentWebview();
+					if(plus.navigator.isImmersedStatusbar()){// 兼容沉浸式状态栏模式
+						topoffset=Math.round(plus.navigator.getStatusbarHeight());
+					}
+					ws.setPullToRefresh({support:true,style:'circle',offset:topoffset+45+'px'},onRefresh);
+					// 第一次打开页面即开始刷新列表
+				/* 	setTimeout(function(){
+						console.log('Initializ refresh');
+						ws.beginPullToRefresh();
+					},200); */
+					function onRefresh(){
+						Vm.page.offset=1;
+						Vm.statelist=[];
+						Vm.getclub();
+						Vm.getclubstate();
+						setTimeout(function(){
+							ws.endPullToRefresh();
+						},1000);
+					}
+					mui("#commonListWrap").pullRefresh({
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					})
+					function loadMore(pullRefresh) {
+						// 如果没有更多数据了，则关闭上拉加载
+						//pullRefresh.endPullupToRefresh(true);
+						// 如果有更多数据，则继续
+						Vm.page.offset+=1;
+						Vm.getclubstate(function(){
+							mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+						},function(){
+							mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+							Vm.page.offset-=1;
+						});
+						/* setTimeout(function () {
+							mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
+						}, 1500); */
+						//pullRefresh.endPullupToRefresh(false);
+					};
 					mui.preload({
 							id: 'clubdetail',
 							url: 'clubdetail.html'
@@ -93,14 +151,14 @@
 					});
 					var clubMore = document.getElementById('club-more');
 					var clubdetailMore = document.getElementById('clubdetail-more');
-					mui("#clublist").on("tap",".club-detail",function(){
+					mui("#clublist").on("tap",".club-detail",function(){//精选俱乐部详情
 						var id = this.getAttribute('id');
 						if(!clubdetail){
 							clubdetail = plus.webview.getWebviewById('clubdetail');
 						}
 						mui.fire(clubdetail,'clubId',{
 							id:id
-						});       
+						});
 						mui.openWindow({
 							id:'clubdetail',
 							show:{
@@ -154,59 +212,97 @@
 						});
 					}, false);
 				});
-				var app = new Vue({
-					el: '#app',
+				function getbannercache(){
+					var stateText = localStorage.getItem('$banner') || "[]";
+					return JSON.parse(stateText);
+				}
+				function getclubcache(){
+					var stateText = localStorage.getItem('$getclub') || "[]";
+					return JSON.parse(stateText);
+				}
+				function getclubstatecache(){
+					var stateText = localStorage.getItem('$getclubstate') || "[]";
+					return JSON.parse(stateText);
+				}
+				window.addEventListener('scroll2top',function(event){
+					//获得事件参数
+					//location.reload();
+					Vm.statelist=[];
+					Vm.otherinfo=app.getInfo();
+					Vm.getalldata();
+				});
+				var Vm = new Vue({
+					el: '#app-index',
 					data(){
 						return{
-							datalist:[
-								{
-									img:"../images/club.jpg",
-									title:"舞蹈俱乐部",
-									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
-									count:"招聘信息10条",
-								},
-								{
-									img:"../images/club1.jpg",
-									title:"舞蹈俱乐部",
-									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
-									count:"招聘信息10条",
-								},
-								{
-									img:"../images/club2.png",
-									title:"舞蹈俱乐部",
-									content:"从事舞蹈表演培训10年从事舞蹈表演培训10年",
-									count:"招聘信息10条",
-								}],
-								statelist:[
-									{
-										head:"../images/user-head.png",
-										tag:"金牌合作",
-										name:"有理想的胖子",
-										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-									},
-									{
-										head:"../images/user-head.png",
-										tag:"金牌合作",
-										name:"有理想的胖子",
-										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-									},
-									{
-										head:"../images/user-head.png",
-										tag:"金牌合作",
-										name:"有理想的胖子",
-										content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-										imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-									}
-								]
+							url:imgurl,
+							otherinfo:app.getInfo(),
+							bannerlist:getbannercache(),
+							datalist:getclubcache(),
+							statelist:getclubstatecache(),
+							page:{
+								offset:1,
+							}
 						}
 					},
 					mounted(){
-						
+							//var self=this;
+						  //this.getalldata();
 					},
 					methods:{
-						
+							getalldata(){
+								this.getbanner();
+								this.getclub();
+								this.getclubstate();
+							},
+							getbanner(){
+								var self=this;
+								yyajax('index/index/banner',{type:1},function(res){
+									if(res.code==200){
+									localStorage.setItem('$banner', JSON.stringify(res.msg));
+										self.bannerlist=res.msg;
+										setTimeout(function(){
+											var gallery = mui('.mui-slider');
+											gallery.slider({
+												interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+											});
+										},100)
+									}else{
+										mui.toast('网络错误');
+									}
+								})
+							},
+							getclub(){
+								var self=this;
+								var userinfo=app.getSettings();
+								yyajax('index/index/homeclub',{id:userinfo.id,role:userinfo.role,token:userinfo.token},function(res){
+									if(res.code==200){
+										localStorage.setItem('$getclub', JSON.stringify(res.msg));
+										self.datalist=res.msg;
+									}else{
+										mui.toast(res.msg);
+									}
+								})
+							},
+							getclubstate(cb,err){
+								var self=this;
+								var userinfo=app.getSettings();
+								yyajax('index/index/clubdynamic',{id:userinfo.id,role:userinfo.role,token:userinfo.token,offset:this.page.offset},function(res){
+									if(res.code==200){
+										if(res.msg.length!=0){
+											localStorage.setItem('$getclubstate', JSON.stringify(res.msg));
+											var alldata=self.statelist.concat(res.msg);
+											self.statelist=alldata; 
+											if(cb){cb();}
+										}else{
+											if(err){err();}
+										}
+									}else{
+										if(err){err();}
+										mui.toast(res.msg);
+									}
+								})
+							}
 					}
 				});
 		</script>

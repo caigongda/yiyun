@@ -291,15 +291,16 @@
 					//检查 "登录状态/锁屏状态" 开始
 					if (settings.token) {//自动登录判断
 						if(settings.username){
-							getinfo();
-							var id = setInterval(function () {
-								if(main_loaded_flag){
-									mui.hideLoading();
-									clearInterval(id);
-									$.fire(mainPage, 'show', null);
-									mainPage.show("pop-in");
-								}
-							},20);
+							getinfo(function(){
+								var id = setInterval(function () {
+									if(main_loaded_flag){
+										mui.hideLoading();
+										clearInterval(id);
+										$.fire(mainPage, 'show', null);
+										mainPage.show("pop-in");
+									}
+								},10);
+							});
 						}else{
 							mui.hideLoading();
 							/* mui.toast("请完善信息");
@@ -307,7 +308,6 @@
 						}
 					} else {
 						mui.hideLoading();
-						app.setState(null);
 					}
 					// close splash
 					setTimeout(function() {
@@ -393,15 +393,18 @@
 								mui.hideLoading();
 								if(res.code==200){
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
-									getinfo();
-									if(!res.userinfo.username){
-										mui.toast("请完善信息");
-										setinfo();
-									}else{
-										mui.toast("登录成功");
-										toMain();
-									}
+									getinfo(function(){
+										mui.hideLoading();
+										if(!res.userinfo.username){
+											mui.toast("请完善信息");
+											setinfo();
+										}else{
+											mui.toast("登录成功");
+											toMain();
+										}
+									});
 								}else{
+									mui.hideLoading();
 									mui.toast(res.msg);
 								}
 							})
@@ -423,18 +426,20 @@
 								code:loginInfo.password,
 								role:role
 							},function(res){
-								mui.hideLoading();
 								if(res.code==200){
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
-									getinfo();
-									if(!res.userinfo.username){
-										mui.toast("请完善信息");
-										setinfo();
-									}else{
-										mui.toast("登录成功");
-										toMain();
-									}
+									getinfo(function(){
+										mui.hideLoading();
+										if(!res.userinfo.username){
+											mui.toast("请完善信息");
+											setinfo();
+										}else{
+											mui.toast("登录成功");
+											toMain();
+										}
+									});
 								}else{
+									mui.hideLoading();
 									mui.toast(res.msg);
 								}
 							})

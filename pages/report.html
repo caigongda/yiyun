@@ -10,6 +10,11 @@
 	</head>
 	<body>
 		<div class="img-wrap">
+			<div class="mui-slider" id="banner">
+				<div class="mui-slider-group mui-slider-loop">
+				<!--支持循环，需要重复图片节点-->
+				</div>
+			</div>
 		</div>
 		<input type="file" name="videofile" class="hidden" id="videofile" accept="video/*" capture="camera"/>
 		<div class="btn-wrap" id="container">
@@ -36,10 +41,39 @@
 					console.log(e.detail.angle)
 				}
 			}); */
+			window.onload=function(){
+				yyajax("index/index/banner",{type:2},function(res){
+					if(res.code==200){
+						var _html="";
+						for(var i=0;i<res.msg.length;i++){
+							_html+='<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="'+imgurl+res.msg[i].bannerimage+'" /></div></a></div></div>'
+						}
+						$("#banner .mui-slider-loop").html(_html);
+						var gallery = mui('.mui-slider');
+						gallery.slider({
+							interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+						});
+					}
+				});
+			}
 			var reportvideo=null;
 			var reportclubstate=null;
 			var reportteacherstate=null;
+			var userinfo=app.getSettings();
 			mui.plusReady(function(){
+				var backButtonPress = 0;
+				mui.back = function(event) {
+					backButtonPress++;
+					if (backButtonPress > 1) {
+						plus.runtime.quit();
+					} else {
+						plus.nativeUI.toast('再按一次退出应用');
+					}
+					setTimeout(function() {
+						backButtonPress = 0;
+					}, 1000);
+					return false;
+				};
 				mui.preload({
 						id: 'reportvideo',
 						url: 'reportvideo.html'
@@ -53,14 +87,14 @@
 						url: 'reportteacherstate.html'
 				});
 				mui(".btn-wrap").on("tap",".report-state",function(){
-					if(false){
+					if(userinfo.role=='2'){
 						var id = this.dataset.id;
 						if(!reportclubstate){
 							reportclubstate = plus.webview.getWebviewById('reportclubstate');
 						}
 						mui.fire(reportclubstate,'url',{
 							id:id
-						});       
+						});
 						mui.openWindow({
 							id:'reportclubstate',
 							show:{

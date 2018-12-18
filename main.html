@@ -120,20 +120,27 @@
 						};
 						var tabs = {};
 						for (id in tabsConfig) {
-								tabs[id] = plus.webview.create(tabsConfig[id].url, id, tabsConfig[id].styles);
-								if (tabsConfig[id]['default']) {
-										self.append(tabs[id]);
-										current = id;
-								}
+							tabs[id] = plus.webview.create(tabsConfig[id].url, id, tabsConfig[id].styles);
+							if (tabsConfig[id]['default']) {
+									self.append(tabs[id]);
+									mui.fire(tabs[id], 'scroll2top');
+									current = id;
+							}
 						}
 						mui('#mainnav').on('tap', 'a', function(e) {
+							if(this.dataset.id!=current){
+								tabs[this.dataset.id].show();
+								tabs[current].hide();
+								current = this.dataset.id;
 								if (current == this.dataset.id) {
 										mui.fire(tabs[current], 'scroll2top');
 										return;
 								}
-								tabs[this.dataset.id].show();
-								tabs[current].hide();
-								current = this.dataset.id;
+							}
+						});
+						window.addEventListener('show',function(event){
+							//获得事件参数
+							mui.fire(tabs[current], 'scroll2top');
 						});
 				});
 		</script>
