@@ -156,7 +156,7 @@
 						if(!clubdetail){
 							clubdetail = plus.webview.getWebviewById('clubdetail');
 						}
-						mui.fire(clubdetail,'clubId',{
+						mui.fire(clubdetail,'clubmore',{
 							id:id
 						});
 						mui.openWindow({
@@ -171,7 +171,7 @@
 						if(!clubmore){
 							clubmore = plus.webview.getWebviewById('clubmore');
 						}
-						mui.fire(clubmore,'clubId',{
+						mui.fire(clubmore,'clubmore',{
 							id:id
 						});
 						mui.openWindow({

@@ -133,7 +133,7 @@
 					insertimg(res);
 					teacherApp.formdata.images.push(res);
 					mui.hideLoading();
-				},function(){})
+				},function(){mui.hideLoading();})
 			})
 			mui.plusReady(function(){
 				var dance=[{text:"瑜伽",value:"0"},{text:"拉丁",value:"1"},{text:"芭蕾",value:"2"}];

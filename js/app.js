@@ -18,7 +18,9 @@
 		},
 		error:function(xhr,type,errorThrown){
 			//异常处理；
-			//mui.toast("cuowu");
+			mui.hideLoading();
+			mui.toast("网络错误");
+			console.log(JSON.stringify(errorThrown));
 		}
 	});
  }
@@ -107,12 +109,23 @@
 				cb(url);
 			}else{
 				mui.toast(info.msg);
+				errcb();
 			}
  		},
  		error:function(err){
  			errcb(err)
  		}
  	});
+ }
+ function searchinit(elem,cb){
+	 document.getElementById(elem).addEventListener("keypress",function(event) {
+	 	var keyword=document.getElementById(elem).value;
+	 	if(event.keyCode == "13") {
+	 		document.activeElement.blur();//收起虚拟键盘
+	 		event.preventDefault(); // 阻止默认事件---阻止页面刷新
+			cb(keyword);
+	 	}
+	 });
  }
 (function($, owner) {
 	/**
