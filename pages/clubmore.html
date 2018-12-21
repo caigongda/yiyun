@@ -199,13 +199,12 @@
 					this.getdata(0);
 				},
 				methods:{
-					getdata(type){
+					getdata:function(type){
 						var self=this;
 						if(type==0){
 							self.query.offset=1;
 							mui.showLoading();
 						}
-						console.log(JSON.stringify(this.query));
 						yyajax('index/index/club',this.query,function(res){
 							if(res.code==200){
 								if(type==1){

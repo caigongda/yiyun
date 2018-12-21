@@ -207,8 +207,8 @@
 					data:formdata,
 					processData:false,
 					success:function(info){
-						Vm.form.avatarimage=myurl+info.data.url;
-						document.getElementById("user-head").src=Vm.form.avatarimage;
+						Vm.form.avatarimage=info.data.url;
+						document.getElementById("user-head").src=myurl+Vm.form.avatarimage;
 					},
 					error:function(err){
 						console.log(JSON.stringify(err))

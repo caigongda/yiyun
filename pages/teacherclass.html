@@ -291,6 +291,7 @@
 							mui.showLoading();
 						}
 						yyajax('index/index/teacherdynamic',this.query,function(res){
+							console.log(JSON.stringify(res));
 							if(res.code==200){
 								if(type==1){
 									self.datalist=res.msg;

@@ -5,6 +5,11 @@ body {
 	margin: 0px;
 	padding: 0px;
 }
+.video-nodata{margin:0 auto;background: url(../images/nodata.svg);background-size: 100% 100%;width: 80%;height: 5rem;}
+.video-nodata-p{margin-top: -30px;width: 100%;text-align: center;}
+.bshadow{box-shadow: #ddd 0 0 10px !important;border-radius: 5px !important;height: 5.2rem;}
+.state-nodata{background: url(../images/nodatastate.svg);background-size: 100% 100%;width: 30%;height: 3rem;margin:0 auto;}
+.state-nodata-p{width: 100%;text-align: center;}
 .mui-content{height: 100%;}
 @font-face {
   font-family: 'iconfont';  /* project id 930702 */

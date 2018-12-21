@@ -130,7 +130,7 @@
 				mui.showLoading();
 				uploadhead("imgfile",function(res){
 					$('#imgfile').replaceWith('<input type="file" id="imgfile" accept="image/*" multiple=""/>');
-					insertimg(res);
+					insertimg(myurl+res);
 					teacherApp.formdata.images.push(res);
 					mui.hideLoading();
 				},function(){mui.hideLoading();})

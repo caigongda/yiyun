@@ -10,40 +10,44 @@
 	</head>
 	<body>
 	<div id="app" v-cloak>
-		<header class="mui-bar mui-bar-nav common-header">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<div class="mui-input-row common-input" id="inputc">
-				<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
-				<span class="mui-icon mui-icon-search common-search-icon"></span>
-			</div>
-		</header>
+		<form action="">
+			<header class="mui-bar mui-bar-nav common-header">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<div class="mui-input-row common-input" id="inputc">
+					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+					<span class="mui-icon mui-icon-search common-search-icon"></span>
+				</div>
+			</header>
+		</form>
 			<div class="common-condition-wrap">
 				<div class="condition-wrap">
-					<div class="selcity" @click="selcity">所在城市<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
-					<div class="seldance" @click="seldance">职位要求<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+					<div class="selcity" @click="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
+					<div class="seldance" @click="seldance">{{curjob}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
 					<div class="morecond" @click="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
 				</div>
 				<div class="city-wrap" id="scroll-ul" v-show="iscity">
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name)">{{item.name}}</li>
+								<li :class="{selone:curtwo=='不限地区'}" @click="selcurcity('不限地区','')">不限地区</li>
+								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selcurcity(item.text,item.value)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 				<div class="dance-wrap" id="scroll-ul" v-show="isdance">
-					<div class="mui-scroll-wrapper scroll-ul">
+					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
-							<ul id="dancedata">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+							<ul id="citydata1">
+								<li :class="{selone:curjob=='不限'}" @click="seljobone('不限','')">不限</li>
+								<li v-for="(item,index) in jobs" :key="index" :class="{selone:curjob==item}" @click="seljobone(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
@@ -51,8 +55,54 @@
 				<div class="more-wrap" id="scroll-ul" v-show="morecond">
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
-							<ul id="dancedata">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+							<ul id="citydata1">
+								<li v-for="(item,index) in moreconds" :key="index" :class="{selone:conone==item.text}" @click="selcontype(item.text,item.value)">{{item.text}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition=='1'">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li v-for="(item,index) in setups" :key="index" :class="{selone:consetup==item}" @click="selconsetup(item,index)">{{item}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==2">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li :class="{selone:conjob=='不限'}" @click="selconjob('不限','')">不限</li>
+								<li v-for="(value, key) in jobs" :key="key" :class="{selone:conjob==value}" @click="selconjob(value,key)">{{value}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" v-if="condition=='3'">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li v-for="(item,index) in conlikeplace" :key="index" :class="{selone:conlikeone==item.text}" @click="selconlplace(item.text,index)">{{item.text}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" v-if="condition=='3'">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li :class="{selone:conliketwo=='不限地区'}" @click="selconlplacetwo('不限地区','')">不限地区</li>
+								<li v-for="(item,index) in conlikeplacetwo" :key="index" :class="{selone:conliketwo==item.text}" @click="selconlplacetwo(item.text,item.value)">{{item.text}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==4">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li :class="{selone:conmajor=='不限'}" @click="selconmajor('不限','')">不限</li>
+								<li v-for="(value, key) in majors" :key="key" :class="{selone:conmajor==value}" @click="selconmajor(value,key)">{{value}}</li>
+							</ul>
+						</div>
+					</div>
+					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==5">
+						<div class="mui-scroll">
+							<ul id="citydata2">
+								<li :class="{selone:conexp=='不限'}" @click="selconexp('不限','')">不限</li>
+								<li v-for="(value, key) in exps" :key="key" :class="{selone:conexp==value}" @click="selconexp(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
@@ -65,17 +115,17 @@
 						<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index">
 							<a href="javascript:;">
 								<div class="state-top">
-									<img :src="item.head" id="club-index">
+									<img :src="url+item.avatarimage" id="club-index">
 									<div class="state-auth-info">
-										<p>{{item.name}}</p>
-										<span class="mui-badge mui-badge-success">{{item.tag}}</span>
+										<p>{{item.clubname}}</p>
+										<span class="mui-badge mui-badge-success">{{item.setup}}</span>
 									</div>
 								</div>
 								<p class="mui-ellipsis-2 state-con-info">
 									{{item.content}}
 								</p>
 								<div class="state-img-wrap">
-									<img v-for="value in item.imgs" :src="value" />
+									<img v-for="value in item.images" :src="url+value" />
 								</div>
 							</a>
 						</li>
@@ -85,17 +135,28 @@
 		</div>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
-		<script src="../js/city.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
+			var siteinfo=app.getInfo();
+			var getschool=app.getSchool();
+			var getplace=app.getPlace();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
 			mui.ready(function() {
 			//初始化区域滚动
 				var scroll = mui(".mui-scroll-wrapper").scroll();
-			})
+			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			}
 			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
+					Vm.resetdata();
+				},false);
 				mui("#commonListWrap").pullRefresh({
 					down : {
 						height:50,// 可选.默认50.触发上拉加载拖动距离
@@ -105,9 +166,8 @@
 						callback : function() {
 							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
 							// 加载更多的内容
-							setTimeout(function () {
-								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
-							}, 1500);
+							Vm.query.offset=1;
+							Vm.getclubdata(1);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					},
 					up : {
@@ -121,63 +181,128 @@
 							loadMore(this);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					}
-				})
+				});
 				function loadMore(pullRefresh) {
 					// 如果没有更多数据了，则关闭上拉加载
 					//pullRefresh.endPullupToRefresh(true);
 					// 如果有更多数据，则继续
-					setTimeout(function () {
-						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
-					}, 1500);
+					Vm.query.offset+=1;
+					Vm.getclubdata(2);
 					//pullRefresh.endPullupToRefresh(false);
 				};
+				searchinit("search",function(val){
+					Vm.query.keyword=val;
+					Vm.getclubdata(0);
+				});
 			});
-			var app = new Vue({
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						cityone:city,
-						citytwo:city[0]['sub'],
+						url:imgurl,
+						cityone:getplace,
+						citytwo:getplace[0]['children'],
+						jobs:siteinfo.jobcategory,//职位类别
 						iscity:false,
 						isdance:false,
 						morecond:false,
-						curone:"北京",
-						datalist:[
+						curone:getplace[0]['text'],
+						curtwo:"所在城市",
+						curjob:'职位类别',
+						setups:siteinfo.setup,
+						consetup:siteinfo.setup,
+						condition:1,
+						moreconds:[
 							{
-								head:"../images/user-head.png",
-								tag:"金牌合作",
-								name:"有理想的胖子",
-								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-							},
-							{
-								head:"../images/user-head.png",
-								tag:"金牌合作",
-								name:"有理想的胖子",
-								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-							},
-							{
-								head:"../images/user-head.png",
-								tag:"金牌合作",
-								name:"有理想的胖子",
-								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
-							},
-							{
-								head:"../images/user-head.png",
-								tag:"金牌合作",
-								name:"有理想的胖子",
-								content:"从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片。从跳舞行业三年，现在打算找一份跳舞相关的工作。下面是我的照片！从跳舞行业三年。现在打算找一份跳舞相关的工作。下面是我的照片！",
-								imgs:["../images/state1.png","../images/state2.jpg","../images/state3.png","../images/state4.png"]
+								value:"1",
+								text:"所设专业",
+							},{
+								value:"2",
+								text:"福利",
+							},{
+								value:"3",
+								text:"课时费（元）",
+							},{
+								value:"4",
+								text:"月薪待遇（元）",
+							},{
+								value:"5",
+								text:"机构规模（m2）",
 							}
-						]
+						],
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							offset:1,
+							location_id:"",//所在城市
+							position:"",//职业类别
+							setup:"",//所设专业
+							welfare:"",//福利
+							subsidy:"",//课时费
+							salary:"",//月薪待遇（元）
+							scale:"",//机构规模
+							keyword:""
+						},
+						datalist:[]
 					}
 				},
 				mounted(){
-					
+					this.getclubdata(0);
 				},
 				methods:{
+					getclubdata:function(type){
+						var self=this;
+						if(type==0){
+							self.query.offset=1;
+							mui.showLoading();
+						}
+						yyajax('index/index/clubdynamic',this.query,function(res){
+							console.log(JSON.stringify(res));
+							if(res.code==200){
+								if(type==1){
+									self.datalist=res.msg;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									if(res.msg.length!=0){
+										var newdata=res.msg;
+										var curdata=self.datalist;
+										self.datalist=curdata.concat(newdata);
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+										},1000);
+									}else{
+										self.query.offset-=1;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+										},1000);
+									}
+								}else{
+									self.datalist=res.msg;
+									mui.hideLoading();
+									if(res.msg.length==0){
+										mui.toast("没有找到相关数据");
+									}
+								}
+							}else{
+								mui.toast(res.msg);
+								if(type==1){
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									self.query.offset-=1;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+									},1000);
+								}else{
+									mui.hideLoading();
+								}
+							}
+						})
+					},
 					selcity:function(){
 						this.iscity=!this.iscity;
 						this.isdance=false;
@@ -190,17 +315,72 @@
 					},
 					selstepone:function(val,index){
 						this.curone=val;
-						this.citytwo=city[index]['sub'];
+						this.citytwo=getplace[index]['children'];
 					},
-					selmorecond:function(){
+					selcurcity:function(val,index){
+						this.curtwo=val;
+						this.query.location_id=index;
+						this.iscity=false;
+						this.getclubdata(0);
+					},
+					seljobone:function(val,index){//职位类别
+						this.curjob=val;
+						this.query.position=index;
+						this.isdance=false;
+						this.getclubdata(0);
+					},
+					selmorecond:function(){//更多筛选
 						this.morecond=!this.morecond;
 						this.iscity=false;
 						this.isdance=false;
+					},
+					selcontype:function(val,sindex){//更多筛选-条件
+						this.conone=val;
+						this.condition=sindex;
 					},
 					closeall:function(){
 						this.iscity=false;
 						this.isdance=false;
 						this.morecond=false;
+					},
+					selconsetup:function(val,index){//选择所设专业
+						this.conscone=val;
+						this.conschoolstwo=getplace[index]['children'];
+					},
+					selconjob:function(val,index){//更多筛选-职位类别
+						this.conjob=val;
+						this.query.jobcategory=+index;
+						this.getclubdata(0);
+					},
+					selconlplace:function(val,index){//期望工作地
+						this.conlikeone=val;
+						this.conlikeplacetwo=getplace[index]['children'];
+					},
+					selconlplacetwo:function(val,value){//期望工作地
+						this.conliketwo=val;
+						this.query.expectant_id=value;
+						this.getclubdata(0);
+					},
+					selconmajor:function(val,index){//专业
+						this.conmajor=val;
+						this.query.major=+index;
+						this.getclubdata(0);
+					},
+					selconexp:function(val,index){//教学经验
+						this.conexp=val;
+						this.query.experience=+index;
+						this.getclubdata(0);
+					},
+					resetdata:function(){
+						this.query.location_id="";
+						this.query.home_id="";
+						this.query.teacheracademy_id="";
+						this.query.jobcategory="";
+						this.query.expectant_id="";
+						this.query.major="";
+						this.query.experience="";
+						this.query.offset=1;
+						this.query.keyword="";
 					}
 				}
 			});

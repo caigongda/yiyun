@@ -37,7 +37,7 @@
 			</div>
 			<div class="video-wrap" v-if="curtab=='1'">
 				<div class="teacher-video-left">
-					<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index">
+					<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
 						<div class="img-wrap">
 							<img :src="url+item.image" />
 							<span class="play-icon"></span>
@@ -45,10 +45,14 @@
 						<div class="auth-wrap">
 							<h4 class="mui-ellipsis">{{item.name}}</h4>
 							<p>
-								<img :src="item.avatarimage"/>
+								<img :src="url+item.avatarimage"/>
 								<span class="mui-ellipsis">{{item.clubname}}</span>
 							</p>
 						</div>
+					</div>
+					<div class="bshadow" v-if="leftvideo.length==0">
+						<div class="video-nodata"></div>
+						<p class="video-nodata-p">暂无数据</p>
 					</div>
 				</div>
 				<div class="teacher-video-right">
@@ -60,7 +64,7 @@
 						<div class="auth-wrap">
 							<h4 class="mui-ellipsis">{{item.name}}</h4>
 							<p>
-								<img :src="item.avatarimage"/>
+								<img :src="url+item.avatarimage"/>
 								<span class="mui-ellipsis">{{item.clubname}}</span>
 							</p>
 						</div>
@@ -70,7 +74,7 @@
 			<div class="state-wrap" v-if="curtab=='2'">
 				<div id="club-state-list">
 					<ul class="mui-table-view">
-						<li class="mui-table-view-cell mui-media"  v-for="(item,index) in statelist" :key="index">
+						<li class="mui-table-view-cell mui-media"  v-for="(item,index) in statelist" :key="index" v-if="statelist.length!=0">
 							<a href="javascript:;">
 								<div class="state-top">
 									<img :src="url+item.avatarimage" >
@@ -90,6 +94,10 @@
 									<img v-for="value in item.images.split(',')" :src="url+value" />
 								</div>
 							</a>
+						</li>
+						<li v-if="statelist.length==0">
+							<div class="state-nodata"></div>
+							<p class="state-nodata-p">暂无数据</p>
 						</li>
 					</ul>
 				</div>
@@ -122,12 +130,17 @@
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
 				mui.showLoading();
-				VmClub.getclubdetai();
 				VmClub.club_id = event.detail.id;
+				VmClub.getclubdetail();
 				VmClub.otherinfo=app.getInfo();
 			});
 			var videoplay = null;
 			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					window.scrollTo(0, 0);
+					VmClub.resetdata();
+				},false);
 				mui.preload({
 						id: 'videoplay',
 						url: 'videoplay.html'
@@ -156,8 +169,14 @@
 						otherinfo:app.getInfo(),
 						userinfo: app.getSettings(),
 						curtab: '1',
-						club_id:5,
-						clubinfo:null,
+						club_id:null,
+						clubinfo:{
+							avatarimage:"",
+							name:"",
+							setup:"",
+							abstract:"",
+							content:"",
+						},
 						videolist:[],
 						statelist:[],
 					}
@@ -175,12 +194,18 @@
 					}
 				},
 				mounted(){
-					this.getclubdetai();
+					this.getclubdetail();
 				},
 				methods:{
-					getclubdetai(){
+					getclubdetail(){
 						var self=this;
-						yyajax('index/index/clubdetails',{id:this.userinfo.id,role:this.userinfo.role,token:this.userinfo.token,club_id:this.club_id},function(res){
+						var postdata={
+							id:this.userinfo.id,
+							role:this.userinfo.role,
+							token:this.userinfo.token,
+							club_id:this.club_id
+						}
+						yyajax('index/index/clubdetails',postdata,function(res){
 							mui.hideLoading();
 							if(res.code==200){
 								self.clubinfo=res.msg.club;
@@ -194,6 +219,11 @@
 					},
 					state:function(){
 						this.curtab=2;
+					},
+					resetdata(){
+						for(var i in this.clubinfo){
+							this.clubinfo[i]="";
+						}
 					}
 				}
 			});

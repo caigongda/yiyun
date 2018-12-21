@@ -22,7 +22,7 @@
 				<span id="club-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
 			</div>
 			<ul class="mui-table-view" id="clublist">
-				<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index">
+				<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
 					<a href="javascript:;">
 						<img class="mui-media-object mui-pull-left" :src="url+item.image">
 						<div class="mui-media-body">
@@ -41,7 +41,7 @@
 				<div class="scroll-parent">
 					<div id="commonListWrap">
 						<ul class="mui-table-view" id="statelist">
-							<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="index">
+							<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="item.id">
 								<a href="javascript:;">
 									<div class="state-top">
 										<img :src="url+item.avatarimage" id="club-index">
@@ -152,11 +152,11 @@
 					var clubMore = document.getElementById('club-more');
 					var clubdetailMore = document.getElementById('clubdetail-more');
 					mui("#clublist").on("tap",".club-detail",function(){//精选俱乐部详情
-						var id = this.getAttribute('id');
+						var id = this.dataset.id;
 						if(!clubdetail){
 							clubdetail = plus.webview.getWebviewById('clubdetail');
 						}
-						mui.fire(clubdetail,'clubmore',{
+						mui.fire(clubdetail,'clubId',{
 							id:id
 						});
 						mui.openWindow({
@@ -227,9 +227,10 @@
 				window.addEventListener('scroll2top',function(event){
 					//获得事件参数
 					//location.reload();
-					Vm.statelist=[];
 					Vm.otherinfo=app.getInfo();
-					Vm.getalldata();
+					if(getclubstatecache().length==0){
+						Vm.getalldata();
+					}
 				});
 				var Vm = new Vue({
 					el: '#app-index',
@@ -292,7 +293,7 @@
 										if(res.msg.length!=0){
 											localStorage.setItem('$getclubstate', JSON.stringify(res.msg));
 											var alldata=self.statelist.concat(res.msg);
-											self.statelist=alldata; 
+											self.statelist=alldata;
 											if(cb){cb();}
 										}else{
 											if(err){err();}

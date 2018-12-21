@@ -105,7 +105,7 @@
  		success:function(info){
 			console.log(JSON.stringify(info));
 			if(info.code==1){
-				var url=myurl+info.data.url;
+				var url=info.data.url;
 				cb(url);
 			}else{
 				mui.toast(info.msg);

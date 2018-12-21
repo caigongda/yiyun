@@ -10,69 +10,48 @@
 	</head>
 	<body>
 		<div id="teacher">
-			<header class="mui-bar mui-bar-nav common-header">
-				<!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
-				<div class="mui-input-row common-input" id="inputc">
-					<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
-					<span class="mui-icon mui-icon-search common-search-icon"></span>
-				</div>
-			</header>
+			<form action="">
+				<header class="mui-bar mui-bar-nav common-header">
+					<div class="mui-input-row common-input" id="inputc">
+						<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+						<span class="mui-icon mui-icon-search common-search-icon"></span>
+					</div>
+				</header>
+			</form>
 			<div class="scroll-parent">
 				<div id="commonListWrap">
 					<div class="teacher-video-wrap">
 						<div>
 							<div class="teacher-video-left">
-								<div class="teacher-video-list ripple">
+								<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
 									<div class="img-wrap">
-										<img src="../images/teacher-video.jpg" />
+										<img :src="url+item.image" />
 										<span class="play-icon"></span>
 									</div>
 									<div class="auth-wrap">
-										<h4 class="mui-ellipsis">传统舞会</h4>
+										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
-											<img src="../images/user-head.png"/>
-											<span class="mui-ellipsis">有理想的胖子</span>
+											<img :src="url+item.avatarimage"/>
+											<span class="mui-ellipsis">{{item.clubname}}</span>
 										</p>
 									</div>
 								</div>
-								<div class="teacher-video-list">
-									<div class="img-wrap">
-										<img src="../images/teacher-video.jpg" />
-										<span class="play-icon"></span>
-									</div>
-									<div class="auth-wrap">
-										<h4 class="mui-ellipsis">传统舞会</h4>
-										<p>
-											<img src="../images/user-head.png"/>
-											<span class="mui-ellipsis">有理想的胖子</span>
-										</p>
-									</div>
+								<div class="bshadow" v-if="leftvideo.length==0">
+									<div class="video-nodata"></div>
+									<p class="video-nodata-p">暂无数据</p>
 								</div>
 							</div>
 							<div class="teacher-video-right">
-								<div class="teacher-video-list">
+								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index">
 									<div class="img-wrap">
-										<img src="../images/teacher-video1.jpg" />
+										<img :src="url+item.image" />
 										<span class="play-icon"></span>
 									</div>
 									<div class="auth-wrap">
-										<h4 class="mui-ellipsis">传统舞会</h4>
+										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
-											<img src="../images/user-head.png"/>
-											<span class="mui-ellipsis">有理想的胖子</span>
-										</p>
-									</div>
-								</div>
-								<div class="teacher-video-list">
-									<div class="img-wrap">
-										<img src="../images/teacher-video.jpg" />
-										<span class="play-icon"></span>
-									</div>
-									<div class="auth-wrap">
-										<h4 class="mui-ellipsis">传统舞会</h4>
-										<p>
-											<img src="../images/user-head.png"/>
-											<span class="mui-ellipsis">有理想的胖子</span>
+											<img :src="url+item.avatarimage"/>
+											<span class="mui-ellipsis">{{item.clubname}}</span>
 										</p>
 									</div>
 								</div>
@@ -86,6 +65,10 @@
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
 		<script>
+			var userinfo=app.getSettings();
+			var siteinfo=app.getInfo();
+			var getschool=app.getSchool();
+			var getplace=app.getPlace();
 			var backButtonPress = 0;
 			mui.back = function(event) {
 				backButtonPress++;
@@ -101,6 +84,12 @@
 			};
 			var videoplay = null;
 			mui.plusReady(function() {
+				mui(".mui-input-clear")[0].addEventListener('focus', function(){
+					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+						Vm.query.keyword="";
+						Vm.getdata(0);
+					});
+				});
 				mui.preload({
 						id: 'videoplay',
 						url: 'videoplay.html'
@@ -114,9 +103,8 @@
 						callback : function() {
 							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
 							// 加载更多的内容
-							setTimeout(function () {
-								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
-							}, 1500);
+							Vm.query.offset=1;
+							Vm.getdata(1);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					},
 					up : {
@@ -134,12 +122,15 @@
 				function loadMore(pullRefresh) {
 					// 如果没有更多数据了，则关闭上拉加载
 					//pullRefresh.endPullupToRefresh(true);
-					setTimeout(function () {
-						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
-					}, 1500);
+					Vm.query.offset+=1;
+					Vm.getdata(2);
 					// 如果有更多数据，则继续
 					//pullRefresh.endPullupToRefresh(false);
 				};
+				searchinit("search",function(val){
+					Vm.query.keyword=val;
+					Vm.getdata(0);
+				});
 				mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
 					var id = this.getAttribute('class');
 					if(!videoplay){
@@ -155,17 +146,98 @@
 						}
 					});
 				})
-			})
+			});
+			window.addEventListener('scroll2top',function(event){
+				//获得事件参数
+				//location.reload();
+				
+			});
 			var player = null;
-			var app = new Vue({
+			var Vm = new Vue({
 				el: '#teacher',
 				data(){
 					return{
-						
+						url:imgurl,
+						datalist:[],
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							offset:1,
+							keyword:""
+						}
 					}
 				},
+				computed:{
+					leftvideo(){
+						return this.datalist.filter(function(item,index){
+							return index%2==0;
+						});
+					},
+					rightvideo(){
+						return this.datalist.filter(function(item,index){
+							return index%2!=0;
+						});
+					}
+				},
+				mounted(){
+					this.getdata(0);
+				},
 				methods:{
-					
+					getdata:function(type){
+						var self=this;
+						if(type==0){
+							self.query.offset=1;
+							mui.showLoading();
+						}
+						yyajax('index/index/teachervideo',this.query,function(res){
+							if(res.code==200){
+								if(type==1){
+									self.datalist=res.msg;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									if(res.msg.length!=0){
+										var newdata=res.msg;
+										var curdata=self.datalist;
+										self.datalist=curdata.concat(newdata);
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+										},1000);
+									}else{
+										self.query.offset-=1;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+										},1000);
+									}
+								}else{
+									self.datalist=res.msg;
+									mui.hideLoading();
+									if(res.msg.length==0){
+										mui.toast("没有找到相关数据");
+									}
+								}
+							}else{
+								mui.toast(res.msg);
+								if(type==1){
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									self.query.offset-=1;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+									},1000);
+								}else{
+									mui.hideLoading();
+								}
+							}
+						})
+					},
+					resetdata:function(){
+						this.query.keyword="";
+					}
 				}
 			});
 		</script>
