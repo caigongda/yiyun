@@ -150,7 +150,7 @@
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
 				//location.reload();
-				
+				Vm.getdata(0);
 			});
 			var player = null;
 			var Vm = new Vue({
@@ -181,7 +181,7 @@
 					}
 				},
 				mounted(){
-					this.getdata(0);
+					//this.getdata(0);
 				},
 				methods:{
 					getdata:function(type){

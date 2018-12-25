@@ -10,25 +10,27 @@
 	</head>
 	<body>
 		<div id="app" v-cloak>
-			<header class="mui-bar mui-bar-nav common-header">
-				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-				<div class="mui-input-row common-input" id="inputc">
-					<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
-					<span class="mui-icon mui-icon-search common-search-icon"></span>
-				</div>
-			</header>
+			<form action="">
+				<header class="mui-bar mui-bar-nav common-header">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<div class="mui-input-row common-input" id="inputc">
+						<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+						<span class="mui-icon mui-icon-search common-search-icon"></span>
+					</div>
+				</header>
+			</form>
 			<div class="game-contact">
 				<div class="club-list" id="clublistparent">
 					<div class="scroll-parent">
 						<div id="commonListWrap">
 							<ul class="mui-table-view" id="clublist">
-								<li class="mui-table-view-cell mui-media" id="club-detail" v-for="(item,index) in list" :key="index">
+								<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
 									<a href="javascript:;">
-										<img class="mui-media-object mui-pull-left" :src="item.img">
+										<img class="mui-media-object mui-pull-left" :src="url+item.image">
 										<div class="mui-media-body">
-											<span>{{item.name}}</span>
-											<p class='mui-ellipsis-2'>{{item.info}}</p>
-											<p class="zpinfo">{{item.time}}</p>
+											<span>{{item.title}}</span>
+											<p class='mui-ellipsis-2'>{{item.content}}</p>
+											<p class="zpinfo">{{item.newtime.substring(0,10)}}</p>
 										</div>
 									</a>
 								</li>
@@ -42,10 +44,22 @@
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
+			var articledetail=null;
 			mui.plusReady(function(){
+				mui(".mui-input-clear")[0].addEventListener('focus', function(){
+					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+						Vm.query.keyword="";
+						Vm.getdata(0);
+					});
+				});
+				mui.preload({
+						id: 'articledetail',
+						url: 'articlesdetail.html'
+				});
 				mui("#commonListWrap").pullRefresh({
 					down : {
 						height:50,// 可选.默认50.触发上拉加载拖动距离
@@ -55,9 +69,8 @@
 						callback : function() {
 							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
 							// 加载更多的内容
-							setTimeout(function () {
-								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
-							}, 1500);
+							Vm.query.offset=1;
+							Vm.getdata(1);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					},
 					up : {
@@ -71,87 +84,111 @@
 							loadMore(this);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					}
-				})
+				});
+				searchinit("search",function(val){
+					Vm.query.keyword=val;
+					Vm.getdata(0);
+				});
 				function loadMore(pullRefresh) {
 					// 如果没有更多数据了，则关闭上拉加载
 					//pullRefresh.endPullupToRefresh(true);
-					setTimeout(function () {
-						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
-					}, 1500);
+					Vm.query.offset+=1;
+					Vm.getdata(2);
 					// 如果有更多数据，则继续
 					//pullRefresh.endPullupToRefresh(false);
 				};
+				function gotodetail(){
+					mui("#clublist").on('tap',"li", function(event) {
+						var id = this.dataset.id;
+						if(!articledetail){
+							articledetail = plus.webview.getWebviewById('articledetail');
+						}
+						mui.fire(articledetail,'clubId',{
+							id:id,
+							isworkcenter:2
+						});       
+						mui.openWindow({
+							id:'articledetail',
+							show:{
+								duration:250
+							}
+						});
+					}, false);
+				}
+				gotodetail();
 			});
-			var app = new Vue({
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				Vm.getdata(0);
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						list:[
-							{
-								img:"../images/game1.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game2.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game3.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game1.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game2.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game3.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game1.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game2.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game3.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game1.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							},{
-								img:"../images/game2.jpg",
-								name:"比赛增进友谊 交流促进发展",
-								info:"通过比赛交流，增进彼此的了解和友谊，更给自己的生活添加新的篇章",
-								time:"2018-12-13"
-							}
-						]
+						url:imgurl,
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							offset:"",
+							keyword:""
+						},
+						datalist:[]
 					}
 				},
 				methods:{
-					video:function(){
-						this.curtab=1;
-					},
-					state:function(){
-						this.curtab=2;
+					getdata:function(type){
+						var self=this;
+						if(type==0){
+							self.query.offset=1;
+							mui.showLoading();
+						}
+							console.log(JSON.stringify(this.query));
+						yyajax('index/index/matchdetails',this.query,function(res){
+							console.log(JSON.stringify(res));
+							if(res.code==200){
+								if(type==1){
+									self.datalist=res.msg;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									if(res.msg.length!=0){
+										var newdata=res.msg;
+										var curdata=self.datalist;
+										self.datalist=curdata.concat(newdata);
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+										},1000);
+									}else{
+										self.query.offset-=1;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+										},1000);
+									}
+								}else{
+									self.datalist=res.msg;
+									mui.hideLoading();
+									if(res.msg.length==0){
+										mui.toast("没有找到相关数据");
+									}
+								}
+							}else{
+								mui.toast(res.msg);
+								if(type==1){
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									self.query.offset-=1;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+									},1000);
+								}else{
+									mui.hideLoading();
+								}
+							}
+						})
 					}
 				}
 			});

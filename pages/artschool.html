@@ -10,58 +10,65 @@
 	</head>
 	<body>
 		<div id="app" v-cloak>
+		<form action="">
 			<header class="mui-bar mui-bar-nav common-header">
 				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 				<div class="mui-input-row common-input" id="inputc">
-					<input type="text" class="mui-input-clear" placeholder="请输入关键字搜索">
+					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
 					<span class="mui-icon mui-icon-search common-search-icon"></span>
 				</div>
-				<span class="address-wrap" @click="selcity">湖北省<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></span>
+				<span class="address-wrap" @click="selcity"><span class="address-name mui-ellipsis">{{curtwo}}</span><span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></span>
 				<div id="alladdress" v-show="iscity">
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name,index)">{{item.name}}</li>
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curone==item.name}" @click="selstepone(item.name)">{{item.name}}</li>
+								<li :class="{selone:curtwo=='不限'}" @click="selsteptwo('不限','')">不限</li>
+								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selsteptwo(item.text,item.value)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 			</header>
+		</form>
 			<div class="shade-bg" v-if="iscity" @click="iscity=false;"></div>
 			<div class="scroll-parent">
 				<div id="commonListWrap" :class="{'school-list':iscard,'school-list-line':!iscard}">
-					<ul v-if="iscard">
-						<li id="toartdetail" v-for="(item,index) in datalist" :key="index">
-							<img :src="item.img"/>
-							<h4><img :src="item.head"/><div class="mui-ellipsis">{{item.name}}啊啊啊啊啊啊</div></h4>
-							<p>{{item.address}}</p>
-						</li>
-					</ul>
-					<ul v-if="!iscard">
-						<li id="toartdetail" v-for="(item,index) in datalist" :key="index">
-							<img :src="item.img"/>
-							<div class="line-right">
-								<h4><img :src="item.head"/></h4>
-								<div><div class="mui-ellipsis">{{item.name}}</div><div>{{item.address}}</div></div>
-							</div>
-						</li>
-					</ul>
+					<div>
+						<ul v-if="iscard">
+							<li class="toartdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
+								<img :src="url+item.image"/>
+								<h4><img :src="url+item.xiaoimage"/><div class="mui-ellipsis">{{item.name}}</div></h4>
+								<p>{{item.location_id | parseaddress}}</p>
+							</li>
+						</ul>
+						<ul v-if="!iscard">
+							<li class="toartdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
+								<img :src="url+item.image"/>
+								<div class="line-right">
+									<h4><img :src="url+item.xiaoimage"/></h4>
+									<div><div class="mui-ellipsis">{{item.name}}</div><div>{{item.location_id | parseaddress}}</div></div>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
 			<div class="toggle-list"><span class="iconfont" :class="{'icon-card':!iscard,'icon-list':iscard}" @click="iscard=!iscard"></span></div>
 		</div>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
-		<script src="../js/city.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
+			var getplace=app.getPlace();
+			var getalladdress=app.getalladdress();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
@@ -71,6 +78,12 @@
 				var scroll = mui(".mui-scroll-wrapper").scroll();
 			});
 			mui.plusReady(function(){
+				mui(".mui-input-clear")[0].addEventListener('focus', function(){
+					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+						Vm.query.keyword="";
+						Vm.getdata(0);
+					});
+				});
 				mui.preload({
 						id: 'artschooldetail',
 						url: 'artschooldetail.html'
@@ -84,9 +97,8 @@
 						callback : function() {
 							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
 							// 加载更多的内容
-							setTimeout(function () {
-								mui('#commonListWrap').pullRefresh().endPulldownToRefresh(); //refresh completed
-							}, 1500);
+							Vm.query.offset=1;
+							Vm.getdata(1);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					},
 					up : {
@@ -105,15 +117,17 @@
 					// 如果没有更多数据了，则关闭上拉加载
 					//pullRefresh.endPullupToRefresh(true);
 					// 如果有更多数据，则继续
-					setTimeout(function () {
-						mui('#commonListWrap').pullRefresh().endPullupToRefresh(); //refresh completed
-					}, 1500);
+					Vm.query.offset+=1;
+					Vm.getdata(2);
 					//pullRefresh.endPullupToRefresh(false);
 				};
+				searchinit("search",function(val){
+					Vm.query.keyword=val;
+					Vm.getdata(0);
+				});
 				/* 点击事件 */
-				var toartDetail = document.getElementById('toartdetail');
-				toartDetail.addEventListener('tap', function(event) {
-					var id = this.getAttribute('id');
+				mui("#app").on('tap','.toartdetail',function(){
+					var id = this.dataset.id;
 					if(!artschooldetail){
 						artschooldetail = plus.webview.getWebviewById('artschooldetail');
 					}
@@ -123,88 +137,109 @@
 					mui.openWindow({
 						id:'artschooldetail'
 					});
-				}, false);
+				});
 			});
-			var app = new Vue({
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				Vm.getdata(0);
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						cityone:city,
-						citytwo:city[0]['sub'],
-						curone:"北京",
+						url:imgurl,
+						cityone:getplace,
+						citytwo:getplace[0]['children'],
+						curone:getplace[0]['text'],
+						curtwo:"不限",
 						iscity:false,
 						iscard:true,
-						datalist:[
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							},
-							{
-								head:"../images/user-head.png",
-								img:"../images/art-img.png",
-								name:"小天鹅舞蹈学院",
-								address:"武汉"
-							}
-						]
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							offset:1,
+							keyword:"",
+							location_id:"",
+						},
+						datalist:[]
 					}
 				},
+				filters:{
+					parseaddress(val){
+						var address=getalladdress.filter(function (x) {
+						    return x['id']==val;
+						});
+						return address[0].name;
+					}
+				},
+				mounted(){
+					this.getdata(0);
+				},
 				methods:{
+					getdata:function(type){
+						var self=this;
+						if(type==0){
+							self.query.offset=1;
+							mui.showLoading();
+						}
+						console.log(JSON.stringify(this.query));
+						yyajax('index/index/academy',this.query,function(res){
+							if(res.code==200){
+								if(type==1){
+									self.datalist=res.msg;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									if(res.msg.length!=0){
+										var newdata=res.msg;
+										var curdata=self.datalist;
+										self.datalist=curdata.concat(newdata);
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+										},1000);
+									}else{
+										self.query.offset-=1;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+										},1000);
+									}
+								}else{
+									self.datalist=res.msg;
+									mui.hideLoading();
+									if(res.msg.length==0){
+										mui.toast("没有找到相关数据");
+									}
+								}
+							}else{
+								mui.toast(res.msg);
+								if(type==1){
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+									},1000);
+								}else if(type==2){
+									self.query.offset-=1;
+									setTimeout(function () {
+										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+									},1000);
+								}else{
+									mui.hideLoading();
+								}
+							}
+						})
+					},
 					selcity:function(){
 						this.iscity=!this.iscity;
 					},
 					selstepone:function(val,index){
 						this.curone=val;
-						this.citytwo=city[index]['sub'];
+						this.citytwo=getplace[index]['children'];
+					},
+					selsteptwo:function(value,index){
+						this.curtwo=value;
+						this.query.location_id=index;
+						this.getdata(0);
 					},
 					toartdetail:function(){
 						console.log("aaa");

@@ -42,75 +42,79 @@
 				</div>
 			</div>
 			<div class="main-wrap">
-				<div class="list-title">
-					<h4>舞服</h4>
-					<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
-				</div>
-				<div class="dance-cloth">
-					<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
-						<div class="mui-scroll">
-							<ul>
-								<li>
-									<div>
-										<img src="../images/cloth1.jpg"/>
-										<span>¥218</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/cloth2.jpg"/>
-										<span>¥218</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/cloth3.jpg"/>
-										<span>¥218</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/cloth4.jpg"/>
-										<span>¥218</span>
-									</div>
-								</li>
-							</ul>
+				<div v-for="(value,key) in datalist" :key="key">
+					<div class="list-title">
+						<h4>{{value.name}}</h4>
+						<span :data-url="value.url">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+					</div>
+					<div class="dance-cloth">
+						<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+							<div class="mui-scroll">
+								<ul>
+									<li v-for="(it,in) in value.list" :key="in" :data-url="it.url">
+										<div>
+											<img :src="url+it.image"/>
+											<span>¥{{it.price}}</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/cloth2.jpg"/>
+											<span>¥218</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/cloth3.jpg"/>
+											<span>¥218</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/cloth4.jpg"/>
+											<span>¥218</span>
+										</div>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="list-title">
-					<h4>舞鞋</h4>
-					<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
-				</div>
-				<div class="dance-cloth">
-					<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
-						<div class="mui-scroll">
-							<ul>
-								<li>
-									<div>
-										<img src="../images/shoes1.png"/>
-										<span>¥218</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/shoes2.png"/>
-										<span>¥118</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/shoes3.png"/>
-										<span>¥166</span>
-									</div>
-								</li>
-								<li>
-									<div>
-										<img src="../images/shoes1.png"/>
-										<span>¥299</span>
-									</div>
-								</li>
-							</ul>
+				<div>
+					<div class="list-title">
+						<h4>舞鞋</h4>
+						<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
+					</div>
+					<div class="dance-cloth">
+						<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+							<div class="mui-scroll">
+								<ul>
+									<li>
+										<div>
+											<img src="../images/shoes1.png"/>
+											<span>¥218</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/shoes2.png"/>
+											<span>¥118</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/shoes3.png"/>
+											<span>¥166</span>
+										</div>
+									</li>
+									<li>
+										<div>
+											<img src="../images/shoes1.png"/>
+											<span>¥299</span>
+										</div>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -240,15 +244,31 @@
 					});
 				}, false);
 			});
-			var app = new Vue({
+			window.addEventListener('scroll2top',function(event){
+				//获得事件参数
+				Vm.getdata();
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						
+						url:imgurl,
+						datalist:[],
 					}
 				},
+				mounted(){
+					this.getdata();
+				},
 				methods:{
-					
+					getdata(){
+						var self=this;
+						yyajax('index/index/advert',{},function(res){
+							console.log(JSON.stringify(res));
+							if(res.code==200){
+								self.datalist=res.msg;
+							}
+						})
+					}
 				}
 			});
 		</script>

@@ -58,7 +58,7 @@
 						<div id="commonListWrap">
 							<div>
 							<ul class="mui-table-view" id="clublist">
-								<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index">
+								<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
 									<a href="javascript:;">
 										<img class="mui-media-object mui-pull-left" :src="url+item.image">
 										<div class="mui-media-body">
@@ -150,7 +150,7 @@
 						url: 'clubdetail.html'
 				});
 				mui("#clublist").on("tap",".club-detail",function(){
-					var id = this.getAttribute('id');
+					var id = this.dataset.id;
 					if(!clubdetail){
 						clubdetail = plus.webview.getWebviewById('clubdetail');
 					}

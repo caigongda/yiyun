@@ -23,8 +23,11 @@
 	color: #000000;
 	font-weight: normal;
 }
+.art-detail-header>div>h4>span{
+	width: 100%;text-align: right;font-size: 0.23rem;margin-left: 10px;
+}
 .art-detail-header>div>p{
-	font-size: 0.2rem;
+	font-size: 0.25rem;
 	line-height: 2;
 	color: #4A4A4A;
 }

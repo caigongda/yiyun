@@ -58,7 +58,7 @@
 										{{item.content}}
 									</p>
 									<div class="state-img-wrap">
-										<img v-for="value in item.images.split(',')" :src="url+value" />
+										<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 									</div>
 								</a>
 							</li>

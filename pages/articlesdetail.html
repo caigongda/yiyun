@@ -12,39 +12,25 @@
 		<div id="app">
 			<header class="mui-bar mui-bar-nav common-header">
 				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-				<h1 class="mui-title">{{detail.title}}</h1>
+				<h1 class="mui-title">文章详情</h1>
 			</header>
 			<div class="article-header">
-				<h4>从跳舞行业三年，现在打算找一份跳跳舞行业三年，现在打算找一份跳跳舞行业三年，现在打算找一份跳{{detail.message}}</h4>
+				<h4>{{detail.title}}</h4>
 				<div class="article-user-info">
-					<img src="../images/user-head.png"/>
+					<img :src="url+detail.image"/>
 					<div>
-						<p>艺芸用户姓名</p>
-						<p>2018-12-05</p>
+						<p>{{detail.publisher}}</p>
+						<p>{{detail.newtime.substring(0,10)}}</p>
 					</div>
 				</div>
-				<div class="article-content">
-					多元探索 从量变到质变
-      如果说从0到1，是改革者的锐意破冰，那么，从1到100，则是坚守者的传承与创新。
-      当新世纪的钟声在第二个千年敲响，中国孵化器发展步入新纪元。2000年初，东湖孵化器从事业单位改制为股份制公司，提出产权式孵化器概念，通过投资主体的多元化来实现孵化器建设的商业化运作。
-      “这意味着，我们不再完全依靠政府投入，而是以和社会机构、投资者共享孵化器物业产权的形式共同对孵化器投资建设。”龚伟笑说，“现在回想起来还真有点众筹的意思”，满足了中小科技企业的创业服务需求，也使投资者共享创新企业与孵化器成长带来的收益。
-      同样在2000年，北京航空航天大学独资成立“北京北航天汇科技孵化器有限公司”，这是全国首家以“孵化器”作为企业名称的科技企业孵化器，中国创业孵化机构不仅实现了名称上的国际接轨，也逐步建立了健全的、符合现代企业要求的管理体制和运行机制。
-      “大学办孵化器更注重将学校的优势成果转化，希望能为企业融资服务。”北航科技园总经理李军依然记得，2008年，5名在校研究生创办的互联网企业，北航投了救急的二十万元，并手把手帮学生们搭建团队、做好内控管理，一年后，创业者们找到了发展方向。如今，这家名为智明星通的科技公司因出品的手机游戏广为人知，目前已在全球建有5家分公司，年营业额达2亿元。
-      从2000年—2013年，伴随着“科技企业孵化基地”“孵化器”等关键词出现在国务院文件中，我国孵化器的数量从164家增至1468家。
-      民营孵化器异军突起，国企孵化器大量涌现，大学科技园发挥独特作用，留学人员创业园进入成熟发展阶段……孵化器发展呈现多元化、专业化、网络化、国际化和市场化的特征，对科技企业和创业者提供包括从创意、研究、开发、生产、销售以至企业咨询上市全过程所需的服务，孵化质量和孵化绩效显著提高。
-      双创时代 激活新动能
-      2014年，在上海张江孵化器打拼4380天后，作为创始人之一的黄海燕决定重新创业，在北京成立太库科技创业发展有限公司。因为，她看到了改善创新土壤新的时代使命。
-      “创立之初，我们遇到了3个问题：资源支持、全球整合、区域落地。对我和团队而言，太库每天都在见山开路，如今回身望去，我们走出了一条集合全球创新、推动产业发展的新路。”太库全球CEO黄海燕坦言，“中国孵化器成立30年中，孵化器人坚持不懈地在做一件事：孵化中国的创新精神和创新规则，构建孵化中国创新的底层土壤和核心可持续生态。”
-      近年来，创新创业的浪潮蓬勃兴起。“大众创业、万众创新”渐成时代主题，愈加炽烈的创新热情，愈加浓厚的创业氛围，不断完善的创新机制，无数有理想有能力的创新创业者依靠自己的双手实现社会价值和人生梦想。
-      伴随“双创”时代到来，中国的科技企业孵化器正迎来前所未有的发展机遇，创业需求空前高涨，以众创空间为代表的各类新型孵化器竞相涌现，迭代更新了孵化功能，与既有的孵化器一起形成了棋布全国省市区县，服务覆盖全创业生命周期，独具中国特色的科技创业孵化体系。
-      截至2016年底，全国纳入科技部火炬统计范围的众创空间有4298家，孵化器3255家，科技企业加速器400余家，国家高新区156家，共同构成接递有序的创业孵化生态。
-				</div>
+				<div class="article-content" v-html="detail.content"></div>
 			</div>
 		</div>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
@@ -58,33 +44,45 @@
 					//vm.resetData();//重置页面数据
 				},false);
 			});
-			var app = new Vue({
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				mui.showLoading();
+				var isworkcenter = event.detail.isworkcenter;
+				if(isworkcenter==1){
+					Vm.query.match_id="";
+					Vm.query.startcore_id=event.detail.id;
+				}else{
+					Vm.query.startcore_id="";
+					Vm.query.match_id=event.detail.id;
+				}
+				Vm.getdatainfo();
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						detail:{
-							title:"文章详情",
-							message:""
-						}
+						url:imgurl,
+						query:{
+								id:userinfo.id,
+								role:userinfo.role,
+								token:userinfo.token,
+						},
+						detail:{}
 					}
 				},
 				mounted(){
-					/* mui.showLoading("正在加载..","div");
-					setTimeout(function(){
-						mui.hideLoading();
-					},1000) */
-					var self=this;
-					window.addEventListener('clubId',function(event){
-						//获得事件参数
-						self.detail.message = event.detail.id;
-					});
 				},
 				methods:{
-					video:function(){
-						this.curtab=1;
-					},
-					state:function(){
-						this.curtab=2;
+					getdatainfo(){
+						var self=this;
+						yyajax('index/index/startcoredetails',this.query,function(res){
+							mui.hideLoading();
+							if(res.code==200){
+								self.detail=res.msg;
+							}else{
+								mui.toast(res.msg);
+							}
+						})
 					}
 				}
 			});

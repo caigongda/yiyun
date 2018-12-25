@@ -16,7 +16,6 @@
 .article-user-info img{
 	width: 1.2rem;
 	height: 1.2rem;
-	border-radius: 50%;
 }
 .article-user-info>div{
 	display: flex;
@@ -24,10 +23,10 @@
 	justify-content: center;
 	margin-left: 0.25rem;
 }
-.article-user-info>div>div{
+.article-user-info>div>p{
 	margin:0;
 }
-.article-user-info>div>div:first-child{
+.article-user-info>div>p:first-child{
 	font-size: 0.28rem;
 	color: #333;
 }
@@ -56,15 +55,4 @@
 .invite-btn button>span{
 	padding-left: 5px;
 	padding-top: 2px;
-}
-.tag-list-wrap{
-	width: 100%;
-	padding: 10px;
-	display: flex;
-	align-items: center;
-	margin-top: 10px;
-	border:1px solid #ddd;
-	border-left: 3px solid #6E4FC4;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
 }

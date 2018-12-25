@@ -22,7 +22,7 @@
 			<div class="common-condition-wrap">
 				<div class="condition-wrap">
 					<div class="selcity" @click="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
-					<div class="seldance" @click="seldance">{{curjob}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+					<div class="seldance" @click="seldance">{{curpos}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
 					<div class="morecond" @click="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
 				</div>
 				<div class="city-wrap" id="scroll-ul" v-show="iscity">
@@ -46,8 +46,8 @@
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li :class="{selone:curjob=='不限'}" @click="seljobone('不限','')">不限</li>
-								<li v-for="(item,index) in jobs" :key="index" :class="{selone:curjob==item}" @click="seljobone(item,index)">{{item}}</li>
+								<li :class="{selone:curpos=='不限'}" @click="selposone('不限','')">不限</li>
+								<li v-for="(item,index) in positions" :key="index" :class="{selone:curpos==item}" @click="selposone(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
@@ -63,6 +63,7 @@
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition=='1'">
 						<div class="mui-scroll">
 							<ul id="citydata2">
+								<li :class="{selone:consetup=='不限'}" @click="selconsetup('不限','')">不限</li>
 								<li v-for="(item,index) in setups" :key="index" :class="{selone:consetup==item}" @click="selconsetup(item,index)">{{item}}</li>
 							</ul>
 						</div>
@@ -70,39 +71,32 @@
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==2">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:conjob=='不限'}" @click="selconjob('不限','')">不限</li>
-								<li v-for="(value, key) in jobs" :key="key" :class="{selone:conjob==value}" @click="selconjob(value,key)">{{value}}</li>
+								<li :class="{selone:confare=='不限'}" @click="selconwelfare('不限','')">不限</li>
+								<li v-for="(value, key) in welfare" :key="key" :class="{selone:confare==value}" @click="selconwelfare(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
-					<div class="mui-scroll-wrapper" v-if="condition=='3'">
+					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition=='3'">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li v-for="(item,index) in conlikeplace" :key="index" :class="{selone:conlikeone==item.text}" @click="selconlplace(item.text,index)">{{item.text}}</li>
-							</ul>
-						</div>
-					</div>
-					<div class="mui-scroll-wrapper" v-if="condition=='3'">
-						<div class="mui-scroll">
-							<ul id="citydata2">
-								<li :class="{selone:conliketwo=='不限地区'}" @click="selconlplacetwo('不限地区','')">不限地区</li>
-								<li v-for="(item,index) in conlikeplacetwo" :key="index" :class="{selone:conliketwo==item.text}" @click="selconlplacetwo(item.text,item.value)">{{item.text}}</li>
+								<li :class="{selone:consubsidy=='不限'}" @click="selconsubsidys('不限','')">不限</li>
+								<li v-for="(item,index) in subsidys" :key="index" :class="{selone:consubsidy==item}" @click="selconsubsidys(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==4">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:conmajor=='不限'}" @click="selconmajor('不限','')">不限</li>
-								<li v-for="(value, key) in majors" :key="key" :class="{selone:conmajor==value}" @click="selconmajor(value,key)">{{value}}</li>
+								<li :class="{selone:consalary=='不限'}" @click="selconsalarys('不限','')">不限</li>
+								<li v-for="(value, key) in salarys" :key="key" :class="{selone:consalary==value}" @click="selconsalarys(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==5">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:conexp=='不限'}" @click="selconexp('不限','')">不限</li>
-								<li v-for="(value, key) in exps" :key="key" :class="{selone:conexp==value}" @click="selconexp(value,key)">{{value}}</li>
+								<li :class="{selone:conscale=='不限'}" @click="selconscales('不限','')">不限</li>
+								<li v-for="(value, key) in scales" :key="key" :class="{selone:conscale==value}" @click="selconscales(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
@@ -111,25 +105,31 @@
 			<div class="shade-bg" v-if="iscity||isdance||morecond" @click="closeall"></div>
 			<div class="scroll-parent">
 				<div id="commonListWrap">
+				<div>
 					<ul class="mui-table-view">
-						<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index">
+						<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
 							<a href="javascript:;">
 								<div class="state-top">
 									<img :src="url+item.avatarimage" id="club-index">
 									<div class="state-auth-info">
 										<p>{{item.clubname}}</p>
-										<span class="mui-badge mui-badge-success">{{item.setup}}</span>
+										<div style="display: flex;">
+											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
+												{{siteinfo.setup[val]}}
+											</span>
+										</div>
 									</div>
 								</div>
-								<p class="mui-ellipsis-2 state-con-info">
+								<div class="mui-ellipsis-2 state-con-info">
 									{{item.content}}
-								</p>
+								</div>
 								<div class="state-img-wrap">
-									<img v-for="value in item.images" :src="url+value" />
+									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 								</div>
 							</a>
 						</li>
 					</ul>
+				</div>
 				</div>
 			</div>
 		</div>
@@ -141,6 +141,7 @@
 			var siteinfo=app.getInfo();
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
+			var clubstatedetail = null;
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
@@ -152,6 +153,16 @@
 				plus.webview.currentWebview().hide("auto", 300);
 			}
 			mui.plusReady(function(){
+				mui.preload({
+					id: 'clubstatedetail',
+					url: 'clubstatedetail.html'
+				});
+				mui(".mui-input-clear")[0].addEventListener('focus', function(){
+					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+						Vm.query.keyword="";
+						Vm.getclubdata(0);
+					});
+				});
 				var self = plus.webview.currentWebview();
 				self.addEventListener("hide",function (e) {
 					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
@@ -194,6 +205,25 @@
 					Vm.query.keyword=val;
 					Vm.getclubdata(0);
 				});
+				mui("#app").on("tap",".clubdetail",function(){//俱乐部状态详情
+					var id = this.dataset.id;
+					if(!clubstatedetail){
+						clubstatedetail = plus.webview.getWebviewById('clubstatedetail');
+					}
+					mui.fire(clubstatedetail,'clubId',{
+						id:id
+					});       
+					mui.openWindow({
+						id:'clubstatedetail',
+						show:{
+							duration:250
+						}
+					});
+				});
+			});
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				Vm.getclubdata(0);
 			});
 			var Vm = new Vue({
 				el: '#app',
@@ -202,16 +232,18 @@
 						url:imgurl,
 						cityone:getplace,
 						citytwo:getplace[0]['children'],
-						jobs:siteinfo.jobcategory,//职位类别
-						iscity:false,
-						isdance:false,
-						morecond:false,
-						curone:getplace[0]['text'],
-						curtwo:"所在城市",
-						curjob:'职位类别',
-						setups:siteinfo.setup,
-						consetup:siteinfo.setup,
-						condition:1,
+						positions:siteinfo.position,//职位类别
+						curpos:"职位类别",
+						setups:siteinfo.setup,//所设专业
+						consetup:"不限",
+						welfare:siteinfo.welfare,//福利
+						confare:"不限",
+						subsidys:siteinfo.subsidy,//课时费
+						consubsidy:"不限",
+						salarys:siteinfo.salary,//月薪待遇
+						consalary:"不限",
+						scales:siteinfo.scale,
+						conscale:"不限",
 						moreconds:[
 							{
 								value:"1",
@@ -230,6 +262,13 @@
 								text:"机构规模（m2）",
 							}
 						],
+						condition:1,
+						conone:"所设专业",
+						iscity:false,
+						isdance:false,
+						morecond:false,
+						curone:getplace[0]['text'],
+						curtwo:"所在城市",
 						query:{
 							id:userinfo.id,
 							role:userinfo.role,
@@ -248,7 +287,7 @@
 					}
 				},
 				mounted(){
-					this.getclubdata(0);
+					//this.getclubdata(0);
 				},
 				methods:{
 					getclubdata:function(type){
@@ -258,7 +297,6 @@
 							mui.showLoading();
 						}
 						yyajax('index/index/clubdynamic',this.query,function(res){
-							console.log(JSON.stringify(res));
 							if(res.code==200){
 								if(type==1){
 									self.datalist=res.msg;
@@ -323,12 +361,6 @@
 						this.iscity=false;
 						this.getclubdata(0);
 					},
-					seljobone:function(val,index){//职位类别
-						this.curjob=val;
-						this.query.position=index;
-						this.isdance=false;
-						this.getclubdata(0);
-					},
 					selmorecond:function(){//更多筛选
 						this.morecond=!this.morecond;
 						this.iscity=false;
@@ -338,14 +370,41 @@
 						this.conone=val;
 						this.condition=sindex;
 					},
-					closeall:function(){
+					selposone:function(val,index){//职位类别
+						this.curpos=val;
+						this.query.position=index;
+						this.isdance=false;
+						this.getclubdata(0);
+					},
+					selconsetup:function(val,index){//选择所设专业
+						this.consetup=val;
+						this.query.setup=index;
+						this.getclubdata(0);
+					},
+					selconwelfare:function(val,index){//福利
+						this.confare=val;
+						this.query.welfare=index;
+						this.getclubdata(0);
+					},
+					selconsubsidys:function(val,index){//课时费
+						this.consubsidy=val;
+						this.query.subsidy=index;
+						this.getclubdata(0);
+					},
+					selconsalarys:function(val,index){//课时费
+						this.consalary=val;
+						this.query.salary=index;
+						this.getclubdata(0);
+					},
+					selconscales:function(val,index){//课时费
+						this.conscale=val;
+						this.query.scale=index;
+						this.getclubdata(0);
+					},
+					closeall:function(){//关闭所有
 						this.iscity=false;
 						this.isdance=false;
 						this.morecond=false;
-					},
-					selconsetup:function(val,index){//选择所设专业
-						this.conscone=val;
-						this.conschoolstwo=getplace[index]['children'];
 					},
 					selconjob:function(val,index){//更多筛选-职位类别
 						this.conjob=val;

@@ -17,21 +17,18 @@
 			</header>
 			<div class="art-detail">
 				<div class="art-detail-header">
-					<img src="../images/user-head.png"/>
+					<img :src="url+clubinfo.xiaoimage"/>
 					<div>
-						<h4>小天鹅舞蹈学院</h4>
-						<p>官网网址：http:www.xiaotiane.com</p>
+						<h4>{{clubinfo.name}}<span>{{clubinfo.location_id | parseaddress}}</span></h4>
+						<p>官网网址：{{clubinfo.url}}</p>
 					</div>
 				</div>
 			</div>
 			<div class="list-title art-detail-title">
 				<h4>招生信息</h4>
 			</div>
-			<div class="art-detail-img ripple">
-				<img src="../images/classbanner.jpeg" data-preview-src="" data-preview-group="1"/>
-			</div>
-			<div class="art-detail-img ripple">
-				<img src="../images/classbanner.jpeg" data-preview-src="" data-preview-group="1"/>
+			<div class="art-detail-img ripple" v-for="value in clubinfo.image.split(',')">
+				<img :src="url+value" data-preview-src="" data-preview-group="1"/>
 			</div>
 		</div>
 		<script src="../js/mui.min.js"></script>
@@ -40,30 +37,69 @@
 		<script src="../js/mui.previewimage.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
+			var getalladdress=app.getalladdress();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
 			mui.previewImage({issave:true});
-			var app = new Vue({
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				mui.showLoading();
+				var id=event.detail.id;
+				Vm.query.academy_id=id;
+				Vm.getdata();
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						message: '1'
+						url:imgurl,
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							academy_id:"",
+						},
+						clubinfo:{
+							name:"",
+							image:"",
+							xiaoimage:"",
+							url:"",
+							location_id:"",
+						}
+					}
+				},
+				filters:{
+					parseaddress(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
 					}
 				},
 				mounted(){
-					var self=this;
-					window.addEventListener('clubId',function(event){
-						//获得事件参数
-						self.message = event.detail.id;
-					});
+					
 				},
 				methods:{
-					video:function(){
-						this.curtab=1;
+					getdata:function(){
+						var self=this;
+						yyajax('index/index/academydetails',this.query,function(res){
+							console.log(JSON.stringify(res));
+							mui.hideLoading();
+							if(res.code==200){
+								self.clubinfo=res.msg;
+							}
+						})
 					},
-					state:function(){
-						this.curtab=2;
+					resetdata:function(){
+						for(var i in this.clubinfo){
+							this.clubinfo[i]="";
+						}
 					}
 				}
 			});

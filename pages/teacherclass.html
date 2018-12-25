@@ -128,20 +128,24 @@
 			<div id="commonListWrap">
 				<div>
 					<ul class="mui-table-view">
-						<li class="mui-table-view-cell mui-media teacherdetail" v-for="(item,index) in datalist" :key="index">
+						<li class="mui-table-view-cell mui-media teacherdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
 							<a href="javascript:;">
 								<div class="state-top">
 									<img :src="url+item.avatarimage" id="club-index">
 									<div class="state-auth-info">
 										<p>{{item.name}}</p>
-										<span class="mui-badge mui-badge-success">{{item.tag}}</span>
+										<div style="display: flex;">
+											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
+												{{siteinfo.major[val]}}
+											</span>
+										</div>
 									</div>
 								</div>
-								<p class="mui-ellipsis-2 state-con-info">
+								<div class="mui-ellipsis-2 state-con-info">
 									{{item.content}}
-								</p>
+								</div>
 								<div class="state-img-wrap">
-									<img v-for="value in item.images.split(',')" :src="url+value" />
+									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 								</div>
 							</a>
 						</li>
@@ -152,13 +156,13 @@
 	</div>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
-		<script src="../js/city.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
 			var userinfo=app.getSettings();
 			var siteinfo=app.getInfo();
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
+			var teacherstatedetail=null;
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
@@ -166,15 +170,22 @@
 			//初始化区域滚动
 				var scroll = mui(".mui-scroll-wrapper").scroll();
 			});
-			mui.back = function() {
-				plus.webview.currentWebview().hide("auto", 300);
-			}
 			mui.plusReady(function(){
+				mui(".mui-input-clear")[0].addEventListener('focus', function(){
+					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+						teacherapp.query.keyword="";
+						teacherapp.getteacherdata(0);
+					});
+				});
 				var self = plus.webview.currentWebview();
 				self.addEventListener("hide",function (e) {
 					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
 					teacherapp.resetdata();
 				},false);
+				mui.preload({
+						id: 'teacherstatedetail',
+						url: 'teacherstatedetail.html'
+				});
 				mui("#commonListWrap").pullRefresh({
 					down : {
 						height:50,// 可选.默认50.触发上拉加载拖动距离
@@ -199,7 +210,7 @@
 							loadMore(this);
 						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 					}
-				})
+				});
 				function loadMore(pullRefresh) {
 					// 如果没有更多数据了，则关闭上拉加载
 					//pullRefresh.endPullupToRefresh(true);
@@ -212,11 +223,32 @@
 					teacherapp.query.keyword=val;
 					teacherapp.getteacherdata(0);
 				});
+				mui("#teacherapp").on("tap",".teacherdetail",function(){
+					var id = this.dataset.id;
+					if(!teacherstatedetail){
+						teacherstatedetail = plus.webview.getWebviewById('teacherstatedetail');
+					}
+					mui.fire(teacherstatedetail,'clubId',{
+						id:id,
+						isteacher:1,
+					});
+					mui.openWindow({
+						id:'teacherstatedetail',
+						show:{
+							duration:250
+						}
+					});
+				})
+			});
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				teacherapp.getteacherdata(0);
 			});
 			var teacherapp = new Vue({
 				el: '#teacherapp',
 				data(){
 					return{
+						siteinfo:siteinfo,
 						url:imgurl,
 						cityone:getplace,
 						citytwo:getplace[0]['children'],
@@ -281,7 +313,7 @@
 					}
 				},
 				mounted(){
-					this.getteacherdata(0);
+					//this.getteacherdata(0);
 				},
 				methods:{
 					getteacherdata:function(type){
@@ -291,7 +323,6 @@
 							mui.showLoading();
 						}
 						yyajax('index/index/teacherdynamic',this.query,function(res){
-							console.log(JSON.stringify(res));
 							if(res.code==200){
 								if(type==1){
 									self.datalist=res.msg;

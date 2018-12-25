@@ -15,24 +15,28 @@
 			<h1 class="mui-title">俱乐部动态</h1>
 		</header>
 		<div class="article-header">
-			<h4>{{clubdynamic.name}}</h4>
+			<h4>{{teacherdynamic.name}}</h4>
 			<div class="article-user-info">
-				<img :src="url+club.image"/>
+				<img :src="url+teacher.image"/>
 				<div>
-					<p>{{club.name}}</p>
-					<div>{{clubdynamic.createtime | parseTime}}</div>
+					<div style="display: flex;align-items: center;">
+						<div>{{teacher.name}}</div>
+					</div>
+					<div style="display: flex;align-items: center;">
+						<div>{{teacherdynamic.createtime | parseTime}}</div>
+					</div>
 				</div>
 				<!-- <div class="invite-btn">
 					<button><img src="../icon/invite.svg" /><span>邀请</span></button>
 				</div> -->
 			</div>
 			<div class="tag-list-wrap">
-				<span class="mui-badge mui-badge-purple" style="display: inline-block;margin-right: 5px;" v-for="val in clubdynamic.setup">
+				<span class="mui-badge mui-badge-purple" style="display: inline-block;margin-right: 5px;" v-for="val in teacherdynamic.major">
 					{{val}}
 				</span>
 			</div>
 			<div class="article-content">
-				{{clubdynamic.content}}
+				{{teacherdynamic.content}}
 			</div>
 		</div>
 	</div>
@@ -80,8 +84,8 @@
 							role:userinfo.role,
 							token:userinfo.token,
 						},
-						clubdynamic:{},
-						club:{}
+						teacherdynamic:{},
+						teacher:{},
 					}
 				},
 				filters:{
@@ -108,16 +112,16 @@
 						yyajax(this.deatailurl,this.query,function(res){
 							mui.hideLoading();
 							if(res.code==200){
-								self.clubdynamic=res.msg.clubdynamic;
-								self.club=res.msg.club;
+								self.teacherdynamic=res.msg.teacherdynamic;
+								self.teacher=res.msg.teacher;
 							}else{
 								mui.toast(res.msg);
 							}
 						})
 					},
 					resetdata:function(){
-						this.clubdynamic={};
-						this.club={};
+						this.teacherdynamic={};
+						this.teacher={};
 					}
 				}
 			});

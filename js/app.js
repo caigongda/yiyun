@@ -51,6 +51,7 @@
 	var cityplace=[];
 	 yyajax("index/index/area",{},function(res){
 		var place=res.msg;
+		app.setalladdress(place);
 		for(var i=0;i<place.length;i++){
 			if(place[i].pid=="0"){
 				cityplace.push({
@@ -127,6 +128,16 @@
 	 	}
 	 });
  }
+function parseTime(val){
+	var date = new Date(val * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+	var Y = date.getFullYear() + '-';
+	var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	var D = date.getDate() + ' ';
+	var h = date.getHours() + ':';
+	var m = date.getMinutes() + ':';
+	var s = date.getSeconds();
+	return Y+M+D+h+m+s;
+}
 (function($, owner) {
 	/**
 	 * 用户登录
@@ -203,7 +214,14 @@
 		localStorage.setItem('$users', JSON.stringify(users));//注册 */
 		return callback();
 	};
-
+	owner.getalladdress = function() {
+		var stateText = localStorage.getItem('$alladdress') || "{}";
+		return JSON.parse(stateText);
+	};
+	owner.setalladdress = function(state) {
+		var state = state || {};
+		localStorage.setItem('$alladdress', JSON.stringify(state));
+	};
 	/**
 	 * 获取当前状态
 	 **/
@@ -218,9 +236,6 @@
 	owner.setState = function(state) {
 		var state = state || {};
 		localStorage.setItem('$state', JSON.stringify(state));
-		//var settings = owner.getSettings();
-		//settings.gestures = '';
-		//owner.setSettings(settings);
 	};
 	/* 获取信息 */
 	owner.getInfo = function() {//网站信息

@@ -230,6 +230,10 @@ body {
 	margin: 0.16rem 0;
 	font-size: 0.22rem;
 }
+.state-con-info>div{
+	color: #333;
+	font-size: 0.22rem;
+}
 .state-img-wrap{
 	width: 100%;
 	display: flex;
@@ -241,7 +245,7 @@ body {
 	height: 100%;
 	border-radius: 2px;
 }
-.state-img-wrap img:not(:last-child){
+.state-img-wrap img:not(:nth-child(4)){
 	margin-right: calc(4%/3);
 }
 /* 视频列表样式 */
@@ -439,4 +443,12 @@ body {
 
 .mui-table-view-cell:after{
 	left: 0 !important;
+}
+/* 标签样式 */
+.tag-list-wrap span{
+		width: auto;
+		background: #6E4FC4;
+		align-self: baseline;
+		border-radius:0;
+		margin-top:0.1rem ;
 }

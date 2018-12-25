@@ -14,8 +14,9 @@
 	margin-top: 0.3rem;
 }
 .article-user-info img{
-	width: 0.8rem;
-	height: 0.8rem;
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 50%;
 }
 .article-user-info>div{
 	display: flex;
