@@ -14,7 +14,13 @@
 		timeout:10000,//超时时间设置为10秒；
 		headers:{'Content-Type':'application/json'},	              
 		success:function(data){
-			callback(data);
+			if(data.code==403){
+				mui.toast("您的账号已在另一台设备登录！");
+				localStorage.clear();
+				plus.runtime.restart();
+			}else{
+				callback(data);
+			}
 		},
 		error:function(xhr,type,errorThrown){
 			//异常处理；
@@ -44,6 +50,7 @@
  function getinfo(cb){
 	 var userinfo=app.getState();
 	 yyajax("index/user/siteinfo",{id:userinfo.id,role:userinfo.role,token:userinfo.token},function(res){
+		 console.log(JSON.stringify(res));
 		 app.setInfo(res.msg);
 		 cb();
 	 });
@@ -66,6 +73,7 @@
 	 var schoolplace=[];
 	 yyajax("index/index/teacheracademy",{},function(res){//获取学校
 	 	var school=res.msg;
+		app.setorschool(school);
 	 	for(var i=0;i<school.length;i++){
 	 		if(school[i].pid=="0"){
 	 			schoolplace.push({
@@ -104,7 +112,6 @@
  		data:formdata,
  		processData:false,
  		success:function(info){
-			console.log(JSON.stringify(info));
 			if(info.code==1){
 				var url=info.data.url;
 				cb(url);
@@ -137,6 +144,27 @@ function parseTime(val){
 	var m = date.getMinutes() + ':';
 	var s = date.getSeconds();
 	return Y+M+D+h+m+s;
+}
+function pubinvite(formdata,cb){//邀请
+	yyajax('index/index/invite',formdata,function(res){
+		if(res.code==200){
+			mui.toast(res.msg);
+			//$(".addinvite").addClass("");
+			cb(res.msg);
+		}else{
+			mui.toast(res.msg);
+		}
+	})
+}
+function pubcol(formdata,cb){
+	yyajax('index/index/collection',formdata,function(res){
+		if(res.code==200){
+			mui.toast(res.msg);
+			cb(res.msg);
+		}else{
+			mui.toast(res.msg);
+		}
+	});
 }
 (function($, owner) {
 	/**
@@ -278,9 +306,23 @@ function parseTime(val){
 	owner.setSchool = function(state) {
 		var state = state || {};
 		localStorage.setItem('$school', JSON.stringify(state));
-		//var settings = owner.getSettings();
-		//settings.gestures = '';
-		//owner.setSettings(settings);
+	};
+	/* 获取院校 */
+	owner.getSchool = function() {
+		var stateText = localStorage.getItem('$school') || "{}";
+		return JSON.parse(stateText);
+	};
+	/**
+	* 设置原始数据院校
+	**/
+	owner.setorschool = function(state) {
+		var state = state || {};
+		localStorage.setItem('$setorschool', JSON.stringify(state));
+	};
+	/* 获取原始数据院校 */
+	owner.getorschool = function(state) {
+		var stateText = localStorage.getItem('$setorschool') || "{}";
+		return JSON.parse(stateText);
 	};
 
 	var checkEmail = function(email) {

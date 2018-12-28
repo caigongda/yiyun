@@ -45,72 +45,16 @@
 				<div v-for="(value,key) in datalist" :key="key">
 					<div class="list-title">
 						<h4>{{value.name}}</h4>
-						<span :data-url="value.url">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+						<span class="jumpurl" :data-url="value.url">更多<span class="mui-icon mui-icon-arrowright"></span></span>
 					</div>
 					<div class="dance-cloth">
 						<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
 							<div class="mui-scroll">
 								<ul>
-									<li v-for="(it,in) in value.list" :key="in" :data-url="it.url">
+									<li v-for="(item,index) in value.list" :key="index" :data-url="item.url" class="jumpurl">
 										<div>
-											<img :src="url+it.image"/>
-											<span>¥{{it.price}}</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/cloth2.jpg"/>
-											<span>¥218</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/cloth3.jpg"/>
-											<span>¥218</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/cloth4.jpg"/>
-											<span>¥218</span>
-										</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div>
-					<div class="list-title">
-						<h4>舞鞋</h4>
-						<span>更多<span class="mui-icon mui-icon-arrowright"></span></span>
-					</div>
-					<div class="dance-cloth">
-						<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
-							<div class="mui-scroll">
-								<ul>
-									<li>
-										<div>
-											<img src="../images/shoes1.png"/>
-											<span>¥218</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/shoes2.png"/>
-											<span>¥118</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/shoes3.png"/>
-											<span>¥166</span>
-										</div>
-									</li>
-									<li>
-										<div>
-											<img src="../images/shoes1.png"/>
-											<span>¥299</span>
+											<img :src="url+item.image"/>
+											<span>¥{{item.price}}</span>
 										</div>
 									</li>
 								</ul>
@@ -126,16 +70,21 @@
 		<script>
 			var backButtonPress = 0;
 			mui.back = function(event) {
-				backButtonPress++;
-				if (backButtonPress > 1) {
-					plus.runtime.quit();
-				} else {
-					plus.nativeUI.toast('再按一次退出应用');
+				var cururl=plus.webview.currentWebview().getURL();
+				if(cururl.indexOf('allclass')>=0){
+					backButtonPress++;
+					if (backButtonPress > 1) {
+						plus.runtime.quit();
+					} else {
+						plus.nativeUI.toast('再按一次退出应用');
+					}
+					setTimeout(function() {
+						backButtonPress = 0;
+					}, 1000);
+					return false;
+				}else{
+					mui.back();
 				}
-				setTimeout(function() {
-					backButtonPress = 0;
-				}, 1000);
-				return false;
 			};
 			var teacherclass=null;
 			var clubclass=null;
@@ -243,6 +192,16 @@
 						}
 					});
 				}, false);
+				mui("#app").on('tap','.jumpurl',function(){
+					var url=this.dataset.url;
+					mui.openWindow({
+						url: 'newview.html',
+						id:'info',
+						extras:{
+							url:url
+						}
+					});
+				})
 			});
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
@@ -253,7 +212,7 @@
 				data(){
 					return{
 						url:imgurl,
-						datalist:[],
+						datalist:{},
 					}
 				},
 				mounted(){
@@ -263,9 +222,11 @@
 					getdata(){
 						var self=this;
 						yyajax('index/index/advert',{},function(res){
-							console.log(JSON.stringify(res));
 							if(res.code==200){
 								self.datalist=res.msg;
+								mui('.mui-scroll-wrapper').scroll({
+									deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+								});
 							}
 						})
 					}

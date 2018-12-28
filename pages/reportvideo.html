@@ -7,12 +7,17 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/report.css" rel="stylesheet" />
+		<style>
+			#uploadfile{
+				position: absolute;z-index:-10;width: 0;height: 0;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="report-page-header"><div class="page-cancel">取消</div><div class="page-fb">发表</div></div>
 		<div class="report-page">
 			<div class="report-content-wrap">
-				<textarea class="repot-content" autoHeight="true" placeholder="介绍一下视频吧..."></textarea>
+				<textarea class="repot-content" autoHeight="true" placeholder="给视频取个名字吧..." id="video-title"></textarea>
 			</div>
 			<div class="report-video-main">
 				<p>我的视频</p>
@@ -31,6 +36,7 @@
 				</div>
 			</div>
 		</div>
+		<input type="file" id="uploadfile" accept="image/*" multiple=""/>
 		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/app.js"></script>
@@ -41,6 +47,7 @@
 		<script type="text/javascript" src="../lib/plupload-2.1.2/js/plupload.full.min.js"></script>
 		<script type="text/javascript" src="../upload.js"></script>
 		<script>
+			var userinfo=app.getSettings();
 			/* //监听右滑事件，若侧滑菜单未显示，右滑要显示菜单；
 			window.addEventListener("swiperight", function(e) {
 				console.log(e.detail.angle)
@@ -49,16 +56,29 @@
 					console.log(e.detail.angle)
 				}
 			}); */
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			};
+			var videourl,videosize,videoformat,imagesrc;
 			window.addEventListener('url',function(event){
+				userinfo=app.getSettings();
 				//获得事件参数
 				var fileinfo=event.detail.fileinfo;
+				var otherinfo=JSON.parse(event.detail.file);
 				$(".video-wrap video").attr("src",uploadurl+fileinfo);
-				console.log(uploadurl+fileinfo);
+				videourl=uploadurl+fileinfo;
+				videosize=(+otherinfo.size)/1024/1024+"M";
+				videoformat=otherinfo.type;
 				if(mui.os.android){
 					$(".video-wrap video").css("transform","rotate(180deg)");
 				}
 			});
 			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					window.scrollTo(0, 0);//重置滚动条位置
+					location.reload();//重置页面数据
+				},false);
 				mui(".btn-wrap").on("tap",".report-video",function(){
 					/* var URL = '../video/movie.mp4';
 					video = new plus.video.VideoPlayer('video',{
@@ -66,10 +86,8 @@
 						autoplay:true
 					});
 					console.log(JSON.stringify(video)); */
-					console.log("aaa");
 					plus.gallery.pick(function(p) {
 						plus.io.resolveLocalFileSystemURL(p, function(entry) {
-							console.log(entry.toLocalURL());
 							$(".video-wrap video").attr("src",entry.toLocalURL());
 							if(mui.os.android){
 								$(".video-wrap video").css("transform","rotate(180deg)");
@@ -82,15 +100,64 @@
 						filter: "video",multiple:false,system:false
 					})
 				});
-				mui(".report-page-header").on("tap",".page-cancel",function(){
+				mui(".report-page-header").on("tap",".page-cancel",function(){//取消
 					$(".repot-content").val("");
 					$(".video-wrap video").attr("src","");
 					$(".post-img-wrap").hide();
 					$(".post-img-wrap img").attr("src","");
 					mui.back();
 				});
+				mui(".report-page-header").on("tap",".page-fb",function(){//发表
+					mui.showLoading();
+					var id=userinfo.id;
+					var role=userinfo.role;
+					var token=userinfo.token;
+					var name=$("#video-title").val();
+					var formdata={
+						id:id,
+						role:role,
+						token:token,
+						name:name,
+						image:imagesrc,
+						videourl:videourl,
+						videosize:videosize,
+						videoformat:videoformat,
+					};
+					if(name==""){
+						mui.hideLoading();
+						mui.toast("请输入视频名称！");
+						return false;
+					}
+					if(imagesrc==""){
+						mui.hideLoading();
+						mui.toast("请选择视频封面！");
+						return false;
+					}
+					yyajax('index/index/publishvideo',formdata,function(res){
+						mui.hideLoading();
+						if(res.code==200){
+							mui.back();
+							mui.toast(res.msg);
+						}else{
+							mui.toast(res.msg);
+						}
+					})
+				});
+				$("#uploadfile").live('change', function(){
+					mui.showLoading();
+					uploadhead("uploadfile",function(res){
+						$('#uploadfile').replaceWith('<input type="file" id="uploadfile" accept="image/*" multiple=""/>');
+						$(".post-img-wrap img").attr("src",myurl+res);
+						imagesrc=res;
+						$(".post-img").attr("title","更换封面");
+						$(".post-img-wrap").show();
+						mui.hideLoading();
+					},function(){mui.hideLoading();})
+				});
 				mui(".report-page").on("tap",".post-img",function(){
-					plus.gallery.pick(function(p) {
+					$(".repot-content").blur();
+					$("#uploadfile").click();
+					/* plus.gallery.pick(function(p) {
 						plus.io.resolveLocalFileSystemURL(p, function(entry) {
 							console.log(entry.toLocalURL());
 							$(".post-img-wrap img").attr("src",entry.toLocalURL());
@@ -101,7 +168,7 @@
 						});
 					}, function(a) {}, {
 						filter: "image",multiple:false,system:false
-					})
+					}) */
 				});
 				$(".post-img-wrap img").on("touchstart",function(e){
 					$(this).parent().hide();

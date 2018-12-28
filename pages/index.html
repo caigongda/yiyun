@@ -7,6 +7,15 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/index.css" rel="stylesheet" />
+		<link href="../css/previewimage.css" rel="stylesheet" />
+		<style>
+			#club-state-list .mui-active{
+				background: #fff !important;
+			}
+			#club-state-list li:after{
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 	<div id="app-index" v-cloak>
@@ -17,26 +26,27 @@
 			  </div>
 			</div>
 			<div class="main-wrap">
-			<div class="list-title">
-				<h4>精选俱乐部</h4>
-				<span id="club-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
-			</div>
-			<ul class="mui-table-view" id="clublist">
-				<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
-					<a href="javascript:;">
-						<img class="mui-media-object mui-pull-left" :src="url+item.image">
-						<div class="mui-media-body">
-							<span>{{item.name}}</span>
-							<p class='mui-ellipsis-2'>{{item.abstract}}</p>
-							<p class="zpinfo">{{item.setup.toString()}}</p>
-						</div>
-					</a>
-				</li>
-			</ul>
-			<div class="list-title">
-				<h4>俱乐部动态</h4>
-				<span id="clubdetail-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
-			</div>
+				<div class="list-title">
+					<h4>精选俱乐部</h4>
+					<span id="club-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+				</div>
+				<ul class="mui-table-view" id="clublist">
+					<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
+						<a href="javascript:;">
+							<img class="mui-media-object mui-pull-left" :src="url+item.image">
+							<div class="mui-media-body">
+								<span>{{item.name}}</span>
+								<p class='mui-ellipsis-2'>{{item.abstract}}</p>
+								<p class="zpinfo">{{item.setup.toString()}}</p>
+							</div>
+						</a>
+					</li>
+				</ul>
+			 </div>
+				<div class="list-title" style="width:calc(100% - 20px);margin:0 auto;margin-top:10px;">
+					<h4>俱乐部动态</h4>
+					<span id="clubdetail-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
+				</div>
 			<div id="club-state-list">
 				<div class="scroll-parent">
 					<div id="commonListWrap">
@@ -44,46 +54,66 @@
 							<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="item.id">
 								<a href="javascript:;">
 									<div class="state-top">
-										<img :src="url+item.avatarimage" id="club-index">
+										<img :src="url+item.avatarimage" class="club-index" :data-id="item.club_id" :data-role="2">
 										<div class="state-auth-info">
 											<p>{{item.clubname}}</p>
-											<div style="display: flex;">
+											<div style="display: flex;" v-if="!!item.setup">
 												<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
 													{{otherinfo.setup[val]}}
 												</span>
 											</div>
 										</div>
 									</div>
-									<p class="mui-ellipsis-2 state-con-info">
+									<p class="state-con-info" style="word-wrap:break-word;white-space:normal;" v-if="!!item.content">
 										{{item.content}}
 									</p>
-									<div class="state-img-wrap">
-										<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
+									<div class="state-img-wrap" v-if="!!item.images">
+										<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" data-preview-src="" data-preview-group="1"/>
 									</div>
+									<div class="action-wrap">
+										<div>
+											<div class="addinvite" :data-id="item.club_id">
+												<div class="noinvite"></div>
+												<div>邀请</div>
+											</div>
+										</div>
+										<div>
+											<div class="addcol" :data-id="item.id">
+												<div class="nocol"></div>
+												<div>收藏</div>
+											</div>
+										</div>
+									</div>
+									<div class="cross-line" style=""></div>
 								</a>
 							</li>
 						</ul>
 					</div>
 				</div>
 			</div>
-		</div>
 	</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/app.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
 				var clubdetail = null;
 				var clubmore = null;
 				var clubstatedetail = null;
 				var clubstatemore = null;
+				var personinfo=null;
 				var ws=null;
 				var list=null;
+				var userinfo=app.getSettings();
 				// 处理沉浸式状态栏
 				var topoffset=0;
 				var ms=(/Html5Plus\/.+\s\(.*(Immersed\/(\d+\.?\d*).*)\)/gi).exec(navigator.userAgent);
 				if(ms&&ms.length>=3){
 					topoffset=parseFloat(ms[2]);
 				}
+				mui.previewImage({issave:true});
 				mui.plusReady(function() {
 					ws=plus.webview.currentWebview();
 					if(plus.navigator.isImmersedStatusbar()){// 兼容沉浸式状态栏模式
@@ -149,6 +179,10 @@
 							id: 'clubstatemore',
 							url: 'clubstatemore.html'
 					});
+					mui.preload({
+						id: 'personinfo',
+						url: 'personinfo.html'
+				  });
 					var clubMore = document.getElementById('club-more');
 					var clubdetailMore = document.getElementById('clubdetail-more');
 					mui("#clublist").on("tap",".club-detail",function(){//精选俱乐部详情
@@ -181,7 +215,7 @@
 							}
 						});
 					}, false);
-					mui("#statelist").on("tap",".statedetail",function(){//俱乐部状态详情
+					/* mui("#statelist").on("tap",".statedetail",function(){//俱乐部动态详情
 						var id = this.dataset.id;
 						if(!clubstatedetail){
 							clubstatedetail = plus.webview.getWebviewById('clubstatedetail');
@@ -195,8 +229,25 @@
 								duration:250
 							}
 						});
+					}); */
+					mui("#statelist").on("tap",".club-index",function(){//个人主页
+						var id = this.dataset.id;
+						var role= this.dataset.role;
+						if(!personinfo){
+							personinfo = plus.webview.getWebviewById('personinfo');
+						}
+						mui.fire(personinfo,'scroll2top',{
+							user_id:id,
+							user_role:role,
+						});
+						mui.openWindow({
+							id:'personinfo',
+							show:{
+								duration:250
+							}
+						});
 					});
-					clubdetailMore.addEventListener('tap', function(event) {//俱乐部状态更多
+					clubdetailMore.addEventListener('tap', function(event) {//俱乐部动态更多
 						var id = this.getAttribute('id');
 						if(!clubstatemore){
 							clubstatemore = plus.webview.getWebviewById('clubstatemore');
@@ -211,6 +262,41 @@
 							}
 						});
 					}, false);
+					mui("#statelist").on("tap",".addinvite",function(){//邀请
+						var id = this.dataset.id;
+						var formdata={
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							beinvite_id:id,
+						};
+						yyajax('index/index/invite',formdata,function(res){
+							if(res.code==200){
+								mui.toast(res.msg);
+								//$(".addinvite").addClass("");
+							}else{
+								mui.toast(res.msg);
+							}
+						})
+					});
+					mui("#statelist").on("tap",".addcol",function(){//收藏
+						var id = this.dataset.id;
+						var formdata={
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							type:4,
+							pid:id,
+						};
+						yyajax('index/index/collection',formdata,function(res){
+							if(res.code==200){
+								mui.toast(res.msg);
+								
+							}else{
+								mui.toast(res.msg);
+							}
+						});
+					});
 				});
 				function getbannercache(){
 					var stateText = localStorage.getItem('$banner') || "[]";
@@ -228,8 +314,12 @@
 					//获得事件参数
 					//location.reload();
 					Vm.otherinfo=app.getInfo();
+					var userinfo=app.getSettings();
+					Vm.getbanner();
 					if(getclubstatecache().length==0){
-						Vm.getalldata();
+						if(JSON.stringify(userinfo)!='{}'){
+							Vm.getalldata();
+						}
 					}
 				});
 				var Vm = new Vue({

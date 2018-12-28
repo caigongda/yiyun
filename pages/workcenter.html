@@ -124,9 +124,13 @@
 			});
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
+				userinfo=app.getSettings();
+				Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
 				Vm.getdata(0);
 			});
-			var Vm = new Vue({ 
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
@@ -153,7 +157,6 @@
 							mui.showLoading();
 						}
 						yyajax('index/index/startcore',this.query,function(res){
-							console.log(JSON.stringify(res));
 							if(res.code==200){
 								if(type==1){
 									self.datalist=res.msg;

@@ -23,18 +23,20 @@
 				<div class="club-list" id="clublistparent">
 					<div class="scroll-parent">
 						<div id="commonListWrap">
-							<ul class="mui-table-view" id="clublist">
-								<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
-									<a href="javascript:;">
-										<img class="mui-media-object mui-pull-left" :src="url+item.image">
-										<div class="mui-media-body">
-											<span>{{item.title}}</span>
-											<p class='mui-ellipsis-2'>{{item.content}}</p>
-											<p class="zpinfo">{{item.newtime.substring(0,10)}}</p>
-										</div>
-									</a>
-								</li>
-							</ul>
+							<div>
+								<ul class="mui-table-view" id="clublist">
+									<li class="mui-table-view-cell mui-media club-detail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
+										<a href="javascript:;">
+											<img class="mui-media-object mui-pull-left" :src="url+item.image">
+											<div class="mui-media-body">
+												<span>{{item.title}}</span>
+												<p class='mui-ellipsis-2'>{{item.content}}</p>
+												<p class="zpinfo">{{item.newtime.substring(0,10)}}</p>
+											</div>
+										</a>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -119,6 +121,10 @@
 			});
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
+				userinfo=app.getSettings();
+				Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
 				Vm.getdata(0);
 			});
 			var Vm = new Vue({
@@ -143,9 +149,8 @@
 							self.query.offset=1;
 							mui.showLoading();
 						}
-							console.log(JSON.stringify(this.query));
-						yyajax('index/index/matchdetails',this.query,function(res){
-							console.log(JSON.stringify(res));
+						console.log(JSON.stringify(self.query));
+						yyajax('index/index/match',this.query,function(res){
 							if(res.code==200){
 								if(type==1){
 									self.datalist=res.msg;

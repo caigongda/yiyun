@@ -26,34 +26,48 @@
 			font-size: 0.3rem;
 			padding: 0;
 		}
+		#imgfile{
+			position: absolute;
+			z-index: -10;
+			width: 0;
+		}
 	</style>
 	<body>
 		<div class="report-page-header"><div class="page-cancel">取消</div><div class="page-fb">发表</div></div>
 		<div class="report-page">
 			<div class="form-item mui-input-row">
-				<label>毕业院校：</label>
-				<input type="text" class="mui-input-clear school" placeholder="请输入毕业院校"/>
-				<label>所教舞种：</label>
-				<input type="text" class="mui-input-clear dancetype" id="dance-picker" placeholder="请选择期望工作地" readonly="readonly"/>
+				<label>所在地：</label>
+				<input type="text" class="mui-input-clear" id="curplace-picker" placeholder="请选择所在地" readonly="readonly"/>
 			</div>
 			<div class="form-item mui-input-row">
-				<label>所在地：</label>
-				<input type="text" class="mui-input-clear curplace" placeholder="请输入毕业院校"/>
-				<label>期望工作地：</label>
-				<input type="text" class="mui-input-clear likeplace" placeholder="请选择期望工作地"/>
+				<label>开设专业：</label>
+				<input type="text" class="mui-input-clear" id="setup-picker" placeholder="请选择开设专业" readonly="readonly"/>
+				<label>职位类别：</label>
+				<input type="text" class="mui-input-clear" id="position-picker" placeholder="请选择职位类别" readonly="readonly"/>
+			</div>
+			<div class="form-item mui-input-row">
+				<label>福利：</label>
+				<input type="text" class="mui-input-clear" id="welfare-picker" placeholder="请选择福利" readonly="readonly"/>
+				<label>课时费(元)：</label>
+				<input type="text" class="mui-input-clear" id="subsidy-picker" placeholder="课时费" readonly="readonly"/>
+				<label>月薪待遇(元)：</label>
+				<input type="text" class="mui-input-clear" id="salary-picker" placeholder="月薪待遇" readonly="readonly"/>
+				<label>机构规模(m<sup>2</sup>)：</label>
+				<input type="text" class="mui-input-clear" id="scale-picker" placeholder="机构规模" readonly="readonly"/>
 			</div>
 			<div class="report-content-wrap">
-				<p>我的介绍</p>
-				<textarea class="repot-content introduce" autoHeight="true" placeholder="请输入我的介绍..."></textarea>
+				<p>职位详情</p>
+				<textarea class="repot-content introduce" autoHeight="true" placeholder="请输入职位详情..."></textarea>
 			</div>
 			<div class="report-userinfo">
-				<p>我的详情</p>
+				<p>图片介绍</p>
 				<div class="report-state-wrap">
 					<div class="state-img-main ripple img-sel">
 						<span class="mui-icon mui-icon-plusempty"></span>
 					</div>
 				</div>
 			</div>
+			<input type="file" id="imgfile" accept="image/*" multiple="" readonly="readonly"/>
 		</div>
 		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.min.js"></script>
@@ -68,6 +82,10 @@
 					console.log(e.detail.angle)
 				}
 			}); */
+			var userinfo=app.getSettings();
+			var siteinfo=app.getInfo();
+			var getschool=app.getSchool();
+			var getplace=app.getPlace();
 			function insertimg(url){
 				var _html="<div class='state-img-main ripple img-common'>"
 					_html+="<span class='mui-icon mui-icon-closeempty del-img'></span>"
@@ -90,61 +108,160 @@
 					});
 				}, false);
 			};
-			/* window.addEventListener('url',function(event){
+			mui(".report-state-wrap").on("tap",".del-img",function(){
+				var url=$(this).data("url");
+				var index=formdata.images.indexOf(url);
+				formdata.images.splice(index,1);
+				$(this).parent().remove();
+			});
+			$("#imgfile").live('change', function(){
+				mui.showLoading();
+				uploadhead("imgfile",function(res){
+					$('#imgfile').replaceWith('<input type="file" id="imgfile" accept="image/*" multiple="" readonly="readonly"/>');
+					insertimg(myurl+res);
+					formdata.images.push(res);
+					mui.hideLoading();
+				},function(){mui.hideLoading();})
+			});
+			function parsedata(data){
+				var curarr=[{
+						text:'不限',
+						value:'',
+					}];
+				for(var i in data){
+					curarr.push({
+						text:data[i],
+						value:i
+					})
+				}
+				return curarr;
+			}
+			window.addEventListener('url',function(event){
 				//获得事件参数
-				var url=event.detail.url;
-				insertimg(url);
-			}); */
-			mui.plusReady(function(){
-				var dance=["瑜伽","拉丁","芭蕾"]
-				pubpicker("dance-picker",1,dance,function(self,items){
-					console.log(self);
-					self.value=items;
-				});
-				mui(".report-state-wrap").on("tap",".del-img",function(){
-					$(this).parent().remove();
-				});
+				//var url=event.detail.url;
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				getschool=app.getSchool();
+				getplace=app.getPlace();
+				events();
+			}); 
+			var formdata={
+				location_id:"",
+				setup:"",
+				position:"",
+				welfare:"",
+				subsidy:"",
+				salary:"",
+				scale:"",
+				content:"",
+				images:[],
+			};
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			}
+			function events(){
+				mui.plusReady(function(){
+					var self = plus.webview.currentWebview();
+					self.addEventListener("hide",function (e) {
+						window.scrollTo(0, 0);//重置滚动条位置
+						location.reload();
+					},false);
+					pubpicker("curplace-picker",2,getplace,function(self,items){
+						document.getElementById("curplace-picker").value=items[0].text + " - " + items[1].text;
+						formdata.location_id=items[1].value;
+					});
+					var setuparr=parsedata(siteinfo.setup);
+					pubpicker("setup-picker",1,setuparr,function(self,items){
+						document.getElementById("setup-picker").value=items[0].text;
+						formdata.setup=items[0].value;
+					});
+					var positionarr=parsedata(siteinfo.position);
+					pubpicker("position-picker",1,positionarr,function(self,items){
+						document.getElementById("position-picker").value=items[0].text;
+						formdata.position=items[0].value;
+					});
+					var welfarearr=parsedata(siteinfo.welfare);
+					pubpicker("welfare-picker",1,welfarearr,function(self,items){
+						document.getElementById("welfare-picker").value=items[0].text;
+						formdata.welfare=items[0].value;
+					});
+					var subsidyarr=parsedata(siteinfo.subsidy);
+					pubpicker("subsidy-picker",1,subsidyarr,function(self,items){
+						document.getElementById("subsidy-picker").value=items[0].text;
+						formdata.subsidy=items[0].value;
+					});
+					var salaryarr=parsedata(siteinfo.salary);
+					pubpicker("salary-picker",1,salaryarr,function(self,items){
+						document.getElementById("salary-picker").value=items[0].text;
+						formdata.salary=items[0].value;
+					});
+					var scalearr=parsedata(siteinfo.scale);
+					pubpicker("scale-picker",1,scalearr,function(self,items){
+						document.getElementById("scale-picker").value=items[0].text;
+						formdata.scale=items[0].value;
+					});
+					mui(".report-state-wrap").on("tap",".del-img",function(){
+						console.log("aaa");
+						$(this).parent().remove();
+					});
+					mui(".report-page-header").on("tap",".page-cancel",function(){
+						resetdata(["curplace-picker","setup-picker","position-picker","welfare-picker","subsidy-picker","salary-picker","scale-picker"]);
+						mui.back();
+					});
+					mui(".report-page-header").on("tap",".page-fb",function(){//发布
+						formdata.content=$(".introduce").val();
+						if(formdata.location_id==''||
+							formdata.setup==''||
+							formdata.position==''||
+							formdata.welfare==''||
+							formdata.subsidy==''||
+							formdata.salary==''||
+							formdata.scale==''||
+							formdata.content==''||
+							formdata.images.length==0){
+							mui.toast("不能为空哦！");
+						}else{
+							formdata.id=userinfo.id;
+							formdata.role=2;
+							formdata.token=userinfo.token;
+							formdata.images=formdata.images.toString();
+							console.log(JSON.stringify(formdata));
+							yyajax("index/index/publishdynamic",formdata,function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									mui.toast("发布成功");
+									resetdata(["curplace-picker","setup-picker","position-picker","welfare-picker","subsidy-picker","salary-picker","scale-picker"]);
+									setTimeout(function(){
+										mui.back();
+									},1000);
+								}else{
+									mui.toast(res.msg);
+								}
+							})
+						}
+					});
 				mui(".report-state-wrap").on("tap",".img-sel",function(){
-					plus.gallery.pick(function(p) {
-						plus.io.resolveLocalFileSystemURL(p, function(entry) {
-							var _url=entry.toLocalURL();
-							insertimg(_url);
-						}, function(e) {
-							
-						});
-					}, function(a) {}, {
-						filter: "image",multiple:false,system:false
-					})
+					document.getElementById('imgfile').click();
 				});
-				mui(".report-page-header").on("tap",".page-cancel",function(){
-					$(".repot-content").val("");
+				function resetdata(data){
+					for(var i=0;i<data.length;i++){
+						$("#"+data[i]).val("");
+					};
+					formdata.location_id='';
+					formdata.setup='';
+					formdata.position='';
+					formdata.welfare='';
+					formdata.subsidy='';
+					formdata.salary='';
+					formdata.scale='';
+					formdata.content='';
+					formdata.images=[];
+					formdata.content="";
+					$(".introduce").val("");
 					$(".img-common").remove();
-					mui.back();
-				});
-				mui(".report-page-header").on("tap",".page-fb",function(){
-					var school=$(".school").val();
-					var dancetype=$(".dancetype").val();
-					var curplace=$(".curplace").val();
-					var likeplace=$(".likeplace").val();
-					if(school==""||dancetype==""||curplace==""||likeplace==""){
-						mui.toast("不能为空哦！");
-					}
-				});
-				mui(".report-page").on("tap",".post-img",function(){
-					plus.gallery.pick(function(p) {
-						plus.io.resolveLocalFileSystemURL(p, function(entry) {
-							console.log(entry.toLocalURL());
-							$(".post-img-wrap img").attr("src",entry.toLocalURL());
-							$(".post-img").attr("title","更换封面");
-							$(".post-img-wrap").show();
-						}, function(e) {
-							
-						});
-					}, function(a) {}, {
-						filter: "image",multiple:false,system:false
-					})
-				});
-			})
+				}
+			});
+			}
 		</script>
 	</body>
 

@@ -69,182 +69,74 @@
 			var userinfo=app.getSettings();
 			var getplace=app.getPlace();
 			var getalladdress=app.getalladdress();
+			var artschooldetail = null;
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
-			var artschooldetail = null;
-			mui.ready(function() {
-            //初始化区域滚动
-				var scroll = mui(".mui-scroll-wrapper").scroll();
-			});
-			mui.plusReady(function(){
-				mui(".mui-input-clear")[0].addEventListener('focus', function(){
-					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
-						Vm.query.keyword="";
+			function events(){
+				mui.ready(function() {
+				//初始化区域滚动
+					var scroll = mui(".mui-scroll-wrapper").scroll();
+				});
+				mui.back = function() {
+					plus.webview.currentWebview().hide("auto", 300);
+				};
+				mui.plusReady(function(){
+					mui(".mui-input-clear")[0].addEventListener('focus', function(){
+						mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+							Vm.query.keyword="";
+							Vm.getdata(0);
+						});
+					});
+					var self = plus.webview.currentWebview();
+					self.addEventListener("hide",function (e) {
+						location.reload();
+						mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
+					},false);
+					mui.preload({
+							id: 'artschooldetail',
+							url: 'artschooldetail.html'
+					});
+					mui("#commonListWrap").pullRefresh({
+						down : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								Vm.query.offset=1;
+								Vm.getdata(1);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					})
+					function loadMore(pullRefresh) {
+						// 如果没有更多数据了，则关闭上拉加载
+						//pullRefresh.endPullupToRefresh(true);
+						// 如果有更多数据，则继续
+						Vm.query.offset+=1;
+						Vm.getdata(2);
+						//pullRefresh.endPullupToRefresh(false);
+					};
+					searchinit("search",function(val){
+						Vm.query.keyword=val;
 						Vm.getdata(0);
 					});
-				});
-				mui.preload({
-						id: 'artschooldetail',
-						url: 'artschooldetail.html'
-				});
-				mui("#commonListWrap").pullRefresh({
-					down : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							Vm.query.offset=1;
-							Vm.getdata(1);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					},
-					up : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							loadMore(this);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					}
-				})
-				function loadMore(pullRefresh) {
-					// 如果没有更多数据了，则关闭上拉加载
-					//pullRefresh.endPullupToRefresh(true);
-					// 如果有更多数据，则继续
-					Vm.query.offset+=1;
-					Vm.getdata(2);
-					//pullRefresh.endPullupToRefresh(false);
-				};
-				searchinit("search",function(val){
-					Vm.query.keyword=val;
-					Vm.getdata(0);
-				});
-				/* 点击事件 */
-				mui("#app").on('tap','.toartdetail',function(){
-					var id = this.dataset.id;
-					if(!artschooldetail){
-						artschooldetail = plus.webview.getWebviewById('artschooldetail');
-					}
-					mui.fire(artschooldetail,'clubId',{
-						id:id
-					});
-					mui.openWindow({
-						id:'artschooldetail'
-					});
-				});
-			});
-			window.addEventListener('clubId',function(event){
-				//获得事件参数
-				Vm.getdata(0);
-			});
-			var Vm = new Vue({
-				el: '#app',
-				data(){
-					return{
-						url:imgurl,
-						cityone:getplace,
-						citytwo:getplace[0]['children'],
-						curone:getplace[0]['text'],
-						curtwo:"不限",
-						iscity:false,
-						iscard:true,
-						query:{
-							id:userinfo.id,
-							role:userinfo.role,
-							token:userinfo.token,
-							offset:1,
-							keyword:"",
-							location_id:"",
-						},
-						datalist:[]
-					}
-				},
-				filters:{
-					parseaddress(val){
-						var address=getalladdress.filter(function (x) {
-						    return x['id']==val;
-						});
-						return address[0].name;
-					}
-				},
-				mounted(){
-					this.getdata(0);
-				},
-				methods:{
-					getdata:function(type){
-						var self=this;
-						if(type==0){
-							self.query.offset=1;
-							mui.showLoading();
-						}
-						console.log(JSON.stringify(this.query));
-						yyajax('index/index/academy',this.query,function(res){
-							if(res.code==200){
-								if(type==1){
-									self.datalist=res.msg;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									if(res.msg.length!=0){
-										var newdata=res.msg;
-										var curdata=self.datalist;
-										self.datalist=curdata.concat(newdata);
-										setTimeout(function () {
-											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
-										},1000);
-									}else{
-										self.query.offset-=1;
-										setTimeout(function () {
-											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
-										},1000);
-									}
-								}else{
-									self.datalist=res.msg;
-									mui.hideLoading();
-									if(res.msg.length==0){
-										mui.toast("没有找到相关数据");
-									}
-								}
-							}else{
-								mui.toast(res.msg);
-								if(type==1){
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									self.query.offset-=1;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
-									},1000);
-								}else{
-									mui.hideLoading();
-								}
-							}
-						})
-					},
-					selcity:function(){
-						this.iscity=!this.iscity;
-					},
-					selstepone:function(val,index){
-						this.curone=val;
-						this.citytwo=getplace[index]['children'];
-					},
-					selsteptwo:function(value,index){
-						this.curtwo=value;
-						this.query.location_id=index;
-						this.getdata(0);
-					},
-					toartdetail:function(){
-						console.log("aaa");
-						var id="aaa";
-						//var id = this.getAttribute('id');
+					/* 点击事件 */
+					mui("#app").on('tap','.toartdetail',function(){
+						var id = this.dataset.id;
 						if(!artschooldetail){
 							artschooldetail = plus.webview.getWebviewById('artschooldetail');
 						}
@@ -254,8 +146,137 @@
 						mui.openWindow({
 							id:'artschooldetail'
 						});
+					});
+				});
+			}
+			var Vm;
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				userinfo=app.getSettings();
+				getplace=app.getPlace();
+				getalladdress=app.getalladdress();
+				/* Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
+				Vm.cityone=getplace;
+				Vm.citytwo=getplace[0]['children'];
+				Vm.curone=getplace[0]['text']; */
+				//Vm.getdata(0);
+				Vm = new Vue({
+					el: '#app',
+					data(){
+						return{
+							url:imgurl,
+							cityone:getplace,
+							citytwo:getplace[0]['children'],
+							curone:getplace[0]['text'],
+							curtwo:"不限",
+							iscity:false,
+							iscard:true,
+							query:{
+								id:userinfo.id,
+								role:userinfo.role,
+								token:userinfo.token,
+								offset:1,
+								keyword:"",
+								location_id:"",
+							},
+							datalist:[]
+						}
+					},
+					filters:{
+						parseaddress(val){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}
+					},
+					mounted(){
+						this.getdata(0);
+						events();
+					},
+					methods:{
+						getdata:function(type){
+							var self=this;
+							if(type==0){
+								self.query.offset=1;
+								mui.showLoading();
+							}
+							console.log(JSON.stringify(this.query));
+							yyajax('index/index/academy',this.query,function(res){
+								if(res.code==200){
+									if(type==1){
+										self.datalist=res.msg;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										if(res.msg.length!=0){
+											var newdata=res.msg;
+											var curdata=self.datalist;
+											self.datalist=curdata.concat(newdata);
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+											},1000);
+										}else{
+											self.query.offset-=1;
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+											},1000);
+										}
+									}else{
+										self.datalist=res.msg;
+										mui.hideLoading();
+										if(res.msg.length==0){
+											mui.toast("没有找到相关数据");
+										}
+									}
+								}else{
+									mui.toast(res.msg);
+									if(type==1){
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										self.query.offset-=1;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+										},1000);
+									}else{
+										mui.hideLoading();
+									}
+								}
+							})
+						},
+						selcity:function(){
+							this.iscity=!this.iscity;
+						},
+						selstepone:function(val,index){
+							this.curone=val;
+							this.citytwo=getplace[index]['children'];
+						},
+						selsteptwo:function(value,index){
+							this.curtwo=value;
+							this.query.location_id=index;
+							this.getdata(0);
+						},
+						toartdetail:function(){
+							console.log("aaa");
+							var id="aaa";
+							//var id = this.getAttribute('id');
+							if(!artschooldetail){
+								artschooldetail = plus.webview.getWebviewById('artschooldetail');
+							}
+							mui.fire(artschooldetail,'clubId',{
+								id:id
+							});
+							mui.openWindow({
+								id:'artschooldetail'
+							});
+						}
 					}
-				}
+				});
 			});
 		</script>
 	</body>

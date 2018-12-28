@@ -14,6 +14,7 @@
 				display: inline;
 				width: 40px;
 				height: 40px;
+				border-radius:50%;
 			}
 			.invitelist li{
 				display: flex;
@@ -55,6 +56,37 @@
 				width: 100%;
 				height: 100%;
 			}
+			
+			.col-tab{
+				width: 95%;
+				height: 34px;
+				margin: 0 auto;
+				margin-top: 55px;
+				border: 1px solid #6E4FC4;
+				display: flex;
+				align-items: center;
+				color: #6E4FC4;
+				border-radius: 5px;
+				font-size: 0.28rem;
+				background: transparent;
+			}
+			.col-tab>div{
+				flex: 0 0 50%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+			}
+			.tab-active{
+				background: #6E4FC4;
+				color: #fff;
+			}
+			.scroll-parent{
+				top: 90px;
+			}
+			#state-col{
+				padding-bottom: 50px;
+			}
 		</style>
 	</head>
 	<body>
@@ -63,41 +95,43 @@
 			<h1 class="mui-title">邀请</h1>
 		</header>
 		<div id="app">
-			<div class="scroll-parent">
+			<div class="col-tab">
+				<div :class="{'tab-active':isinvite}" @tap="isinvite=true">邀请</div>
+				<div :class="{'tab-active':!isinvite}" @tap="isinvite=false">被邀请</div>
+			</div>
+			<div class="scroll-parent" v-if="isinvite">
 				<div id="commonListWrap">
 					<ul class="mui-table-view invitelist">
-						<li class="mui-table-view-cell">
+						<li class="mui-table-view-cell" v-for="(item,index) in leftdata" :key="index" :data-id="item.user_id" :data-role="item.user_role">
 							<div>
-								<img src="../images/user-head.png"/>
-								<span>愤怒的小鸟</span>
+								<img :src="url+item.avatarimage"/>
+								<span>{{item.username}}</span>
 							</div>
 							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
-						</li>
-						<li class="mui-table-view-cell">
-							<div>
-								<img src="../images/user-head.png"/>
-								<span>愤怒的小鸟</span>
-							</div>
-						</li>
-						<li class="mui-table-view-cell">
-							<div>
-								<img src="../images/user-head.png"/>
-								<span>愤怒的小鸟</span>
-							</div>
 						</li>
 					</ul>
 				</div>
 			</div>
-			<ul class="mui-table-view invitelist">
-				<li class="mui-table-view-cell">
-					暂无数据
-				</li>
-			</ul>
+			<div class="scroll-parent" v-if="!isinvite">
+				<div id="commonListWrap">
+					<ul class="mui-table-view invitelist">
+						<li class="mui-table-view-cell" v-for="(item,index) in rightdata" :key="index"  :data-id="item.user_id" :data-role="item.user_role">
+							<div>
+								<img :src="url+item.avatarimage"/>
+								<span>{{item.username}}</span>
+							</div>
+							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
+			var userinfo=app.getSettings();
+			var siteinfo=app.getInfo();
 			/* mui.plusReady(function(){
 				mui("#commonListWrap").pullRefresh({
 					down : {
@@ -138,14 +172,102 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
-			var app = new Vue({
+			var personinfo=null;
+			mui.plusReady(function(){
+				mui.preload({
+						id: 'personinfo',
+						url: 'personinfo.html'
+				});
+				mui('.invitelist').on('tap','li',function(){
+					var id = this.dataset.id;
+					var role = this.dataset.role;
+					if(!personinfo){
+						personinfo = plus.webview.getWebviewById('personinfo');
+					}
+					mui.fire(personinfo,'scroll2top',{
+						user_id:id,
+						user_role:role,
+					});
+					mui.openWindow({
+						id:'personinfo',
+						show:{
+							duration:250
+						}
+					});
+				});
+			});
+			window.addEventListener('userId',function(event){
+				//获得事件参数
+				//Vm.getclubdata(0);
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				mui.showLoading();
+				Vm.query.user_id=event.detail.user_id;
+				Vm.query.user_role=event.detail.user_role;
+				Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
+				Vm.getdata();
+			});
+			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
-						curtab: '1'
+						url:imgurl,
+						isinvite:true,
+						curtab: '1',
+						query:{
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							user_id:"",
+							user_role:"",
+						},
+						leftdata:[
+							{
+								id:"1",
+								invite_id:"2",
+								beinvite_id:"2",
+								teacher_id:"2",
+								username:"愤怒的小鸟",
+								avatarimage:"../images/user-head.png",
+							}
+						],
+						rightdata:[
+							{
+								id:"1",
+								invite_id:"2",
+								beinvite_id:"2",
+								club_id:"2",
+								username:"愤怒的小鸟",
+								avatarimage:"../images/user-head.png",
+							},
+							{
+								id:"1",
+								invite_id:"2",
+								beinvite_id:"2",
+								club_id:"2",
+								username:"愤怒的小鸟",
+								avatarimage:"../images/user-head.png",
+							}
+						]
 					}
 				},
 				methods:{
+					getdata:function(){
+						var self=this;
+						console.log(JSON.stringify(this.query));
+						yyajax('index/user/invitation',this.query,function(res){
+							mui.hideLoading();
+							console.log(JSON.stringify(res));
+							if(res.code==200){
+								self.leftdata=res.msg.invite;
+								self.rightdata=res.msg.beinvite;
+							}else{
+								mui.toast(res.msg);
+							}
+						})
+					},
 					video:function(){
 						this.curtab=1;
 					},

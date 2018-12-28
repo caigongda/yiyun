@@ -7,9 +7,17 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubdetail.css" rel="stylesheet" />
+		<style>
+			#club-state-list .mui-active{
+				background: #fff !important;
+			}
+			#club-state-list li:after{
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
-		<div id="detail">
+		<div id="detail" v-cloak>
 			<header class="mui-bar mui-bar-nav common-header">
 				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 				<h1 class="mui-title">俱乐部详情</h1>
@@ -74,10 +82,10 @@
 			<div class="state-wrap" v-if="curtab=='2'">
 				<div id="club-state-list">
 					<ul class="mui-table-view">
-						<li class="mui-table-view-cell mui-media"  v-for="(item,index) in statelist" :key="index" v-if="statelist.length!=0">
+						<li class="mui-table-view-cell mui-media" v-for="(item,index) in statelist" :key="index" v-if="statelist.length!=0">
 							<a href="javascript:;">
 								<div class="state-top">
-									<img :src="url+item.avatarimage" >
+									<img :src="url+item.avatarimage">
 									<div class="state-auth-info">
 										<p>{{item.clubname}}</p>
 										<div style="display: flex;">
@@ -93,6 +101,21 @@
 								<div class="state-img-wrap" >
 									<img v-for="value in item.images.split(',')" :src="url+value" />
 								</div>
+								<div class="action-wrap">
+									<div>
+										<div class="addinvite" :data-id="item.club_id">
+											<div class="noinvite"></div>
+											<div>邀请</div>
+										</div>
+									</div>
+									<div>
+										<div class="addcol" :data-id="item.club_id">
+											<div class="nocol"></div>
+											<div>收藏</div>
+										</div>
+									</div>
+								</div>
+								<div class="cross-line" style=""></div>
 							</a>
 						</li>
 						<li v-if="statelist.length==0">
@@ -126,20 +149,13 @@
 				
 				}
 			});
-			//添加newId自定义事件监听
-			window.addEventListener('clubId',function(event){
-				//获得事件参数
-				mui.showLoading();
-				VmClub.club_id = event.detail.id;
-				VmClub.getclubdetail();
-				VmClub.otherinfo=app.getInfo();
-			});
 			var videoplay = null;
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
 				self.addEventListener("hide",function (e) {
 					window.scrollTo(0, 0);
-					VmClub.resetdata();
+					location.reload();
+					//VmClub.resetdata();
 				},false);
 				mui.preload({
 						id: 'videoplay',
@@ -159,73 +175,110 @@
 							duration:250
 						}
 					});
-				})
-			})
-			var VmClub = new Vue({
-				el: '#detail',
-				data(){
-					return{
-						url:imgurl,
-						otherinfo:app.getInfo(),
-						userinfo: app.getSettings(),
-						curtab: '1',
-						club_id:null,
-						clubinfo:{
-							avatarimage:"",
-							name:"",
-							setup:"",
-							abstract:"",
-							content:"",
+				});
+				mui("#detail").on("tap",".addinvite",function(){//邀请
+					var id = this.dataset.id;
+					var formdata={
+						id:VmClub.userinfo.id,
+						role:VmClub.userinfo.role,
+						token:VmClub.userinfo.token,
+						beinvite_id:id,
+					};
+					pubinvite(formdata,function(msg){
+						//邀请成功
+					});
+				});
+				mui("#detail").on("tap",".addcol",function(){//收藏
+					var id = this.dataset.id;
+					var formdata={
+						id:VmClub.userinfo.id,
+						role:VmClub.userinfo.role,
+						token:VmClub.userinfo.token,
+						type:4,
+						pid:id,
+					};
+					pubcol(formdata,function(msg){
+						//收藏成功
+						
+					});
+				});
+			});
+			var VmClub;
+			//添加newId自定义事件监听
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				mui.showLoading();
+				//VmClub.club_id = event.detail.id;
+				/* VmClub.getclubdetail();
+				VmClub.otherinfo=app.getInfo();
+				VmClub.userinfo=app.getSettings(); */
+				VmClub = new Vue({
+					el: '#detail',
+					data(){
+						return{
+							url:imgurl,
+							otherinfo:app.getInfo(),
+							userinfo: app.getSettings(),
+							curtab: '1',
+							club_id:event.detail.id,
+							clubinfo:{
+								avatarimage:"",
+								name:"",
+								setup:"",
+								abstract:"",
+								content:"",
+							},
+							videolist:[],
+							statelist:[],
+						}
+					},
+					computed:{
+						leftvideo(){
+							return this.videolist.filter(function(item,index){
+								return index%2==0;
+							});
 						},
-						videolist:[],
-						statelist:[],
-					}
-				},
-				computed:{
-					leftvideo(){
-						return this.videolist.filter(function(item,index){
-							return index%2==0;
-						});
-					},
-					rightvideo(){
-						return this.videolist.filter(function(item,index){
-							return index%2!=0;
-						});
-					}
-				},
-				mounted(){
-					this.getclubdetail();
-				},
-				methods:{
-					getclubdetail(){
-						var self=this;
-						var postdata={
-							id:this.userinfo.id,
-							role:this.userinfo.role,
-							token:this.userinfo.token,
-							club_id:this.club_id
+						rightvideo(){
+							return this.videolist.filter(function(item,index){
+								return index%2!=0;
+							});
 						}
-						yyajax('index/index/clubdetails',postdata,function(res){
-							mui.hideLoading();
-							if(res.code==200){
-								self.clubinfo=res.msg.club;
-								self.videolist=res.msg.clubvideo;
-								self.statelist=res.msg.clubdynamic;
+					},
+					mounted(){
+						this.getclubdetail();
+					},
+					methods:{
+						getclubdetail(){
+							var self=this;
+							var postdata={
+								id:this.userinfo.id,
+								role:this.userinfo.role,
+								token:this.userinfo.token,
+								club_id:this.club_id
 							}
-						})
-					},
-					video:function(){
-						this.curtab=1;
-					},
-					state:function(){
-						this.curtab=2;
-					},
-					resetdata(){
-						for(var i in this.clubinfo){
-							this.clubinfo[i]="";
+							yyajax('index/index/clubdetails',postdata,function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									console.log(JSON.stringify(res));
+									self.clubinfo=res.msg.club;
+									self.videolist=res.msg.clubvideo;
+									self.statelist=res.msg.clubdynamic;
+								}
+							})
+						},
+						video:function(){
+							this.curtab=1;
+						},
+						state:function(){
+							this.curtab=2;
+						},
+						resetdata(){
+							for(var i in this.clubinfo){
+								this.clubinfo[i]="";
+							}
 						}
 					}
-				}
+				});
 			});
 		</script>
 	</body>

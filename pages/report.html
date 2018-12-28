@@ -55,11 +55,15 @@
 						});
 					}
 				});
-			}
+			};
 			var reportvideo=null;
 			var reportclubstate=null;
 			var reportteacherstate=null;
 			var userinfo=app.getSettings();
+			window.addEventListener('scroll2top',function(event){
+				//获得事件参数
+				userinfo=app.getSettings();
+			});
 			mui.plusReady(function(){
 				var backButtonPress = 0;
 				mui.back = function(event) {

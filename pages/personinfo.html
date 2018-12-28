@@ -7,19 +7,25 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/person.css" rel="stylesheet" />
+		<style>
+			#club-state-list .mui-active{
+				background: #fff !important;
+			}
+			#club-state-list li:after{
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="video">
 			<div class="person-header-bg"></div>
 			<div class="person-info-card">
 				<div class="person-info-top">
-					<img :src="url+uinfo.avatarimage" >
+					<img :src="url+user.avatarimage" >
 					<div>
-						<p id="personsetting" v-if="query.role==1"><span class="person-name">{{uinfo.username}}</span><span class="person-setting">个人设置</span></p>
-						<p v-if="query.role==2"><span class="person-name">{{uinfo.name}}</span></p>
-						<p id="personphone"><span class="person-id">艺舞ID：{{uinfo.id}}</span><span class="person-contact">联系方式</span></p>
+						<p><span class="person-name">{{user.username}}</span></p>
+						<p id="personphone"><span class="person-id">艺舞ID：{{user.id}}</span><span class="person-contact">联系方式</span></p>
 					</div>
-					<div id="loginOut" style="position: absolute;right: 30px;top:45px;font-size: 0.28rem;">退出登录</div>
 				</div>
 				<div class="person-prod-count">
 					<div>
@@ -86,9 +92,9 @@
 						<li class="mui-table-view-cell mui-media" v-for="(item,index) in dynamiclist" :key="index" v-if="dynamiclist.length!=0">
 							<a href="javascript:;">
 								<div class="state-top">
-									<img :src="url+item.avatarimage" id="club-index">
+									<img :src="url+item.avatarimage" class="club-index">
 									<div class="state-auth-info">
-										<p>{{item.username}}</p> 
+										<p>{{item.username}}</p>
 										<div style="display: flex;" v-if="query.user_role==1&&!!item.major">
 											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
 												{{siteinfo.major[val]}}
@@ -107,6 +113,21 @@
 								<div class="state-img-wrap" v-if="!!item.images">
 									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 								</div>
+								<div class="action-wrap">
+									<div>
+										<div class="addinvite" :data-id="item.club_id">
+											<div class="noinvite"></div>
+											<div>邀请</div>
+										</div>
+									</div>
+									<div>
+										<div class="addcol" :data-id="item.club_id">
+											<div class="nocol"></div>
+											<div>收藏</div>
+										</div>
+									</div>
+								</div>
+								<div class="cross-line" style=""></div>
 							</a>
 						</li>
 						<li v-if="dynamiclist.length==0">
@@ -127,18 +148,6 @@
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
 			var backButtonPress = 0;
-			mui.back = function(event) {
-				backButtonPress++;
-				if (backButtonPress > 1) {
-					plus.runtime.quit();
-				} else {
-					plus.nativeUI.toast('再按一次退出应用');
-				}
-				setTimeout(function() {
-					backButtonPress = 0;
-				}, 1000);
-				return false;
-			};
 			$(function(){
 				$(window).scroll(function(){
 					 var scrollTop = $(this).scrollTop();    //滚动条距离顶部的高度
@@ -155,6 +164,9 @@
 					 }
 				 });
 			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			}
 			function todetail(){
 				mui("#person-state-list").on("tap","li",function(){
 					
@@ -166,6 +178,11 @@
 			var videoplay = null;
 			var personcontact = null;//联系方式
 			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					window.scrollTo(0, 0);//重置滚动条位置
+					location.reload();
+				},false);
 				mui.preload({
 						id: 'invite',
 						url: 'invite.html'
@@ -187,7 +204,6 @@
 						url: 'personcontact.html'
 				});
 				mui(".person-prod-count").on("tap","#invite",function(){
-					console.log("aaa");
 					var id = this.getAttribute('class');
 					if(!invite){
 						invite = plus.webview.getWebviewById('invite');
@@ -209,8 +225,7 @@
 						collection = plus.webview.getWebviewById('collection');
 					}
 					mui.fire(collection,'userId',{
-						user_id:Vm.query.user_id,
-						user_role:Vm.query.user_role,
+						id:id
 					});
 					mui.openWindow({
 						id:'collection',
@@ -224,8 +239,8 @@
 					if(!personsetting){
 						personsetting = plus.webview.getWebviewById('personsetting');
 					}
-					mui.fire(personsetting,'islogin',{
-						islogin:false
+					mui.fire(personsetting,'userId',{
+						id:id
 					});
 					mui.openWindow({
 						id:'personsetting',
@@ -241,7 +256,7 @@
 					}
 					mui.fire(videoplay,'userId',{
 						id:id
-					});
+					});       
 					mui.openWindow({
 						id:'videoplay',
 						show:{
@@ -265,21 +280,32 @@
 						}
 					});
 				});
-				$('#loginOut').click(function(){
-					localStorage.clear();
-					plus.runtime.restart();
-					//mui.confirm("是否确定退出吗？","退出提示",)
-				})
-			});
-			function usermsg(){
-				var stateText = localStorage.getItem('$usermsg') || "[]";
-				return JSON.parse(stateText);
-			};
-			window.addEventListener('refresh', function(e) {
-				//执行刷新
-				Vm.$set(Vm.uinfo,'avatarimage',e.detail.avatarimage);
-				Vm.$set(Vm.uinfo,'username',e.detail.username);
-				Vm.$set(Vm.uinfo,'id',e.detail.id);
+				mui("#video").on("tap",".addinvite",function(){//邀请
+					var id = this.dataset.id;
+					var formdata={
+						id:userinfo.id,
+						role:userinfo.role,
+						token:userinfo.token,
+						beinvite_id:id,
+					};
+					pubinvite(formdata,function(msg){
+						//邀请成功
+					});
+				});
+				mui("#video").on("tap",".addcol",function(){//收藏
+					var id = this.dataset.id;
+					var formdata={
+						id:userinfo.id,
+						role:userinfo.role,
+						token:userinfo.token,
+						type:4,
+						pid:id,
+					};
+					pubcol(formdata,function(msg){
+						//收藏成功
+						
+					});
+				});
 			});
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
@@ -290,7 +316,6 @@
 				getplace=app.getPlace();
 				mui.showLoading();
 				Vm.uinfo=userinfo;
-				Vm.siteinfo=siteinfo;
 				Vm.query.id=userinfo.id;
 				Vm.query.role=userinfo.role;
 				Vm.query.token=userinfo.token;
@@ -308,9 +333,13 @@
 				data(){
 					return{
 						url:imgurl,
-						siteinfo:siteinfo,
 						uinfo:userinfo,
 						curtab: '1',
+						user:{
+							username:"",
+							id:"",
+							avatarimage:"",
+						},
 						query:{
 							id:userinfo.id,
 							role:userinfo.role,
@@ -319,12 +348,12 @@
 							user_role:""
 						},
 						numinfo:{
-							works:usermsg().works||0,
-							invite:usermsg().invite||0,
-							collection:usermsg().collection||0,
+							works:0,
+							invite:0,
+							collection:0,
 						},
-						videolist:usermsg().videolist||[],
-						dynamiclist:usermsg().dynamiclist||[],
+						videolist:[],
+						dynamiclist:[]
 					}
 				},
 				computed:{
@@ -353,11 +382,15 @@
 				methods:{
 					getalldata:function(){
 						var self=this;
+						console.log(JSON.stringify(this.query));
 						yyajax('index/user/index',this.query,function(res){
 							mui.hideLoading();
+								console.log(JSON.stringify(res));
 							if(res.code==200){
 								var result=res.msg;
-								localStorage.setItem('$usermsg', JSON.stringify(result));
+								self.user.username=res.user.username;
+								self.user.id=res.user.id;
+								self.user.avatarimage=res.user.avatarimage;
 								self.numinfo.works=result.works;
 								self.numinfo.invite=result.invite;
 								self.numinfo.collection=result.collection;

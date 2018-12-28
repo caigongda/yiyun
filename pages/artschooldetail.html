@@ -24,6 +24,7 @@
 					</div>
 				</div>
 			</div>
+			<div style="font-size: 0.28rem;color: #666;width: 100%;margin:0 auto;margin-top: 20px;margin-left: 20px;">{{clubinfo.content}}</div>
 			<div class="list-title art-detail-title">
 				<h4>招生信息</h4>
 			</div>
@@ -42,67 +43,87 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					window.scrollTo(0, 0);//重置滚动条位置
+					Vm.resetData();//重置页面数据
+				},false);
+			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			}
 			mui.previewImage({issave:true});
+			//var Vm;
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
 				mui.showLoading();
-				var id=event.detail.id;
-				Vm.query.academy_id=id;
+				userinfo=app.getSettings();
+				getalladdress=app.getalladdress();
+				Vm.query.academy_id=event.detail.id;
 				Vm.getdata();
 			});
 			var Vm = new Vue({
-				el: '#app',
-				data(){
-					return{
-						url:imgurl,
-						query:{
-							id:userinfo.id,
-							role:userinfo.role,
-							token:userinfo.token,
-							academy_id:"",
-						},
-						clubinfo:{
-							name:"",
-							image:"",
-							xiaoimage:"",
-							url:"",
-							location_id:"",
-						}
-					}
-				},
-				filters:{
-					parseaddress(val){
-						if(val!=""){
-							var address=getalladdress.filter(function (x) {
-								return x['id']==val;
-							});
-							return address[0].name;
-						}else{
-							return "";
-						}
-					}
-				},
-				mounted(){
-					
-				},
-				methods:{
-					getdata:function(){
-						var self=this;
-						yyajax('index/index/academydetails',this.query,function(res){
-							console.log(JSON.stringify(res));
-							mui.hideLoading();
-							if(res.code==200){
-								self.clubinfo=res.msg;
+					el: '#app',
+					data(){
+						return{
+							url:imgurl,
+							alladdress:getalladdress,
+							query:{
+								id:userinfo.id,
+								role:userinfo.role,
+								token:userinfo.token,
+								academy_id:'',
+							},
+							clubinfo:{
+								name:"",
+								image:"",
+								xiaoimage:"",
+								url:"",
+								location_id:"",
+								content:""
 							}
-						})
+						} 
 					},
-					resetdata:function(){
-						for(var i in this.clubinfo){
-							this.clubinfo[i]="";
+					filters:{
+						parseaddress(val){
+							if(val!=""){
+								var address=getalladdress.filter(function (x) {
+									return x['id']==val;
+								});
+								return address[0].name;
+							}else{
+								return "";
+							}
+						}
+					},
+					mounted(){
+						//this.getdata();
+					},
+					methods:{
+						getdata:function(){
+							var self=this;
+							console.log(JSON.stringify(this.query));
+							yyajax('index/index/academydetails',this.query,function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									self.$set(self.clubinfo,"name", res.msg.name);
+									self.$set(self.clubinfo,"image", res.msg.image);
+									self.$set(self.clubinfo,"xiaoimage", res.msg.xiaoimage);
+									self.$set(self.clubinfo,"url", res.msg.url);
+									self.$set(self.clubinfo,"location_id", res.msg.location_id);
+									self.$set(self.clubinfo,"content", res.msg.content);
+									console.log(JSON.stringify(res.msg));
+								}
+							})
+						},
+						resetData:function(){
+							for(var i in this.clubinfo){
+								this.clubinfo[i]="";
+							}
 						}
 					}
-				}
-			});
+				});
 		</script>
 	</body>
 

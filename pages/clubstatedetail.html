@@ -17,7 +17,7 @@
 		<div class="article-header">
 			<h4>{{clubdynamic.name}}</h4>
 			<div class="article-user-info">
-				<img :src="url+club.image"/>
+				<img :src="url+club.avatarimage"/>
 				<div>
 					<p>{{club.name}}</p>
 					<div>{{clubdynamic.createtime | parseTime}}</div>
@@ -60,6 +60,9 @@
 				Vm.deatailurl="";
 				mui.showLoading();
 				var isteacher=event.detail.isteacher;
+				Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
 				if(isteacher==1){//老师详情
 					Vm.query.teacherdynamic_id = event.detail.id;
 					Vm.deatailurl="index/index/teacherdynamicdetails";
@@ -108,6 +111,7 @@
 						yyajax(this.deatailurl,this.query,function(res){
 							mui.hideLoading();
 							if(res.code==200){
+								console.log(JSON.stringify(res.msg));
 								self.clubdynamic=res.msg.clubdynamic;
 								self.club=res.msg.club;
 							}else{

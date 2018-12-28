@@ -7,6 +7,14 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubclass.css" rel="stylesheet" />
+		<style>
+			#commonListWrap .mui-active{
+				background: #fff !important;
+			}
+			#commonListWrap li:after{
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 	<div id="app" v-cloak>
@@ -103,33 +111,50 @@
 				</div>
 			</div>
 			<div class="shade-bg" v-if="iscity||isdance||morecond" @click="closeall"></div>
-			<div class="scroll-parent">
-				<div id="commonListWrap">
-				<div>
-					<ul class="mui-table-view">
-						<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
-							<a href="javascript:;">
-								<div class="state-top">
-									<img :src="url+item.avatarimage" id="club-index">
-									<div class="state-auth-info">
-										<p>{{item.clubname}}</p>
-										<div style="display: flex;">
-											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
-												{{siteinfo.setup[val]}}
-											</span>
+			<div id="club-state-list">
+				<div class="scroll-parent">
+					<div id="commonListWrap">
+						<div>
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell mui-media clubdetail" v-for="(item,index) in datalist" :key="index" :data-id="item.id">
+									<a href="javascript:;">
+										<div class="state-top" style="width: calc(100% - 35px);">
+											<img :src="url+item.avatarimage" class="club-index" :data-id="item.club_id" :data-role="2">
+											<div class="state-auth-info">
+												<p>{{item.clubname}}</p>
+												<div style="display: flex;" v-if="!!item.setup">
+													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
+														{{siteinfo.setup[val]}}
+													</span>
+												</div>
+											</div>
 										</div>
-									</div>
-								</div>
-								<div class="mui-ellipsis-2 state-con-info">
-									{{item.content}}
-								</div>
-								<div class="state-img-wrap">
-									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
-								</div>
-							</a>
-						</li>
-					</ul>
-				</div>
+										<div class="mui-ellipsis-2 state-con-info" style="width: calc(100% - 35px);" v-if="!!item.content">
+											{{item.content}}
+										</div>
+										<div class="state-img-wrap" style="width: calc(100% - 35px);" v-if="!!item.images">
+											<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
+										</div>
+										<div class="action-wrap" style="width: calc(100% - 35px);">
+											<div>
+												<div class="addinvite" :data-id="item.club_id">
+													<div class="noinvite"></div>
+													<div>邀请</div>
+												</div>
+											</div>
+											<div>
+												<div class="addcol" :data-id="item.id">
+													<div class="nocol"></div>
+													<div>收藏</div>
+												</div>
+											</div>
+										</div>
+										<div class="cross-line" style=""></div>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -142,306 +167,377 @@
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
 			var clubstatedetail = null;
+			var personinfo=null;
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
-			mui.ready(function() {
-			//初始化区域滚动
-				var scroll = mui(".mui-scroll-wrapper").scroll();
-			});
-			mui.back = function() {
-				plus.webview.currentWebview().hide("auto", 300);
-			}
-			mui.plusReady(function(){
-				mui.preload({
-					id: 'clubstatedetail',
-					url: 'clubstatedetail.html'
+			function events(){
+				mui.ready(function() {
+				//初始化区域滚动
+					var scroll = mui(".mui-scroll-wrapper").scroll();
 				});
-				mui(".mui-input-clear")[0].addEventListener('focus', function(){
-					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
-						Vm.query.keyword="";
-						Vm.getclubdata(0);
-					});
-				});
-				var self = plus.webview.currentWebview();
-				self.addEventListener("hide",function (e) {
-					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
-					Vm.resetdata();
-				},false);
-				mui("#commonListWrap").pullRefresh({
-					down : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							Vm.query.offset=1;
-							Vm.getclubdata(1);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					},
-					up : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							loadMore(this);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					}
-				});
-				function loadMore(pullRefresh) {
-					// 如果没有更多数据了，则关闭上拉加载
-					//pullRefresh.endPullupToRefresh(true);
-					// 如果有更多数据，则继续
-					Vm.query.offset+=1;
-					Vm.getclubdata(2);
-					//pullRefresh.endPullupToRefresh(false);
+				mui.back = function() {
+					plus.webview.currentWebview().hide("auto", 300);
 				};
-				searchinit("search",function(val){
-					Vm.query.keyword=val;
-					Vm.getclubdata(0);
-				});
-				mui("#app").on("tap",".clubdetail",function(){//俱乐部状态详情
-					var id = this.dataset.id;
-					if(!clubstatedetail){
-						clubstatedetail = plus.webview.getWebviewById('clubstatedetail');
-					}
-					mui.fire(clubstatedetail,'clubId',{
-						id:id
-					});       
-					mui.openWindow({
-						id:'clubstatedetail',
-						show:{
-							duration:250
+				mui.plusReady(function(){
+					mui.preload({
+						id: 'clubstatedetail',
+						url: 'clubstatedetail.html'
+					});
+					mui.preload({
+						id: 'personinfo',
+						url: 'personinfo.html'
+					});
+					mui(".mui-input-clear")[0].addEventListener('focus', function(){
+						mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+							Vm.query.keyword="";
+							Vm.getclubdata(0);
+						});
+					});
+					var self = plus.webview.currentWebview();
+					self.addEventListener("hide",function (e) {
+						location.reload();
+						mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
+						Vm.resetdata();
+					},false);
+					mui("#commonListWrap").pullRefresh({
+						down : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								Vm.query.offset=1;
+								Vm.getclubdata(1);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 						}
 					});
-				});
-			});
-			window.addEventListener('clubId',function(event){
-				//获得事件参数
-				Vm.getclubdata(0);
-			});
-			var Vm = new Vue({
-				el: '#app',
-				data(){
-					return{
-						url:imgurl,
-						cityone:getplace,
-						citytwo:getplace[0]['children'],
-						positions:siteinfo.position,//职位类别
-						curpos:"职位类别",
-						setups:siteinfo.setup,//所设专业
-						consetup:"不限",
-						welfare:siteinfo.welfare,//福利
-						confare:"不限",
-						subsidys:siteinfo.subsidy,//课时费
-						consubsidy:"不限",
-						salarys:siteinfo.salary,//月薪待遇
-						consalary:"不限",
-						scales:siteinfo.scale,
-						conscale:"不限",
-						moreconds:[
-							{
-								value:"1",
-								text:"所设专业",
-							},{
-								value:"2",
-								text:"福利",
-							},{
-								value:"3",
-								text:"课时费（元）",
-							},{
-								value:"4",
-								text:"月薪待遇（元）",
-							},{
-								value:"5",
-								text:"机构规模（m2）",
+					function loadMore(pullRefresh) {
+						// 如果没有更多数据了，则关闭上拉加载
+						//pullRefresh.endPullupToRefresh(true);
+						// 如果有更多数据，则继续
+						Vm.query.offset+=1;
+						Vm.getclubdata(2);
+						//pullRefresh.endPullupToRefresh(false);
+					};
+					searchinit("search",function(val){
+						Vm.query.keyword=val;
+						Vm.getclubdata(0);
+					});
+					/* mui("#app").on("tap",".clubdetail",function(){//俱乐部状态详情
+						var id = this.dataset.id;
+						if(!clubstatedetail){
+							clubstatedetail = plus.webview.getWebviewById('clubstatedetail');
+						}
+						mui.fire(clubstatedetail,'clubId',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'clubstatedetail',
+							show:{
+								duration:250
 							}
-						],
-						condition:1,
-						conone:"所设专业",
-						iscity:false,
-						isdance:false,
-						morecond:false,
-						curone:getplace[0]['text'],
-						curtwo:"所在城市",
-						query:{
+						});
+					}); */
+					mui("#app").on("tap",".club-index",function(){//个人主页
+						var id = this.dataset.id;
+						var role= this.dataset.role;
+						if(!personinfo){
+							personinfo = plus.webview.getWebviewById('personinfo');
+						}
+						mui.fire(personinfo,'scroll2top',{
+							user_id:id,
+							user_role:role,
+						});
+						mui.openWindow({
+							id:'personinfo',
+							show:{
+								duration:250
+							}
+						});
+					});
+					mui("#app").on("tap",".addinvite",function(){//邀请
+						var id = this.dataset.id;
+						var formdata={
 							id:userinfo.id,
 							role:userinfo.role,
 							token:userinfo.token,
-							offset:1,
-							location_id:"",//所在城市
-							position:"",//职业类别
-							setup:"",//所设专业
-							welfare:"",//福利
-							subsidy:"",//课时费
-							salary:"",//月薪待遇（元）
-							scale:"",//机构规模
-							keyword:""
-						},
-						datalist:[]
-					}
-				},
-				mounted(){
-					//this.getclubdata(0);
-				},
-				methods:{
-					getclubdata:function(type){
-						var self=this;
-						if(type==0){
-							self.query.offset=1;
-							mui.showLoading();
+							beinvite_id:id,
+						};
+						pubinvite(formdata,function(msg){
+							//邀请成功
+						});
+					});
+					mui("#app").on("tap",".addcol",function(){//收藏
+						var id = this.dataset.id;
+						var formdata={
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							type:4,
+							pid:id,
+						};
+						pubcol(formdata,function(msg){
+							//收藏成功
+							
+						});
+					});
+				});
+			}
+			var Vm;
+			window.addEventListener('clubId',function(event){
+				//获得事件参数
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				getschool=app.getSchool();
+				getplace=app.getPlace();
+				Vm = new Vue({
+					el: '#app',
+					data(){
+						return{
+							siteinfo:siteinfo,
+							url:imgurl,
+							cityone:getplace,
+							citytwo:getplace[0]['children'],
+							positions:siteinfo.position,//职位类别
+							curpos:"职位类别",
+							setups:siteinfo.setup,//所设专业
+							consetup:"不限",
+							welfare:siteinfo.welfare,//福利
+							confare:"不限",
+							subsidys:siteinfo.subsidy,//课时费
+							consubsidy:"不限",
+							salarys:siteinfo.salary,//月薪待遇
+							consalary:"不限",
+							scales:siteinfo.scale,
+							conscale:"不限",
+							moreconds:[
+								{
+									value:"1",
+									text:"所设专业",
+								},{
+									value:"2",
+									text:"福利",
+								},{
+									value:"3",
+									text:"课时费（元）",
+								},{
+									value:"4",
+									text:"月薪待遇（元）",
+								},{
+									value:"5",
+									text:"机构规模（m2）",
+								}
+							],
+							condition:1,
+							conone:"所设专业",
+							iscity:false,
+							isdance:false,
+							morecond:false,
+							curone:getplace[0]['text'],
+							curtwo:"所在城市",
+							query:{
+								id:userinfo.id,
+								role:userinfo.role,
+								token:userinfo.token,
+								offset:1,
+								location_id:"",//所在城市
+								position:"",//职业类别
+								setup:"",//所设专业
+								welfare:"",//福利
+								subsidy:"",//课时费
+								salary:"",//月薪待遇（元）
+								scale:"",//机构规模
+								keyword:""
+							},
+							datalist:[]
 						}
-						yyajax('index/index/clubdynamic',this.query,function(res){
-							if(res.code==200){
-								if(type==1){
-									self.datalist=res.msg;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									if(res.msg.length!=0){
-										var newdata=res.msg;
-										var curdata=self.datalist;
-										self.datalist=curdata.concat(newdata);
+					},
+					mounted(){
+						this.getclubdata(0);
+						events();
+					},
+					methods:{
+						getclubdata:function(type){
+							var self=this;
+							if(type==0){
+								self.query.offset=1;
+								mui.showLoading();
+							}
+							yyajax('index/index/clubdynamic',this.query,function(res){
+								if(res.code==200){
+									if(type==1){
+										self.datalist=res.msg;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										if(res.msg.length!=0){
+											var newdata=res.msg;
+											var curdata=self.datalist;
+											self.datalist=curdata.concat(newdata);
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+											},1000);
+										}else{
+											self.query.offset-=1;
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+											},1000);
+										}
+									}else{
+										self.datalist=res.msg;
+										mui.hideLoading();
+										if(res.msg.length==0){
+											mui.toast("没有找到相关数据");
+										}
+									}
+								}else{
+									mui.toast(res.msg);
+									if(type==1){
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										self.query.offset-=1;
 										setTimeout(function () {
 											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
 										},1000);
 									}else{
-										self.query.offset-=1;
-										setTimeout(function () {
-											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
-										},1000);
-									}
-								}else{
-									self.datalist=res.msg;
-									mui.hideLoading();
-									if(res.msg.length==0){
-										mui.toast("没有找到相关数据");
+										mui.hideLoading();
 									}
 								}
-							}else{
-								mui.toast(res.msg);
-								if(type==1){
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									self.query.offset-=1;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
-									},1000);
-								}else{
-									mui.hideLoading();
-								}
-							}
-						})
-					},
-					selcity:function(){
-						this.iscity=!this.iscity;
-						this.isdance=false;
-						this.morecond=false;
-					},
-					seldance:function(){
-						this.isdance=!this.isdance;
-						this.iscity=false;
-						this.morecond=false;
-					},
-					selstepone:function(val,index){
-						this.curone=val;
-						this.citytwo=getplace[index]['children'];
-					},
-					selcurcity:function(val,index){
-						this.curtwo=val;
-						this.query.location_id=index;
-						this.iscity=false;
-						this.getclubdata(0);
-					},
-					selmorecond:function(){//更多筛选
-						this.morecond=!this.morecond;
-						this.iscity=false;
-						this.isdance=false;
-					},
-					selcontype:function(val,sindex){//更多筛选-条件
-						this.conone=val;
-						this.condition=sindex;
-					},
-					selposone:function(val,index){//职位类别
-						this.curpos=val;
-						this.query.position=index;
-						this.isdance=false;
-						this.getclubdata(0);
-					},
-					selconsetup:function(val,index){//选择所设专业
-						this.consetup=val;
-						this.query.setup=index;
-						this.getclubdata(0);
-					},
-					selconwelfare:function(val,index){//福利
-						this.confare=val;
-						this.query.welfare=index;
-						this.getclubdata(0);
-					},
-					selconsubsidys:function(val,index){//课时费
-						this.consubsidy=val;
-						this.query.subsidy=index;
-						this.getclubdata(0);
-					},
-					selconsalarys:function(val,index){//课时费
-						this.consalary=val;
-						this.query.salary=index;
-						this.getclubdata(0);
-					},
-					selconscales:function(val,index){//课时费
-						this.conscale=val;
-						this.query.scale=index;
-						this.getclubdata(0);
-					},
-					closeall:function(){//关闭所有
-						this.iscity=false;
-						this.isdance=false;
-						this.morecond=false;
-					},
-					selconjob:function(val,index){//更多筛选-职位类别
-						this.conjob=val;
-						this.query.jobcategory=+index;
-						this.getclubdata(0);
-					},
-					selconlplace:function(val,index){//期望工作地
-						this.conlikeone=val;
-						this.conlikeplacetwo=getplace[index]['children'];
-					},
-					selconlplacetwo:function(val,value){//期望工作地
-						this.conliketwo=val;
-						this.query.expectant_id=value;
-						this.getclubdata(0);
-					},
-					selconmajor:function(val,index){//专业
-						this.conmajor=val;
-						this.query.major=+index;
-						this.getclubdata(0);
-					},
-					selconexp:function(val,index){//教学经验
-						this.conexp=val;
-						this.query.experience=+index;
-						this.getclubdata(0);
-					},
-					resetdata:function(){
-						this.query.location_id="";
-						this.query.home_id="";
-						this.query.teacheracademy_id="";
-						this.query.jobcategory="";
-						this.query.expectant_id="";
-						this.query.major="";
-						this.query.experience="";
-						this.query.offset=1;
-						this.query.keyword="";
+							})
+						},
+						selcity:function(){
+							this.iscity=!this.iscity;
+							this.isdance=false;
+							this.morecond=false;
+						},
+						seldance:function(){
+							this.isdance=!this.isdance;
+							this.iscity=false;
+							this.morecond=false;
+						},
+						selstepone:function(val,index){
+							this.curone=val;
+							this.citytwo=getplace[index]['children'];
+						},
+						selcurcity:function(val,index){
+							this.curtwo=val;
+							this.query.location_id=index;
+							this.iscity=false;
+							this.getclubdata(0);
+						},
+						selmorecond:function(){//更多筛选
+							this.morecond=!this.morecond;
+							this.iscity=false;
+							this.isdance=false;
+						},
+						selcontype:function(val,sindex){//更多筛选-条件
+							this.conone=val;
+							this.condition=sindex;
+						},
+						selposone:function(val,index){//职位类别
+							this.curpos=val;
+							this.query.position=index;
+							this.isdance=false;
+							this.getclubdata(0);
+						},
+						selconsetup:function(val,index){//选择所设专业
+							this.consetup=val;
+							this.query.setup=index;
+							this.getclubdata(0);
+						},
+						selconwelfare:function(val,index){//福利
+							this.confare=val;
+							this.query.welfare=index;
+							this.getclubdata(0);
+						},
+						selconsubsidys:function(val,index){//课时费
+							this.consubsidy=val;
+							this.query.subsidy=index;
+							this.getclubdata(0);
+						},
+						selconsalarys:function(val,index){//课时费
+							this.consalary=val;
+							this.query.salary=index;
+							this.getclubdata(0);
+						},
+						selconscales:function(val,index){//课时费
+							this.conscale=val;
+							this.query.scale=index;
+							this.getclubdata(0);
+						},
+						closeall:function(){//关闭所有
+							this.iscity=false;
+							this.isdance=false;
+							this.morecond=false;
+						},
+						selconjob:function(val,index){//更多筛选-职位类别
+							this.conjob=val;
+							this.query.jobcategory=+index;
+							this.getclubdata(0);
+						},
+						selconlplace:function(val,index){//期望工作地
+							this.conlikeone=val;
+							this.conlikeplacetwo=getplace[index]['children'];
+						},
+						selconlplacetwo:function(val,value){//期望工作地
+							this.conliketwo=val;
+							this.query.expectant_id=value;
+							this.getclubdata(0);
+						},
+						selconmajor:function(val,index){//专业
+							this.conmajor=val;
+							this.query.major=+index;
+							this.getclubdata(0);
+						},
+						selconexp:function(val,index){//教学经验
+							this.conexp=val;
+							this.query.experience=+index;
+							this.getclubdata(0);
+						},
+						initdata:function(){
+							Vm.$data.cityone=getplace;
+							Vm.$data.citytwo=getplace[0]['children'];
+							Vm.$data.positions=siteinfo.position;//职位类别
+							Vm.$data.setups=siteinfo.setup;//所设专业
+							Vm.$data.welfare=siteinfo.welfare;//福利
+							Vm.$data.subsidys=siteinfo.subsidy;//课时费
+							Vm.$data.salarys=siteinfo.salary;//月薪待遇
+							Vm.$data.scales=siteinfo.scale;
+							Vm.$data.query.id=userinfo.id;
+							Vm.$data.query.role=userinfo.role;
+							Vm.$data.query.token=userinfo.token;
+							Vm.$data.curone=getplace[0]['text'];
+						},
+						resetdata:function(){
+							this.query.location_id="";
+							this.query.home_id="";
+							this.query.teacheracademy_id="";
+							this.query.jobcategory="";
+							this.query.expectant_id="";
+							this.query.major="";
+							this.query.experience="";
+							this.query.offset=1;
+							this.query.keyword="";
+						}
 					}
-				}
+				});
 			});
 		</script>
 	</body>

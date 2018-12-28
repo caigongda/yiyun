@@ -41,17 +41,23 @@
 				var self = plus.webview.currentWebview();
 				self.addEventListener("hide",function (e) {
 					window.scrollTo(0, 0);//重置滚动条位置
-					//vm.resetData();//重置页面数据
+					location.reload();
 				},false);
 			});
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
+				userinfo=app.getSettings();
 				mui.showLoading();
 				var isworkcenter = event.detail.isworkcenter;
+				Vm.query.id=userinfo.id;
+				Vm.query.role=userinfo.role;
+				Vm.query.token=userinfo.token;
 				if(isworkcenter==1){
+					Vm.posturl="index/index/startcoredetails";
 					Vm.query.match_id="";
 					Vm.query.startcore_id=event.detail.id;
 				}else{
+					Vm.posturl="index/index/matchdetails";
 					Vm.query.startcore_id="";
 					Vm.query.match_id=event.detail.id;
 				}
@@ -62,10 +68,11 @@
 				data(){
 					return{
 						url:imgurl,
+						posturl:"",
 						query:{
-								id:userinfo.id,
-								role:userinfo.role,
-								token:userinfo.token,
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
 						},
 						detail:{}
 					}
@@ -75,7 +82,8 @@
 				methods:{
 					getdatainfo(){
 						var self=this;
-						yyajax('index/index/startcoredetails',this.query,function(res){
+						yyajax(self.posturl,this.query,function(res){
+							console.log(JSON.stringify(res));
 							mui.hideLoading();
 							if(res.code==200){
 								self.detail=res.msg;
@@ -83,6 +91,9 @@
 								mui.toast(res.msg);
 							}
 						})
+					},
+					resetData(){
+						this.detail={};
 					}
 				}
 			});

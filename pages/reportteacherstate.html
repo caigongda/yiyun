@@ -35,10 +35,10 @@
 	<body>
 		<div class="report-page-header"><div class="page-cancel">取消</div><div class="page-fb">发表</div></div>
 		<div class="report-page" id="teacherApp">
-			<div class="form-item mui-input-row">
+			<!-- <div class="form-item mui-input-row">
 				<label>标题：</label>
 				<input type="text" class="mui-input-clear" id="statetitle" placeholder="请输入标题" v-model="formdata.name"/>
-			</div>
+			</div> -->
 			<div class="form-item mui-input-row">
 				<label>毕业院校：</label>
 				<input type="text" class="mui-input-clear" id="school-picker" placeholder="请选择毕业院校" readonly="readonly"/>
@@ -51,11 +51,11 @@
 			</div>
 			<div class="form-item mui-input-row">
 				<label>所在地：</label>
-				<input type="text" class="mui-input-clear curplace" id="curplace-picker" placeholder="请选择所在地"/>
+				<input type="text" class="mui-input-clear curplace" id="curplace-picker" placeholder="请选择所在地" readonly="readonly"/>
 				<label>家乡地：</label>
-				<input type="text" class="mui-input-clear homelace" id="homeplace-picker" placeholder="请选择家乡地"/>
+				<input type="text" class="mui-input-clear homelace" id="homeplace-picker" placeholder="请选择家乡地" readonly="readonly"/>
 				<label>期望工作地：</label>
-				<input type="text" class="mui-input-clear likeplace" id="likeplace-picker" placeholder="请选择期望工作地"/>
+				<input type="text" class="mui-input-clear likeplace" id="likeplace-picker" placeholder="请选择期望工作地" readonly="readonly"/>
 			</div>
 			<div class="report-content-wrap">
 				<p>我的介绍</p>
@@ -69,7 +69,7 @@
 					</div>
 				</div>
 			</div>
-			<input type="file" id="imgfile" accept="image/*" multiple=""/>
+			<input type="file" id="imgfile" accept="image/*" multiple="" readonly="readonly"/>
 		</div>
 		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.min.js"></script>
@@ -111,11 +111,6 @@
 					});
 				}, false);
 			};
-			/* window.addEventListener('url',function(event){
-				//获得事件参数
-				var url=event.detail.url;
-				insertimg(url);
-			}); */
 			function parsedata(data){
 				var curarr=[];
 				for(var i in data){
@@ -129,136 +124,168 @@
 			$("#imgfile").live('change', function(){
 				mui.showLoading();
 				uploadhead("imgfile",function(res){
-					$('#imgfile').replaceWith('<input type="file" id="imgfile" accept="image/*" multiple=""/>');
+					$('#imgfile').replaceWith('<input type="file" id="imgfile" accept="image/*" multiple="" readonly="readonly"/>');
 					insertimg(myurl+res);
 					teacherApp.formdata.images.push(res);
 					mui.hideLoading();
 				},function(){mui.hideLoading();})
-			})
-			mui.plusReady(function(){
-				var dance=[{text:"瑜伽",value:"0"},{text:"拉丁",value:"1"},{text:"芭蕾",value:"2"}];
-				pubpicker("school-picker",2,getschool,function(self,items){
-					document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
-					teacherApp.formdata.teacheracademy_id=items[1].value;
-				});
-				var majorarr=parsedata(siteinfo.major);
-				pubpicker("major-picker",1,majorarr,function(self,items){
-					document.getElementById("major-picker").value=items[0].text;
-					teacherApp.formdata.major=items[0].value;
-				});
-				var jobarr=parsedata(siteinfo.jobcategory);
-				pubpicker("job-picker",1,jobarr,function(self,items){
-					document.getElementById("job-picker").value=items[0].text;
-					teacherApp.formdata.jobcategory=items[0].value;
-				});
-				var experiencearr=parsedata(siteinfo.experience);
-				pubpicker("exp-picker",1,experiencearr,function(self,items){
-					document.getElementById("exp-picker").value=items[0].text;
-					teacherApp.formdata.experience=items[0].value;
-				});
-				pubpicker("curplace-picker",2,getplace,function(self,items){
-					document.getElementById("curplace-picker").value=items[0].text + " - " + items[1].text;
-					teacherApp.formdata.location_id=items[1].value;
-				});
-				pubpicker("homeplace-picker",2,getplace,function(self,items){
-					document.getElementById("homeplace-picker").value=items[0].text + " - " + items[1].text;
-					teacherApp.formdata.home_id=items[1].value;
-				});
-				pubpicker("likeplace-picker",2,getplace,function(self,items){
-					document.getElementById("likeplace-picker").value=items[0].text + " - " + items[1].text;
-					teacherApp.formdata.expectant_id=items[1].value;
-				});
-				mui(".report-state-wrap").on("tap",".del-img",function(){
-					var url=$(this).data("url");
-					var index=teacherApp.formdata.images.indexOf(url);
-					teacherApp.formdata.images.splice(index,1);
-					$(this).parent().remove();
-					console.log(JSON.stringify(teacherApp.formdata.images));
-				});
-				mui(".report-state-wrap").on("tap",".img-sel",function(){
-					document.getElementById('imgfile').click();
-				});
-				mui(".report-page-header").on("tap",".page-cancel",function(){
-					resetdata(["statetitle","school-picker","major-picker","job-picker","exp-picker","curplace-picker","homeplace-picker","likeplace-picker","statecontent"]);
-					mui.back();
-				});
-				mui(".report-page-header").on("tap",".page-fb",function(){
-					mui.showLoading();
-					if( teacherApp.formdata.name==""||
-						teacherApp.formdata.images.length==0||
-						teacherApp.formdata.content==""||
-						teacherApp.formdata.location_id==""||
-						teacherApp.formdata.home_id==""||
-						teacherApp.formdata.teacheracademy_id==""||
-						teacherApp.formdata.jobcategory==""||
-						teacherApp.formdata.expectant_id==""||
-						teacherApp.formdata.major==""||
-						teacherApp.formdata.experience==""
-						){
-						mui.toast("不能为空哦！");
-					}else{
-						var formdata=teacherApp.formdata;
-						formdata.id=userinfo.id;
-						formdata.role=userinfo.role;
-						formdata.token=userinfo.token;
-						formdata.images=formdata.images.toString();
-						yyajax("index/index/publishdynamic",formdata,function(res){
-							mui.hideLoading();
-							if(res.code==200){
-								mui.toast("发布成功");
-								resetdata(["statetitle","school-picker","major-picker","job-picker","exp-picker","curplace-picker","homeplace-picker","likeplace-picker","statecontent"]);
-								setTimeout(function(){
-									mui.back();
-								},1000);
-							}else{
-								mui.toast(res.msg);
-							}
-						})
-					}
-				});
-				function resetdata(data){
-					for(var i=0;i<data.length;i++){
-						$("#"+data[i]).val("");
-					}
-					$(".img-common").remove();
-				}
-				mui(".report-page").on("tap",".post-img",function(){
-					plus.gallery.pick(function(p) {
-						plus.io.resolveLocalFileSystemURL(p, function(entry) {
-							console.log(entry.toLocalURL());
-							$(".post-img-wrap img").attr("src",entry.toLocalURL());
-							$(".post-img").attr("title","更换封面");
-							$(".post-img-wrap").show();
-						}, function(e) {
-							
-						});
-					}, function(a) {}, {
-						filter: "image",multiple:false,system:false
-					})
-				});
 			});
-			var teacherApp = new Vue({
-				el: '#teacherApp',
-				data(){
-					return{
-						formdata:{
-							name:"",
-							images:[],
-							content:"",
-							location_id:"",
-							home_id:"",
-							teacheracademy_id:"",
-							jobcategory:"",
-							expectant_id:"",
-							major:"",
-							experience:"",
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			};
+			function events(){
+				mui.plusReady(function(){
+					var self = plus.webview.currentWebview();
+					self.addEventListener("hide",function (e) {
+						window.scrollTo(0, 0);//重置滚动条位置
+						location.reload();
+					},false);
+					var dance=[{text:"瑜伽",value:"0"},{text:"拉丁",value:"1"},{text:"芭蕾",value:"2"}];
+					pubpicker("school-picker",2,getschool,function(self,items){
+						document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
+						teacherApp.formdata.teacheracademy_id=items[1].value;
+					});
+					var majorarr=parsedata(siteinfo.major);
+					pubpicker("major-picker",1,majorarr,function(self,items){
+						document.getElementById("major-picker").value=items[0].text;
+						teacherApp.formdata.major=items[0].value;
+					});
+					var jobarr=parsedata(siteinfo.jobcategory);
+					pubpicker("job-picker",1,jobarr,function(self,items){
+						document.getElementById("job-picker").value=items[0].text;
+						teacherApp.formdata.jobcategory=items[0].value;
+					});
+					var experiencearr=parsedata(siteinfo.experience);
+					pubpicker("exp-picker",1,experiencearr,function(self,items){
+						document.getElementById("exp-picker").value=items[0].text;
+						teacherApp.formdata.experience=items[0].value;
+					});
+					pubpicker("curplace-picker",2,getplace,function(self,items){
+						document.getElementById("curplace-picker").value=items[0].text + " - " + items[1].text;
+						teacherApp.formdata.location_id=items[1].value;
+					});
+					pubpicker("homeplace-picker",2,getplace,function(self,items){
+						document.getElementById("homeplace-picker").value=items[0].text + " - " + items[1].text;
+						teacherApp.formdata.home_id=items[1].value;
+					});
+					pubpicker("likeplace-picker",2,getplace,function(self,items){
+						document.getElementById("likeplace-picker").value=items[0].text + " - " + items[1].text;
+						teacherApp.formdata.expectant_id=items[1].value;
+					});
+					mui(".report-state-wrap").on("tap",".del-img",function(){
+						var url=$(this).data("url");
+						var index=teacherApp.formdata.images.indexOf(url);
+						teacherApp.formdata.images.splice(index,1);
+						$(this).parent().remove();
+					});
+					mui(".report-state-wrap").on("tap",".img-sel",function(){
+						document.getElementById('imgfile').click();
+					});
+					mui(".report-page-header").on("tap",".page-cancel",function(){
+						resetdata(["statetitle","school-picker","major-picker","job-picker","exp-picker","curplace-picker","homeplace-picker","likeplace-picker","statecontent"]);
+						mui.back();
+					});
+					mui(".report-page-header").on("tap",".page-fb",function(){
+						userinfo=app.getSettings();
+						siteinfo=app.getInfo();
+						getschool=app.getSchool();
+						getplace=app.getPlace();
+						mui.showLoading();
+						if( teacherApp.formdata.images.length==0||
+							teacherApp.formdata.content==""||
+							teacherApp.formdata.location_id==""||
+							teacherApp.formdata.home_id==""||
+							teacherApp.formdata.teacheracademy_id==""||
+							teacherApp.formdata.jobcategory==""||
+							teacherApp.formdata.expectant_id==""||
+							teacherApp.formdata.major==""||
+							teacherApp.formdata.experience==""
+							){
+							mui.toast("不能为空哦！");
+						}else{
+							var formdata=teacherApp.formdata;
+							formdata.id=userinfo.id;
+							formdata.role=1;
+							formdata.token=userinfo.token;
+							formdata.images=formdata.images.toString();
+							yyajax("index/index/publishdynamic",formdata,function(res){
+								mui.hideLoading();
+								if(res.code==200){
+									mui.toast("发布成功");
+									resetdata(["statetitle","school-picker","major-picker","job-picker","exp-picker","curplace-picker","homeplace-picker","likeplace-picker","statecontent"]);
+									setTimeout(function(){
+										mui.back();
+									},1000);
+								}else{
+									mui.toast(res.msg);
+								}
+							})
 						}
+					});
+					function resetdata(data){
+						for(var i=0;i<data.length;i++){
+							$("#"+data[i]).val("");
+						}
+						teacherApp.formdata.images.length=0;
+						teacherApp.formdata.content="";
+						teacherApp.formdata.location_id="";
+						teacherApp.formdata.home_id="";
+						teacherApp.formdata.teacheracademy_id="";
+						teacherApp.formdata.jobcategory="";
+						teacherApp.formdata.expectant_id="";
+						teacherApp.formdata.major="";
+						teacherApp.formdata.experience="";
+						$(".img-common").remove();
 					}
-				},
-				methods:{
-					
-				}
+					mui(".report-page").on("tap",".post-img",function(){
+						plus.gallery.pick(function(p) {
+							plus.io.resolveLocalFileSystemURL(p, function(entry) {
+								console.log(entry.toLocalURL());
+								$(".post-img-wrap img").attr("src",entry.toLocalURL());
+								$(".post-img").attr("title","更换封面");
+								$(".post-img-wrap").show();
+							}, function(e) {
+								
+							});
+						}, function(a) {}, {
+							filter: "image",multiple:false,system:false
+						})
+					});
+				});
+			}
+			var teacherApp;
+			window.addEventListener('url',function(event){
+				//获得事件参数
+				//var url=event.detail.url;
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				getschool=app.getSchool();
+				getplace=app.getPlace();
+				teacherApp = new Vue({
+					el: '#teacherApp',
+					data(){
+						return{
+							formdata:{
+								//name:"",
+								images:[],
+								content:"",
+								location_id:"",
+								home_id:"",
+								teacheracademy_id:"",
+								jobcategory:"",
+								expectant_id:"",
+								major:"",
+								experience:"",
+							}
+						}
+					},
+					methods:{
+						
+					}
+				});
+				events();
 			});
+			
 		</script>
 	</body>
 

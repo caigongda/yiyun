@@ -149,7 +149,17 @@
 			});
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
-				//location.reload();
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				getschool=app.getSchool();
+				getplace=app.getPlace();
+				Vm.$data.query={
+							id:userinfo.id,
+							role:userinfo.role,
+							token:userinfo.token,
+							offset:1,
+							keyword:""
+						};
 				Vm.getdata(0);
 			});
 			var player = null;

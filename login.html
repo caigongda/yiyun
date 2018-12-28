@@ -151,11 +151,11 @@
 				<div class="radio-wrap">
 					<div class="mui-input-row mui-radio mui-left">
 						<label>老师</label>
-						<input name="radio1" type="radio" checked="checked">
+						<input name="radio1" type="radio" checked="checked" value="1">
 					</div>
 					<div class="mui-input-row mui-radio mui-left">
 						<label>俱乐部</label>
-						<input name="radio1" type="radio">
+						<input name="radio1" type="radio" value="2">
 					</div>
 					<a class="msg-login">短信验证码登录</a>
 				</div>
@@ -252,11 +252,22 @@
 							id: 'personsetting',
 							url: '/pages/personsetting.html'
 					});
-					var radio=document.getElementsByName("radio2");
-					for(var i=0;i<radio.length;i++){
-						if(radio[i].checked==true) {
-							role=radio[i].value;
-							break;
+					function getrole1(){
+						var radio=document.getElementsByName("radio1");
+						for(var i=0;i<radio.length;i++){
+							if(radio[i].checked==true) {
+								role=radio[i].value;
+								break;
+							}
+						}
+					}
+					function getrole2(){
+						var radio=document.getElementsByName("radio2");
+						for(var i=0;i<radio.length;i++){
+							if(radio[i].checked==true) {
+								role=radio[i].value;
+								break;
+							}
 						}
 					}
 					plus.screen.lockOrientation("portrait-primary");
@@ -375,6 +386,7 @@
 						});
 					};
 					loginButton.addEventListener('tap', function(event) {
+						getrole1();
 						var loginInfo = {
 							account: accountBox.value,
 							password: passwordBox.value
@@ -392,17 +404,25 @@
 							},function(res){
 								mui.hideLoading();
 								if(res.code==200){
+									console.log(JSON.stringify(res.userinfo));
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
-									getinfo(function(){
-										mui.hideLoading();
-										if(!res.userinfo.username){
-											mui.toast("请完善信息");
-											setinfo();
-										}else{
+									if(role==1){
+										getinfo(function(){
+											mui.hideLoading();
+											if(!res.userinfo.username){
+												mui.toast("请完善信息");
+												setinfo();
+											}else{
+												mui.toast("登录成功");
+												toMain();
+											}
+										});
+									}else{
+										getinfo(function(){
 											mui.toast("登录成功");
 											toMain();
-										}
-									});
+										});
+									}
 								}else{
 									mui.hideLoading();
 									mui.toast(res.msg);
@@ -411,6 +431,7 @@
 						});
 					});
 					loginButton2.addEventListener('tap', function(event) {
+						getrole2();
 						var loginInfo = {
 							account: accountBox1.value,
 							password: passwordBox1.value
@@ -428,16 +449,23 @@
 							},function(res){
 								if(res.code==200){
 									localStorage.setItem('$state', JSON.stringify(res.userinfo));
-									getinfo(function(){
-										mui.hideLoading();
-										if(!res.userinfo.username){
-											mui.toast("请完善信息");
-											setinfo();
-										}else{
+									if(role==1){
+										getinfo(function(){
+											mui.hideLoading();
+											if(!res.userinfo.username){
+												mui.toast("请完善信息");
+												setinfo();
+											}else{
+												mui.toast("登录成功");
+												toMain();
+											}
+										});
+									}else{
+										getinfo(function(){
 											mui.toast("登录成功");
 											toMain();
-										}
-									});
+										});
+									}
 								}else{
 									mui.hideLoading();
 									mui.toast(res.msg);

@@ -108,8 +108,8 @@
 					<input type="file" name="file" id="userhead" value="" accept="image/*" multiple="" onchange="uploadhead(this);">
 					<span class="mui-icon mui-icon-compose"></span>更换头像
 				</div>
-				<img src="../images/user-head.png" id="user-head"/>
-				<div class="userinfo">Man</div>
+				<img :src="url+form.avatarimage" id="user-head"/>
+				<div class="userinfo">{{form.username}}</div>
 			</div>
 			<div class="h4rem"></div>
 			<div class="other-info">
@@ -169,8 +169,23 @@
 		<script type="text/javascript" src="../js/lib/plupload-2.1.2/js/plupload.full.min.js"></script>
 		<script type="text/javascript" src="../js/uploadimg.js"></script>
 		<script>
+			var schoolarr=school();
+			var cityDataarr=cityData();
+			var userinfo=app.getSettings();
 			mui.init({
-				swipeBack:true //启用右滑关闭功能
+				swipeBack:true ,//启用右滑关闭功能,
+				beforeback: function() {
+            //获得父页面的webview
+						var Scanner = plus.webview.getWebviewById('person');　
+            //触发父页面的自定义事件(refresh),从而进行刷新
+            mui.fire(Scanner, 'refresh',{
+							avatarimage:app.getSettings().avatarimage,
+							name:app.getSettings().username,
+							id:app.getSettings().id,
+						});
+            //返回true,继续页面关闭逻辑
+            return true;
+        },
 			});
 			function pubpicker(elem,type,data,callback){
 				var cityPicker = new mui.PopPicker({
@@ -226,15 +241,15 @@
 					document.getElementById("sex-picker").value=items[0].text;
 					Vm.form.genderdata = items[0].value;
 				});
-				pubpicker("school-picker",2,school(),function(items){
+				pubpicker("school-picker",2,schoolarr,function(items){
 					document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
 					Vm.form.teacheracademy_id = items[1].value;
 				});
-				pubpicker("city-picker",2,cityData(),function(items){
+				pubpicker("city-picker",2,cityDataarr,function(items){
 					document.getElementById("city-picker").value=items[0].text + " - " + items[1].text;
 					Vm.form.location_id = items[1].value;
 				});
-				pubpicker("birth-picker",2,cityData(),function(items){
+				pubpicker("birth-picker",2,cityDataarr,function(items){
 					document.getElementById("birth-picker").value=items[0].text + " - " + items[1].text;
 					Vm.form.home_id = items[1].value;
 				});
@@ -257,16 +272,49 @@
 					}) */
 				})
 			});
+			function getschoolname(id){
+				var allschool=app.getorschool();
+				for(var i=0;i<allschool.length;i++){
+					if(allschool[i].id==id){
+						return allschool[i].name;
+						break;
+					}
+				}
+			}
+			function getplacename(id){
+				var allplace=app.getalladdress();
+				for(var i=0;i<allplace.length;i++){
+					if(allplace[i].id==id){
+						return allplace[i].name;
+						break;
+					}
+				}
+			}
 			window.addEventListener('islogin',function(event){
 				//获得事件参数
-				var userinfo=app.getSettings();
+				userinfo=app.getSettings();
+				Vm.form.avatarimage=userinfo.avatarimage;
+				Vm.form.username=userinfo.username;
+				Vm.form.name=userinfo.name;
+				Vm.form.genderdata=userinfo.genderdata;
+				Vm.form.teacheracademy_id=userinfo.teacheracademy_id;
+				Vm.form.location_id=userinfo.location_id;
+				Vm.form.home_id=userinfo.home_id;
+				Vm.form.weixin=userinfo.weixin;
+				Vm.form.qq=userinfo.qq;
+				document.getElementById("sex-picker").value=userinfo.genderdata==1?'男':'女';
+				document.getElementById("school-picker").value=getschoolname(userinfo.teacheracademy_id);
+				document.getElementById("city-picker").value=getplacename(userinfo.location_id);
+				document.getElementById("birth-picker").value=getplacename(userinfo.home_id);
+				schoolarr=school();
+				cityDataarr=cityData();
 				Vm.islogin = event.detail.islogin;
-				Vm.form.mobile=userinfo.mobile;
 			});
 			var Vm = new Vue({
 				el: '#app',
 				data(){
 					return{
+						url:imgurl,
 						islogin:false,
 						form:{
 							avatarimage:"",//头像
@@ -276,7 +324,6 @@
 							teacheracademy_id:"",
 							location_id:"",
 							home_id:"",
-							mobile:"",
 							weixin:"",
 							qq:"",
 						}
@@ -314,7 +361,10 @@
 									}
 									});
 								}else{
-									mui.toast("已设置");
+									assignobj(userinfo,formdata);
+									localStorage.setItem('$state', JSON.stringify(userinfo));
+									mui.toast(res.msg);
+									mui.back();
 								}
 							}else{
 								mui.toast("网络错误");

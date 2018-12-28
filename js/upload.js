@@ -148,7 +148,8 @@ var uploader = new plupload.Uploader({
 					reportvideo = plus.webview.getWebviewById('reportvideo');
 				}
 				mui.fire(reportvideo,'url',{
-					fileinfo:g_object_name
+					fileinfo:g_object_name,
+					file:JSON.stringify(file),
 				});       
 				mui.openWindow({
 					id:'reportvideo',

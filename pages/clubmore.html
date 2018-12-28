@@ -165,128 +165,157 @@
 					});
 				})
 			});
+			var Vm;
 			window.addEventListener('clubmore',function(event){
 				//获得事件参数
 				//self.detail.message = event.detail.id;
-				console.log("aaa");
-			});
-			var Vm = new Vue({
-				el: '#app',
-				data(){
-					return{
-						url:imgurl,
-						cityone:getplace,
-						citytwo:getplace[0]['children'],
-						iscity:false,
-						isdance:false,
-						curone:getplace[0]['text'],
-						curtwo:"不限",
-						dancelist:siteinfo.setup,
-						curdance:"不限",
-						query:{
-							id:userinfo.id,
-							role:userinfo.role,
-							token:userinfo.token,
-							offset:1,
-							keyword:"",
-							location_id:"",
-							setup:"",
-						},
-						datalist:[]
-					}
-				},
-				mounted(){
-					this.getdata(0);
-				},
-				methods:{
-					getdata:function(type){
-						var self=this;
-						if(type==0){
-							self.query.offset=1;
-							mui.showLoading();
+				userinfo=app.getSettings();
+				siteinfo=app.getInfo();
+				getschool=app.getSchool();
+				getplace=app.getPlace();
+				/* Vm.initdata();
+				Vm.getdata(0); */
+				Vm = new Vue({
+					el: '#app',
+					data(){
+						return{
+							url:imgurl,
+							cityone:getplace,
+							citytwo:getplace[0]['children'],
+							iscity:false,
+							isdance:false,
+							curone:getplace[0]['text'],
+							curtwo:"不限",
+							dancelist:siteinfo.setup,
+							curdance:"不限",
+							query:{
+								id:userinfo.id,
+								role:userinfo.role,
+								token:userinfo.token,
+								offset:1,
+								keyword:"",
+								location_id:"",
+								setup:"",
+							},
+							datalist:[]
 						}
-						yyajax('index/index/club',this.query,function(res){
-							if(res.code==200){
-								if(type==1){
-									self.datalist=res.msg;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									if(res.msg.length!=0){
-										var newdata=res.msg;
-										var curdata=self.datalist;
-										self.datalist=curdata.concat(newdata);
+					},
+					mounted(){
+						this.getdata(0);
+					},
+					methods:{
+						getdata:function(type){
+							var self=this;
+							if(type==0){
+								self.query.offset=1;
+								mui.showLoading();
+							}
+							yyajax('index/index/club',this.query,function(res){
+								if(res.code==200){
+									if(type==1){
+										self.datalist=res.msg;
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										if(res.msg.length!=0){
+											var newdata=res.msg;
+											var curdata=self.datalist;
+											self.datalist=curdata.concat(newdata);
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+											},1000);
+										}else{
+											self.query.offset-=1;
+											setTimeout(function () {
+												mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+											},1000);
+										}
+									}else{
+										self.datalist=res.msg;
+										mui.hideLoading();
+										if(res.msg.length==0){
+											mui.toast("没有找到相关数据");
+										}
+									}
+								}else{
+									mui.toast(res.msg);
+									if(type==1){
+										setTimeout(function () {
+											mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
+										},1000);
+									}else if(type==2){
+										self.query.offset-=1;
 										setTimeout(function () {
 											mui('#commonListWrap').pullRefresh().endPullupToRefresh();
 										},1000);
 									}else{
-										self.query.offset-=1;
-										setTimeout(function () {
-											mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
-										},1000);
-									}
-								}else{
-									self.datalist=res.msg;
-									mui.hideLoading();
-									if(res.msg.length==0){
-										mui.toast("没有找到相关数据");
+										mui.hideLoading();
 									}
 								}
-							}else{
-								mui.toast(res.msg);
-								if(type==1){
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPulldownToRefresh();
-									},1000);
-								}else if(type==2){
-									self.query.offset-=1;
-									setTimeout(function () {
-										mui('#commonListWrap').pullRefresh().endPullupToRefresh();
-									},1000);
-								}else{
-									mui.hideLoading();
-								}
+							})
+						},
+						selcity:function(){
+							this.iscity=!this.iscity;
+							this.isdance=false;
+						},
+						seldance:function(){
+							this.isdance=!this.isdance;
+							this.iscity=false;
+						},
+						selstepone:function(val,index){
+							this.curone=val;
+							this.citytwo=getplace[index]['children'];
+						},
+						selsteptwo:function(val,value){
+							this.curtwo=val;
+							this.query.location_id=value;
+							this.query.keyword="";
+							this.closeall();
+							this.getdata(0);
+						},
+						seldanceone:function(val,index){
+							this.curdance=val;
+							this.query.setup=index;
+							this.query.keyword="";
+							this.closeall();
+							this.getdata(0);
+						},
+						closeall:function(){
+							this.iscity=false;
+							this.isdance=false;
+						},
+						initdata:function(){
+							Vm.$data={
+								url:imgurl,
+								cityone:getplace,
+								citytwo:getplace[0]['children'],
+								iscity:false,
+								isdance:false,
+								curone:getplace[0]['text'],
+								curtwo:"不限",
+								dancelist:siteinfo.setup,
+								curdance:"不限",
+								query:{
+									id:userinfo.id,
+									role:userinfo.role,
+									token:userinfo.token,
+									offset:1,
+									keyword:"",
+									location_id:"",
+									setup:"",
+								},
+								datalist:[]
 							}
-						})
-					},
-					selcity:function(){
-						this.iscity=!this.iscity;
-						this.isdance=false;
-					},
-					seldance:function(){
-						this.isdance=!this.isdance;
-						this.iscity=false;
-					},
-					selstepone:function(val,index){
-						this.curone=val;
-						this.citytwo=getplace[index]['children'];
-					},
-					selsteptwo:function(val,value){
-						this.curtwo=val;
-						this.query.location_id=value;
-						this.query.keyword="";
-						this.closeall();
-						this.getdata(0);
-					},
-					seldanceone:function(val,index){
-						this.curdance=val;
-						this.query.setup=index;
-						this.query.keyword="";
-						this.closeall();
-						this.getdata(0);
-					},
-					closeall:function(){
-						this.iscity=false;
-						this.isdance=false;
-					},
-					resetdata:function(){
-						this.query.offset=1;
-						this.query.keyword="";
-						this.query.location_id="";
-						this.query.setup="";
+						},
+						resetdata:function(){
+							this.query.offset=1;
+							this.query.keyword="";
+							this.query.location_id="";
+							this.query.setup="";
+						}
 					}
-				}
+				});
 			});
 		</script>
 	</body>
