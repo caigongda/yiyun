@@ -104,12 +104,12 @@
 											<img :src="url+item.avatarimage" id="club-index">
 											<div class="state-auth-info">
 												<p>{{item.name}}</p>
-												<div style="display: flex;" v-if="query.user_role==1">
+												<div style="display: flex;" v-if="query.user_role==1&&!!item.major">
 													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
 														{{siteinfo.major[val]}}
 													</span>
 												</div>
-												<div style="display: flex;" v-if="query.user_role==2">
+												<div style="display: flex;" v-if="query.user_role==2&&!!item.setup">
 													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
 														{{siteinfo.setup[val]}}
 													</span>
@@ -119,10 +119,32 @@
 										<p class="mui-ellipsis-2 state-con-info">
 											{{item.content}}
 										</p>
+										<div class="state-con-info sother-info" v-if="query.user_role==1">
+											<div style="width: 100%;" v-if="!!item.teacheracademy_id">毕业院校：{{item.teacheracademy_id | parseschool}}</div>
+											<div style="width: 50%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+											<div style="width: 50%;" v-if="!!item.home_id">家乡地：{{item.home_id | parsehome}}</div>
+											<div style="width: 50%;" v-if="!!item.jobcategory">职位类别：{{item.jobcategory | parsejob}}</div>
+											<div style="width: 50%;" v-if="!!item.expectant_id">期望工作地：{{item.expectant_id | parsework}}</div>
+											<div style="width: 50%;" v-if="!!item.parsemajor">专业：{{item.major | parsemajor}}</div>
+											<div style="width: 50%;" v-if="!!item.experience">教学经验：{{item.experience | parseexp}}</div>
+										</div>
+										<div class="state-con-info sother-info" v-if="query.user_role==2">
+											<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+											<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
+											<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
+											<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
+											<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
+											<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
+											<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+										</div>
 										<div class="state-img-wrap" v-if="!!item.images">
 											<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 										</div>
 									</a>
+								</li>
+								<li v-if="dynamic.length==0">
+									<div class="state-nodata"></div>
+									<p class="state-nodata-p">暂无数据</p>
 								</li>
 							</ul>
 						</div>
@@ -136,6 +158,8 @@
 		<script>
 			var userinfo=app.getSettings();
 			var siteinfo=app.getInfo();
+			var getalladdress=app.getalladdress();
+			var getorschool=app.getorschool();
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
@@ -218,6 +242,8 @@
 				//Vm.getclubdata(0);
 				userinfo=app.getSettings();
 				siteinfo=app.getInfo();
+				getalladdress=app.getalladdress();
+				getorschool=app.getorschool();
 				mui.showLoading();
 				Vm.query.id=userinfo.id;
 				Vm.query.role=userinfo.role;
@@ -245,6 +271,111 @@
 						dynamic:[],
 					}
 				},
+				filters:{
+					parseaddress(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsesetup(val){
+						if(val!=''){
+							return siteinfo.setup[val];
+						}else{
+							return "";
+						}
+					},
+					parseposition(val){
+						if(val!==''){
+							return siteinfo.position[val];
+						}else{
+							return "";
+						}
+					},
+					parsewelfare(val){
+						if(val!==''){
+							return siteinfo.welfare[val];
+						}else{
+							return "";
+						}
+					},
+					parsesubsidy(val){
+						if(val!==''){
+							return siteinfo.subsidy[val];
+						}else{
+							return "";
+						}
+					},
+					parsesalary(val){
+						if(val!==''){
+							return siteinfo.salary[val];
+						}else{
+							return "";
+						}
+					},
+					parsescale(val){
+						if(val!==''){
+							return siteinfo.scale[val];
+						}else{
+							return "";
+						}
+					},
+					parsehome(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parseschool(val){
+						if(val!=""){
+							var address=getorschool.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsejob(val){
+						if(val!=""){
+							return siteinfo.jobcategory[val];
+						}else{
+							return "";
+						}
+					},
+					parsework(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsemajor(val){
+						if(val!=""){
+							return siteinfo.parsemajor[val];
+						}else{
+							return "";
+						}
+					},
+					parseexp(val){
+						if(val!=""){
+							return siteinfo.experience[val];
+						}else{
+							return "";
+						}
+					},
+				},
 				computed:{
 					leftvideo(){
 						if(this.videolist.length!=0){
@@ -268,9 +399,7 @@
 				methods:{
 					getdata(){
 						var self=this;
-						console.log(JSON.stringify(this.query));
 						yyajax('index/user/collection',this.query,function(res){
-						console.log(JSON.stringify(res));
 							mui.hideLoading();
 							if(res.code==200){
 								self.videolist=res.msg.video;

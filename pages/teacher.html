@@ -19,7 +19,8 @@
 				</header>
 			</form>
 			<div class="scroll-parent">
-				<div id="commonListWrap">
+				<div id="commonListWrap" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
 					<div class="teacher-video-wrap">
 						<div>
 							<div class="teacher-video-left">
@@ -42,7 +43,7 @@
 								</div>
 							</div>
 							<div class="teacher-video-right">
-								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
+								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id" v-if="rightvideo.lengt!=0">
 									<div class="img-wrap">
 										<img :src="url+item.image" />
 										<span class="play-icon"></span>
@@ -56,6 +57,7 @@
 									</div>
 								</div>
 							</div>
+						</div>
 						</div>
 					</div>
 				</div>
@@ -83,70 +85,72 @@
 				return false;
 			};
 			var videoplay = null;
-			mui.plusReady(function() {
-				mui(".mui-input-clear")[0].addEventListener('focus', function(){
-					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
-						Vm.query.keyword="";
+			function events(){
+				mui.plusReady(function() {
+					mui(".mui-input-clear")[0].addEventListener('focus', function(){
+						mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+							Vm.query.keyword="";
+							Vm.getdata(0);
+						});
+					});
+					mui.preload({
+							id: 'videoplay',
+							url: 'videoplay.html'
+					});
+					mui("#commonListWrap").pullRefresh({
+						down : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								Vm.query.offset=1;
+								Vm.getdata(1);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					})
+					function loadMore(pullRefresh) {
+						// 如果没有更多数据了，则关闭上拉加载
+						//pullRefresh.endPullupToRefresh(true);
+						Vm.query.offset+=1;
+						Vm.getdata(2);
+						// 如果有更多数据，则继续
+						//pullRefresh.endPullupToRefresh(false);
+					};
+					searchinit("search",function(val){
+						Vm.query.keyword=val;
 						Vm.getdata(0);
 					});
-				});
-				mui.preload({
-						id: 'videoplay',
-						url: 'videoplay.html'
-				});
-				mui("#commonListWrap").pullRefresh({
-					down : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							Vm.query.offset=1;
-							Vm.getdata(1);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					},
-					up : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							loadMore(this);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					}
-				})
-				function loadMore(pullRefresh) {
-					// 如果没有更多数据了，则关闭上拉加载
-					//pullRefresh.endPullupToRefresh(true);
-					Vm.query.offset+=1;
-					Vm.getdata(2);
-					// 如果有更多数据，则继续
-					//pullRefresh.endPullupToRefresh(false);
-				};
-				searchinit("search",function(val){
-					Vm.query.keyword=val;
-					Vm.getdata(0);
-				});
-				mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
-					var id = this.dataset.id;
-					if(!videoplay){
-						videoplay = plus.webview.getWebviewById('videoplay');
-					}
-					mui.fire(videoplay,'userId',{
-						id:id
-					});       
-					mui.openWindow({
-						id:'videoplay',
-						show:{
-							duration:250
+					mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
+						var id = this.dataset.id;
+						if(!videoplay){
+							videoplay = plus.webview.getWebviewById('videoplay');
 						}
-					});
-				})
-			});
+						mui.fire(videoplay,'userId',{
+							id:id
+						});       
+						mui.openWindow({
+							id:'videoplay',
+							show:{
+								duration:250
+							}
+						});
+					})
+				});
+			}
 			function getteachervideocache(){
 				var stateText = localStorage.getItem('$teachervideo') || "[]";
 				return JSON.parse(stateText);
@@ -165,6 +169,7 @@
 							keyword:""
 						};
 				Vm.getdata(0);
+				events();
 			});
 			var player = null;
 			var Vm = new Vue({
@@ -195,6 +200,7 @@
 					}
 				},
 				mounted(){
+					//events();
 					//this.getdata(0);
 				},
 				methods:{

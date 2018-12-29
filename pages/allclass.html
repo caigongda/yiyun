@@ -10,13 +10,11 @@
 		<link href="../css/allclass.css" rel="stylesheet" />
 	</head>
 	<body>
-		<div id="app">
+		<div id="app" v-cloak>
 			<div class="mui-slider" id="banner">
 				<div class="mui-slider-group mui-slider-loop">
 				<!--支持循环，需要重复图片节点-->
-					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
-					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
-					<div class="mui-slider-item"><a href="#"><div class="baner-item"><img src="../images/classbanner.jpeg" /></div></a></div>
+					<div class="mui-slider-item" v-for="(item,index) in bannerlist" :key="index"><a href="#"><div class="baner-item"><img :src="url+item.bannerimage" /></div></a></div>
 				</div>
 			</div>
 			<div class="nav-wrap">
@@ -212,13 +210,31 @@
 				data(){
 					return{
 						url:imgurl,
+						bannerlist:[],
 						datalist:{},
 					}
 				},
 				mounted(){
 					this.getdata();
+					this.getbanner();
 				},
 				methods:{
+					getbanner(){
+						var self=this;
+						yyajax('index/index/banner',{type:3},function(res){
+							if(res.code==200){
+								self.bannerlist=res.msg;
+								setTimeout(function(){
+									var gallery = mui('.mui-slider');
+									gallery.slider({
+										interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+									});
+								},100)
+							}else{
+								mui.toast('网络错误');
+							}
+						})
+					},
 					getdata(){
 						var self=this;
 						yyajax('index/index/advert',{},function(res){

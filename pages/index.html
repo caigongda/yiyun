@@ -64,11 +64,20 @@
 											</div>
 										</div>
 									</div>
-									<p class="state-con-info" style="word-wrap:break-word;white-space:normal;font-size: 0.26rem;" v-if="!!item.content">
+									<p class="state-con-info" v-if="!!item.content">
 										{{item.content}}
 									</p>
+									<div class="state-con-info sother-info">
+										<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+										<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
+										<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
+										<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
+										<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
+										<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
+										<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+									</div>
 									<div class="state-img-wrap" v-if="!!item.images">
-										<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" data-preview-src="" data-preview-group="1"/>
+										<img v-for="value in item.images.split(',')" :src="url+value"/>
 									</div>
 									<div class="action-wrap">
 										<div>
@@ -107,8 +116,10 @@
 				var ws=null;
 				var list=null;
 				var userinfo=app.getSettings();
+				var otherinfo=app.getInfo();
 				// 处理沉浸式状态栏
 				var topoffset=0;
+				var getalladdress=app.getalladdress();
 				var ms=(/Html5Plus\/.+\s\(.*(Immersed\/(\d+\.?\d*).*)\)/gi).exec(navigator.userAgent);
 				if(ms&&ms.length>=3){
 					topoffset=parseFloat(ms[2]);
@@ -271,15 +282,12 @@
 							token:userinfo.token,
 							beinvite_id:id,
 						};
-						yyajax('index/index/invite',formdata,function(res){
+						var self=this;
+						pubinvite(formdata,function(msg){
+							//邀请成功
+							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
 							mui.hideLoading();
-							if(res.code==200){
-								mui.toast(res.msg);
-								//$(".addinvite").addClass("");
-							}else{
-								mui.toast(res.msg);
-							}
-						})
+						});
 					});
 					mui("#statelist").on("tap",".addcol",function(){//收藏
 						mui.showLoading();
@@ -291,14 +299,11 @@
 							type:4,
 							pid:id,
 						};
-						yyajax('index/index/collection',formdata,function(res){
+						var self=this;
+						pubcol(formdata,function(msg){
+							//收藏成功
 							mui.hideLoading();
-							if(res.code==200){
-								mui.toast(res.msg);
-								
-							}else{
-								mui.toast(res.msg);
-							}
+							$(self).children(".nocol").addClass("coled").removeClass("nocol");
 						});
 					});
 				});
@@ -318,11 +323,13 @@
 					//获得事件参数
 					//location.reload();
 					Vm.otherinfo=app.getInfo();
-					var userinfo=app.getSettings();
+					otherinfo=app.getInfo();
+					getalladdress=app.getalladdress();
+					userinfo=app.getSettings();
 					Vm.getbanner();
 					if(getclubstatecache().length==0){
 						if(JSON.stringify(userinfo)!='{}'){
-							Vm.getalldata();
+							ws.beginPullToRefresh();
 						}
 					}
 				});
@@ -339,6 +346,60 @@
 								offset:1,
 							}
 						}
+					},
+					filters:{
+						parseaddress(val){
+							if(val!=""){
+								var address=getalladdress.filter(function (x) {
+									return x['id']==val;
+								});
+								return address[0].name;
+							}else{
+								return "";
+							}
+						},
+						parsesetup(val){
+							if(val!=''){
+								return otherinfo.setup[val];
+							}else{
+								return "";
+							}
+						},
+						parseposition(val){
+							if(val!==''){
+								return otherinfo.position[val];
+							}else{
+								return "";
+							}
+						},
+						parsewelfare(val){
+							if(val!==''){
+								return otherinfo.welfare[val];
+							}else{
+								return "";
+							}
+						},
+						parsesubsidy(val){
+							if(val!==''){
+								return otherinfo.subsidy[val];
+							}else{
+								return "";
+							}
+						},
+						parsesalary(val){
+							if(val!==''){
+								return otherinfo.salary[val];
+							}else{
+								return "";
+							}
+						},
+						parsescale(val){
+							if(val!==''){
+								return otherinfo.scale[val];
+							}else{
+								return "";
+							}
+						},
 					},
 					mounted(){
 							//var self=this;
@@ -384,6 +445,7 @@
 								yyajax('index/index/clubdynamic',{id:userinfo.id,role:userinfo.role,token:userinfo.token,offset:this.page.offset},function(res){
 									if(res.code==200){
 										if(res.msg.length!=0){
+											console.log(JSON.stringify(res.msg));
 											localStorage.setItem('$getclubstate', JSON.stringify(res.msg));
 											var alldata=self.statelist.concat(res.msg);
 											self.statelist=alldata;

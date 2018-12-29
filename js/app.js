@@ -152,6 +152,7 @@ function pubinvite(formdata,cb){//邀请
 			//$(".addinvite").addClass("");
 			cb(res.msg);
 		}else{
+			mui.hideLoading();
 			mui.toast(res.msg);
 		}
 	})
@@ -162,6 +163,7 @@ function pubcol(formdata,cb){
 			mui.toast(res.msg);
 			cb(res.msg);
 		}else{
+			mui.hideLoading();
 			mui.toast(res.msg);
 		}
 	});
@@ -306,11 +308,6 @@ function pubcol(formdata,cb){
 	owner.setSchool = function(state) {
 		var state = state || {};
 		localStorage.setItem('$school', JSON.stringify(state));
-	};
-	/* 获取院校 */
-	owner.getSchool = function() {
-		var stateText = localStorage.getItem('$school') || "{}";
-		return JSON.parse(stateText);
 	};
 	/**
 	* 设置原始数据院校

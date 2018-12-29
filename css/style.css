@@ -230,22 +230,28 @@ body {
 	width: calc(100% - 20px);
 	color: #333;
 	margin: 0.16rem auto;
-	font-size: 0.25rem;
+	font-size: 0.26rem;
+}
+.sother-info{
+	display: flex;flex-wrap: wrap;background: rgba(200,172,248,0.1);padding: 10px;border-radius: 3px;
 }
 .state-con-info>div{
 	color: #333;
-	font-size: 0.25rem;
+	font-size: 0.26rem;
 }
 .state-img-wrap{
 	width: calc(100% - 20px);
 	display: flex;
-	height: 1.44rem;
-	margin:0.16rem auto;
+	height: auto;
+	margin:0 auto;
+	margin-top: 0.16rem;
+	flex-wrap: wrap;
 }
 .state-img-wrap img{
 	width: 24%;
-	height: 100%;
+	height: 1.44rem;
 	border-radius: 2px;
+	margin-bottom: 0.16rem;
 }
 .state-img-wrap img:not(:nth-child(4)){
 	margin-right: calc(4%/3);
@@ -266,7 +272,7 @@ body {
 }
 .img-wrap{
 	width: 100%;
-	height: 4.16rem;
+	height: 5.16rem;
 	position: relative;
 }
 .play-icon{
@@ -462,7 +468,7 @@ body {
 
 /* 收藏邀请 */
 .action-wrap{
-	width: calc(100% - 20px);margin:0 auto;border-top: 1px solid #e6e6e6;display: flex;height: 30px;align-items: center;
+	width: calc(100% - 20px);margin:0 auto;border-top: 1px solid #e6e6e6;display: flex;height: 40px;align-items: center;
 }
 .action-wrap>div{
 	width: 50%;height:100%;color:#666;text-align:center;font-size: 0.25rem;display: flex;align-items: center;justify-content: space-around;			
@@ -477,13 +483,13 @@ body {
 	background: url(../images/invite.svg);
 }
 .action-wrap .invited{
-	background: url(../images/invite.svg);
+	background: url(../images/invited.svg);
 }
 .action-wrap .nocol{
 	background: url(../images/collec.svg);
 }
 .action-wrap .coled{
-	background: url(../images/invite.svg);
+	background: url(../images/collected.svg);
 }
 .cross-line{
 	width:100%;height: 10px;background: #F5F5F5;

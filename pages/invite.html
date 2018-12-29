@@ -99,7 +99,7 @@
 				<div :class="{'tab-active':isinvite}" @tap="isinvite=true">邀请({{leftdata.length}})</div>
 				<div :class="{'tab-active':!isinvite}" @tap="isinvite=false">被邀请({{rightdata.length}})</div>
 			</div>
-			<div class="scroll-parent" v-if="isinvite">
+			<div class="scroll-parent" v-if="isinvite" style="overflow: scroll;">
 				<div id="commonListWrap">
 					<ul class="mui-table-view invitelist">
 						<li class="mui-table-view-cell" v-for="(item,index) in leftdata" :key="index" :data-id="item.user_id" :data-role="item.user_role">
@@ -112,7 +112,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="scroll-parent" v-if="!isinvite">
+			<div class="scroll-parent" v-if="!isinvite" style="overflow: scroll;">
 				<div id="commonListWrap">
 					<ul class="mui-table-view invitelist">
 						<li class="mui-table-view-cell" v-for="(item,index) in rightdata" :key="index"  :data-id="item.user_id" :data-role="item.user_role">

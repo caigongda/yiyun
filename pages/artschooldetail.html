@@ -17,7 +17,7 @@
 			</header>
 			<div class="art-detail">
 				<div class="art-detail-header">
-					<img :src="url+clubinfo.xiaoimage"/>
+					<img :src="url+clubinfo.xiaoimage" v-if="!!clubinfo.xiaoimage"/>
 					<div>
 						<h4>{{clubinfo.name}}<span>{{clubinfo.location_id | parseaddress}}</span></h4>
 						<p>官网网址：{{clubinfo.url}}</p>
@@ -28,7 +28,7 @@
 			<div class="list-title art-detail-title">
 				<h4>招生信息</h4>
 			</div>
-			<div class="art-detail-img ripple" v-for="value in clubinfo.image.split(',')">
+			<div class="art-detail-img ripple" v-for="value in clubinfo.image.split(',')" v-if="!!clubinfo.image">
 				<img :src="url+value" data-preview-src="" data-preview-group="1"/>
 			</div>
 		</div>

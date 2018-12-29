@@ -111,23 +111,24 @@ var sw;
 var uploader = new plupload.Uploader({
 	runtimes : 'html5,flash,silverlight,html4',
 	browse_button : 'selectfiles',
-    //multi_selection: false,
+    multi_selection: false,
 	container: document.getElementById('container'),
 	flash_swf_url : 'lib/plupload-2.1.2/js/Moxie.swf',
+	filters: [
+		{title : "mp4 files", extensions: "mp4"}
+	],
 	silverlight_xap_url : 'lib/plupload-2.1.2/js/Moxie.xap',
     url : 'http://oss.aliyuncs.com',
 	init: {
 		PostInit: function() {
 			
 		},
-
 		FilesAdded: function(up, files) {
             up.start();
 			mui.plusReady(function(){
 				sw=plus.nativeUI.showWaiting("正在上传，请等待...\n");
-			})
+			});
 		},
-
 		BeforeUpload: function(up, file) {
             check_object_radio();
             get_dirname();
@@ -164,7 +165,7 @@ var uploader = new plupload.Uploader({
 		},
 
 		Error: function(up, err) {
-			
+			mui.toast("请选择视频文件");
 		}
 	}
 });

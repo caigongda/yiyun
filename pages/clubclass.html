@@ -132,6 +132,15 @@
 										<div class="mui-ellipsis-2 state-con-info" style="width: calc(100% - 35px);" v-if="!!item.content">
 											{{item.content}}
 										</div>
+										<div class="state-con-info sother-info">
+											<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+											<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
+											<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
+											<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
+											<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
+											<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
+											<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+										</div>
 										<div class="state-img-wrap" style="width: calc(100% - 35px);" v-if="!!item.images">
 											<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 										</div>
@@ -158,6 +167,7 @@
 				</div>
 			</div>
 		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
@@ -166,6 +176,7 @@
 			var siteinfo=app.getInfo();
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
+			var getalladdress=app.getalladdress();
 			var clubstatedetail = null;
 			var personinfo=null;
 			mui.init({
@@ -278,15 +289,11 @@
 							token:userinfo.token,
 							beinvite_id:id,
 						};
+						var self=this;
 						pubinvite(formdata,function(msg){
 							//邀请成功
+							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
 							mui.hideLoading();
-							if(res.code==200){
-								mui.toast(res.msg);
-								
-							}else{
-								mui.toast(res.msg);
-							}
 						});
 					});
 					mui("#app").on("tap",".addcol",function(){//收藏
@@ -299,15 +306,11 @@
 							type:4,
 							pid:id,
 						};
+						var self=this;
 						pubcol(formdata,function(msg){
 							//收藏成功
 							mui.hideLoading();
-							if(res.code==200){
-								mui.toast(res.msg);
-								
-							}else{
-								mui.toast(res.msg);
-							}
+							$(self).children(".nocol").addClass("coled").removeClass("nocol");
 						});
 					});
 				});
@@ -315,6 +318,7 @@
 			var Vm;
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
+				getalladdress=app.getalladdress();
 				userinfo=app.getSettings();
 				siteinfo=app.getInfo();
 				getschool=app.getSchool();
@@ -380,6 +384,60 @@
 							},
 							datalist:[]
 						}
+					},
+					filters:{
+						parseaddress(val){
+							if(val!=""){
+								var address=getalladdress.filter(function (x) {
+									return x['id']==val;
+								});
+								return address[0].name;
+							}else{
+								return "";
+							}
+						},
+						parsesetup(val){
+							if(val!=''){
+								return siteinfo.setup[val];
+							}else{
+								return "";
+							}
+						},
+						parseposition(val){
+							if(val!==''){
+								return siteinfo.position[val];
+							}else{
+								return "";
+							}
+						},
+						parsewelfare(val){
+							if(val!==''){
+								return siteinfo.welfare[val];
+							}else{
+								return "";
+							}
+						},
+						parsesubsidy(val){
+							if(val!==''){
+								return siteinfo.subsidy[val];
+							}else{
+								return "";
+							}
+						},
+						parsesalary(val){
+							if(val!==''){
+								return siteinfo.salary[val];
+							}else{
+								return "";
+							}
+						},
+						parsescale(val){
+							if(val!==''){
+								return siteinfo.scale[val];
+							}else{
+								return "";
+							}
+						},
 					},
 					mounted(){
 						this.getclubdata(0);

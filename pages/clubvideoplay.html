@@ -44,6 +44,12 @@ mui.init({
 	beforeback: function(){
 		var slidewrapper=document.querySelector(".slidewrapper");
 		slidewrapper.innerHTML='';
+		var video=document.querySelectorAll("video");
+		mui.each(video,function(index,tem){	
+			if(tem.currentTime>0){
+				tem.pause();
+			}
+		});
 		mui.plusReady(function() {
 			if(mui.os.ios){
 				plus.navigator.setFullscreen(false);
@@ -55,18 +61,19 @@ mui.init({
 	}
 });
 //$(function() {
-	var memberinfo=null;
+	var clubpersoninfo=null;
 var userinfo=app.getSettings();
 var teachervideo_id;
 var page=1;
+var isperson=0;
 $(function() {
 	/* mui.plusReady(function(){
 		plus.navigator.setStatusBarStyle( style );
 	}) */
 	mui.plusReady(function(){
 		mui.preload({
-				id: 'memberinfo',
-				url: 'memberinfo.html'
+				id: 'clubpersoninfo',
+				url: 'personinfo.html'
 		});
 	});
 	fss = new ddfullscreenslider({
@@ -106,27 +113,30 @@ $(function() {
 		}
 	});
 	mui(".slidewrapper").on("tap",".userhead",function(event){//点击头像
-		event.stopPropagation();
-		var _video=$(this).parents(".slide").find(".video");
-		_video.trigger("pause");
-		if(mui.os.ios){
-			plus.navigator.setFullscreen(false);
-		}else{
-			plus.navigator.setFullscreen(false);
-		}
-		var userid=this.dataset.userid;
-		if(!memberinfo){
-			memberinfo = plus.webview.getWebviewById('memberinfo');
-		}
-		mui.fire(memberinfo,'userId',{
-			userid:userid
-		});
-		mui.openWindow({
-			id:'memberinfo',
-			show:{
-				duration:250
+		if(isperson!='1'){
+			event.stopPropagation();
+			var _video=$(this).parents(".slide").find(".video");
+			_video.trigger("pause");
+			if(mui.os.ios){
+				plus.navigator.setFullscreen(false);
+			}else{
+				plus.navigator.setFullscreen(false);
 			}
-		});
+			var user_id=this.dataset.userid;
+			if(!clubpersoninfo){
+				clubpersoninfo = plus.webview.getWebviewById('clubpersoninfo');
+			}
+			mui.fire(clubpersoninfo,'scroll2top',{
+				user_id:user_id,
+				user_role:2,
+			});
+			mui.openWindow({
+				id:'clubpersoninfo',
+				show:{
+					duration:250
+				}
+			});
+		}
 	})
 	mui(".slidewrapper").on("tap",".addcol",function(event){//点击收藏
 		event.stopPropagation();
@@ -175,6 +185,8 @@ $(function() {
 });
 window.addEventListener('userId',function(event){
 	var vid=event.detail.id;
+	console.log(vid);
+	isperson=event.detail.isperson;
 	userinfo=app.getSettings();
 	mui.plusReady(function() {
 		plus.navigator.setFullscreen(true);
@@ -228,7 +240,7 @@ function getjson(page,id){
 						mui.each(arr,function(index,tem){
 							var article=document.createElement("article");
 							article.className="slide";
-							article.style.backgroundImage='url('+tem["vimg"]+')';
+							article.style.backgroundImage='../images/bg.jpg';
 							article.innerHTML='<div class="videodiv" data-id="'+tem["id"]+'" data-url="'+tem["video"]+'" data-img="'+tem["vimg"]+'"><div class="spinner"><span class="mui-spinner"></span><span class="ltxt">加载中...</span></div> <div class="right_user"><div class="userhead" data-userid="'+tem["club_id"]+'"><img src="'+tem["head"]+'" alt="" /></div><div class="right_ico addcol" data-userid="'+tem["club_id"]+'"><img src="../icon/live.png"/><span>'+tem["live"]+'</span></div><div class="right_ico invite" data-userid="'+tem["club_id"]+'"><img src="../icon/share.png" /></div></div><img  src="../icon/play.png?p=12" class="play" /><div class="user_name">\<p class="name">@'+tem["username"]+'</p>\<p>'+tem["txt"]+'</p></div></div>';
 							slidewrapper.appendChild(article);	
 						});

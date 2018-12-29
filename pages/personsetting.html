@@ -341,18 +341,17 @@
 						formdata.token=userinfo.token;
 						yyajax('index/user/settings',formdata,function(res){
 							if(res.code==200){
-								assignobj(userinfo,formdata);
 								localStorage.setItem('$state', JSON.stringify(userinfo));
 								if(self.islogin==true){
 									mui.toast("提交成功");
 									if(!main){
-									main = plus.webview.getWebviewById('main');
-									}     
-									mui.openWindow({
-									id:'main',
-									show:{
-										duration:250
+										main = plus.webview.getWebviewById('main');
 									}
+									mui.openWindow({
+										id:'main',
+										show:{
+											duration:250
+										}
 									});
 								}else{
 									assignobj(userinfo,formdata);

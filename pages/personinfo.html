@@ -52,7 +52,7 @@
 			</div>
 			<div class="video-wrap" v-show="curtab=='1'">
 				<div class="teacher-video-left">
-					<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
+					<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0" :data-id="item.id">
 						<div class="img-wrap">
 							<img :src="url+item.image" />
 							<span class="play-icon"></span>
@@ -71,7 +71,7 @@
 					</div>
 				</div>
 				<div class="teacher-video-right">
-					<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index">
+					<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
 						<div class="img-wrap">
 							<img :src="url+item.image" />
 							<span class="play-icon"></span>
@@ -110,6 +110,24 @@
 								<p class="state-con-info" v-if="!!item.content">
 									{{item.content}}
 								</p>
+								<div class="state-con-info sother-info" v-if="query.user_role==1">
+									<div style="width: 100%;" v-if="!!item.teacheracademy_id">毕业院校：{{item.teacheracademy_id | parseschool}}</div>
+									<div style="width: 50%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+									<div style="width: 50%;" v-if="!!item.home_id">家乡地：{{item.home_id | parsehome}}</div>
+									<div style="width: 50%;" v-if="!!item.jobcategory">职位类别：{{item.jobcategory | parsejob}}</div>
+									<div style="width: 50%;" v-if="!!item.expectant_id">期望工作地：{{item.expectant_id | parsework}}</div>
+									<div style="width: 50%;" v-if="!!item.parsemajor">专业：{{item.major | parsemajor}}</div>
+									<div style="width: 50%;" v-if="!!item.experience">教学经验：{{item.experience | parseexp}}</div>
+								</div>
+								<div class="state-con-info sother-info" v-if="query.user_role==2">
+									<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+									<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
+									<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
+									<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
+									<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
+									<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
+									<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+								</div>
 								<div class="state-img-wrap" v-if="!!item.images">
 									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
 								</div>
@@ -147,6 +165,8 @@
 			var siteinfo=app.getInfo();
 			var getschool=app.getSchool();
 			var getplace=app.getPlace();
+			var getalladdress=app.getalladdress();
+			var getorschool=app.getorschool();
 			var backButtonPress = 0;
 			$(function(){
 				$(window).scroll(function(){
@@ -175,7 +195,8 @@
 			var invite = null;
 			var collection = null;
 			var personsetting = null;
-			var videoplay = null;
+			var tvideoplay = null;
+			var cvideoplay=null;
 			var personcontact = null;//联系方式
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
@@ -196,12 +217,16 @@
 						url: 'personsetting.html'
 				});
 				mui.preload({
-						id: 'videoplay',
+						id: 'tvideoplay',
 						url: 'videoplay.html'
 				});
 				mui.preload({
 						id: 'personcontact',
 						url: 'personcontact.html'
+				});
+				mui.preload({
+						id: 'cvideoplay',
+						url: 'clubvideoplay.html'
 				});
 				mui(".person-prod-count").on("tap","#invite",function(){
 					var id = this.getAttribute('class');
@@ -229,7 +254,8 @@
 						collection = plus.webview.getWebviewById('collection');
 					}
 					mui.fire(collection,'userId',{
-						id:id
+						user_id:Vm.query.user_id,
+						user_role:Vm.query.user_role,
 					});
 					mui.openWindow({
 						id:'collection',
@@ -258,19 +284,36 @@
 					});
 				});
 				mui("#video").on("tap",".teacher-video-list",function(){
-					var id = this.getAttribute('class');
-					if(!videoplay){
-						videoplay = plus.webview.getWebviewById('videoplay');
-					}
-					mui.fire(videoplay,'userId',{
-						id:id
-					});       
-					mui.openWindow({
-						id:'videoplay',
-						show:{
-							duration:250
+					var id = this.dataset.id;
+					if(Vm.query.user_role==1){
+						if(!tvideoplay){
+							tvideoplay = plus.webview.getWebviewById('tvideoplay');
 						}
-					});
+						mui.fire(tvideoplay,'userId',{
+							id:id,
+							isperson:1,
+						});
+						mui.openWindow({
+							id:'tvideoplay',
+							show:{
+								duration:250
+							}
+						});
+					}else{
+						if(!cvideoplay){
+							cvideoplay = plus.webview.getWebviewById('cvideoplay');
+						}
+						mui.fire(cvideoplay,'userId',{
+							id:id,
+							isperson:1,
+						});
+						mui.openWindow({
+							id:'cvideoplay',
+							show:{
+								duration:250
+							}
+						});
+					}
 				});
 				mui("#video").on("tap","#personphone",function(){
 					var id = this.getAttribute('class');
@@ -289,6 +332,7 @@
 					});
 				});
 				mui("#video").on("tap",".addinvite",function(){//邀请
+				mui.showLoading();
 					var id = this.dataset.id;
 					var formdata={
 						id:userinfo.id,
@@ -296,11 +340,15 @@
 						token:userinfo.token,
 						beinvite_id:id,
 					};
+						var self=this;
 					pubinvite(formdata,function(msg){
 						//邀请成功
+						mui.hideLoading();
+						$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
 					});
 				});
 				mui("#video").on("tap",".addcol",function(){//收藏
+				mui.showLoading();
 					var id = this.dataset.id;
 					var formdata={
 						id:userinfo.id,
@@ -309,9 +357,11 @@
 						type:4,
 						pid:id,
 					};
+						var self=this;
 					pubcol(formdata,function(msg){
 						//收藏成功
-						
+						mui.hideLoading();
+						$(self).children(".nocol").addClass("coled").removeClass("nocol");
 					});
 				});
 			});
@@ -322,6 +372,8 @@
 				siteinfo=app.getInfo();
 				getschool=app.getSchool();
 				getplace=app.getPlace();
+				getalladdress=app.getalladdress();
+				getorschool=app.getorschool();
 				mui.showLoading();
 				Vm.uinfo=userinfo;
 				Vm.query.id=userinfo.id;
@@ -366,6 +418,111 @@
 						videolist:[],
 						dynamiclist:[]
 					}
+				},
+				filters:{
+					parseaddress(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsesetup(val){
+						if(val!=''){
+							return siteinfo.setup[val];
+						}else{
+							return "";
+						}
+					},
+					parseposition(val){
+						if(val!==''){
+							return siteinfo.position[val];
+						}else{
+							return "";
+						}
+					},
+					parsewelfare(val){
+						if(val!==''){
+							return siteinfo.welfare[val];
+						}else{
+							return "";
+						}
+					},
+					parsesubsidy(val){
+						if(val!==''){
+							return siteinfo.subsidy[val];
+						}else{
+							return "";
+						}
+					},
+					parsesalary(val){
+						if(val!==''){
+							return siteinfo.salary[val];
+						}else{
+							return "";
+						}
+					},
+					parsescale(val){
+						if(val!==''){
+							return siteinfo.scale[val];
+						}else{
+							return "";
+						}
+					},
+					parsehome(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parseschool(val){
+						if(val!=""){
+							var address=getorschool.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsejob(val){
+						if(val!=""){
+							return siteinfo.jobcategory[val];
+						}else{
+							return "";
+						}
+					},
+					parsework(val){
+						if(val!=""){
+							var address=getalladdress.filter(function (x) {
+								return x['id']==val;
+							});
+							return address[0].name;
+						}else{
+							return "";
+						}
+					},
+					parsemajor(val){
+						if(val!=""){
+							return siteinfo.parsemajor[val];
+						}else{
+							return "";
+						}
+					},
+					parseexp(val){
+						if(val!=""){
+							return siteinfo.experience[val];
+						}else{
+							return "";
+						}
+					},
 				},
 				computed:{
 					leftvideo(){
