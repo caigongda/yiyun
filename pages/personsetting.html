@@ -33,13 +33,14 @@
 			left: 0;
 			border-radius: 100% 100% 100% 100% / 0% 0% 30% 30%;
 		}
-		.person-header-bg img{
+		.person-header-bg img,.nouserimg{
 			width: 1.5rem;
 			height: 1.5rem;
 			border-radius: 50%;
 			margin-left:  50%;
 			margin-top: 10%;
 			transform: translateX(-50%);
+			border:1px solid #fff;
 		}
 		.userinfo{
 			width: 100%;
@@ -105,10 +106,11 @@
 		<div class="person-setting mui-content-padded" id="app">
 			<div class="person-header-bg">
 				<div class="edit-img" id="edit-img">
-					<input type="file" name="file" id="userhead" value="" accept="image/*" multiple="" onchange="uploadhead(this);">
+					<input type="file" name="file" id="userhead" value="" accept="image/*" multiple="" onchange="uploadhead(this);" readonly="readonly">
 					<span class="mui-icon mui-icon-compose"></span>更换头像
 				</div>
-				<img :src="url+form.avatarimage" id="user-head"/>
+				<img :src="url+form.avatarimage" id="user-head" v-if="!!form.avatarimage"/>
+				<div class="nouserimg" v-if="!form.avatarimage"></div>
 				<div class="userinfo">{{form.username}}</div>
 			</div>
 			<div class="h4rem"></div>
@@ -141,10 +143,6 @@
 				</div>
 			</div>
 			<div class="other-info">
-				<div class="info-item" v-if="islogin=='true'">
-					<label>手机号码：</label>
-					<p class="mui-input-row"><input type="text" v-model="form.mobile" placeholder="请输入您的手机号码" class="mui-input-clear" /></p>
-				</div>
 				<div class="info-item">
 					<label>微信：</label>
 					<p class="mui-input-row"><input type="text" id="wechart" v-model="form.weixin" class="mui-input-clear"  placeholder="请输入您的微信"/></p>
@@ -231,68 +229,65 @@
 				});
 			}
 			var main=null;
-			mui.plusReady(function(){
-				mui.preload({
-					id: 'main',
-					url: 'main.html'
+			function events(){
+				mui.plusReady(function(){
+					mui.preload({
+						id: 'main',
+						url: 'main.html'
+					});
+					var sex=[{value:"1",text:"男"},{value:"2",text:"女"}];
+					pubpicker("sex-picker",1,sex,function(items){
+						document.getElementById("sex-picker").value=items[0].text;
+						Vm.form.genderdata = items[0].value;
+					});
+					pubpicker("school-picker",2,schoolarr,function(items){
+						document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
+						Vm.form.teacheracademy_id = items[1].value;
+					});
+					pubpicker("city-picker",2,cityDataarr,function(items){
+						document.getElementById("city-picker").value=items[0].text + " - " + items[1].text;
+						Vm.form.location_id = items[1].value;
+					});
+					pubpicker("birth-picker",2,cityDataarr,function(items){
+						document.getElementById("birth-picker").value=items[0].text + " - " + items[1].text;
+						Vm.form.home_id = items[1].value;
+					});
+					pubtap("edit-img",function(){
+						document.getElementById('userhead').click();
+					})
 				});
-				var sex=[{value:"1",text:"男"},{value:"2",text:"女"}];
-				pubpicker("sex-picker",1,sex,function(items){
-					document.getElementById("sex-picker").value=items[0].text;
-					Vm.form.genderdata = items[0].value;
-				});
-				pubpicker("school-picker",2,schoolarr,function(items){
-					document.getElementById("school-picker").value=items[0].text + " - " + items[1].text;
-					Vm.form.teacheracademy_id = items[1].value;
-				});
-				pubpicker("city-picker",2,cityDataarr,function(items){
-					document.getElementById("city-picker").value=items[0].text + " - " + items[1].text;
-					Vm.form.location_id = items[1].value;
-				});
-				pubpicker("birth-picker",2,cityDataarr,function(items){
-					document.getElementById("birth-picker").value=items[0].text + " - " + items[1].text;
-					Vm.form.home_id = items[1].value;
-				});
-				/* pubtap("loginout",function(){
-					//退出登录
-				}); */
-				pubtap("edit-img",function(){
-					document.getElementById('userhead').click();
-					/* plus.gallery.pick(function(p) {
-						plus.io.resolveLocalFileSystemURL(p, function(entry) {
-							console.log(entry.toLocalURL());
-							var imgurl=entry.toLocalURL();
-							document.getElementById("user-head").src=imgurl;
-							upload();
-						}, function(e) {
-							
-						});
-					}, function(a) {}, {
-						filter: "image",multiple:false,system:false
-					}) */
-				})
-			});
+			}
 			function getschoolname(id){
-				var allschool=app.getorschool();
-				for(var i=0;i<allschool.length;i++){
-					if(allschool[i].id==id){
-						return allschool[i].name;
-						break;
+				if(id!=null){
+					var allschool=app.getorschool();
+					for(var i=0;i<allschool.length;i++){
+						if(allschool[i].id==id){
+							return allschool[i].name;
+							break;
+						}
 					}
+				}else{
+					return "";
 				}
 			}
 			function getplacename(id){
-				var allplace=app.getalladdress();
-				for(var i=0;i<allplace.length;i++){
-					if(allplace[i].id==id){
-						return allplace[i].name;
-						break;
+				if(id!=null){
+					var allplace=app.getalladdress();
+					for(var i=0;i<allplace.length;i++){
+						if(allplace[i].id==id){
+							return allplace[i].name;
+							break;
+						}
 					}
+				}else{
+					return "";
 				}
 			}
 			window.addEventListener('islogin',function(event){
 				//获得事件参数
 				userinfo=app.getSettings();
+				schoolarr=school();
+				cityDataarr=cityData();
 				Vm.form.avatarimage=userinfo.avatarimage;
 				Vm.form.username=userinfo.username;
 				Vm.form.name=userinfo.name;
@@ -306,9 +301,8 @@
 				document.getElementById("school-picker").value=getschoolname(userinfo.teacheracademy_id);
 				document.getElementById("city-picker").value=getplacename(userinfo.location_id);
 				document.getElementById("birth-picker").value=getplacename(userinfo.home_id);
-				schoolarr=school();
-				cityDataarr=cityData();
 				Vm.islogin = event.detail.islogin;
+				events();
 			});
 			var Vm = new Vue({
 				el: '#app',

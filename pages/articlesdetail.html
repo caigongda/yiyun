@@ -20,7 +20,7 @@
 					<img :src="url+detail.image"/>
 					<div>
 						<p>{{detail.publisher}}</p>
-						<p>{{detail.newtime.substring(0,10)}}</p>
+						<p>{{detail.newtime?detail.newtime.substring(0,10):""}}</p>
 					</div>
 				</div>
 				<div class="article-content" v-html="detail.content"></div>

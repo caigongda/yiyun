@@ -214,8 +214,12 @@
 					});
 					mui.openWindow({
 						id:'invite',
+						createNew: true,
 						show:{
 							duration:250
+						},
+						styles:{
+							cachemode:"noCache",
 						}
 					});
 				});
@@ -229,8 +233,12 @@
 					});
 					mui.openWindow({
 						id:'collection',
+						createNew: true,
 						show:{
 							duration:250
+						},
+						styles:{
+							cachemode:"noCache",
 						}
 					});
 				});
@@ -319,6 +327,8 @@
 				Vm.query.id=userinfo.id;
 				Vm.query.role=userinfo.role;
 				Vm.query.token=userinfo.token;
+				Vm.siteinfo=siteinfo;
+				console.log(JSON.stringify(event.detail));
 				if(event.detail.user_id){
 					Vm.query.user_id=event.detail.user_id;
 					Vm.query.user_role=event.detail.user_role;
@@ -333,6 +343,7 @@
 				data(){
 					return{
 						url:imgurl,
+						siteinfo:siteinfo,
 						uinfo:userinfo,
 						curtab: '1',
 						user:{

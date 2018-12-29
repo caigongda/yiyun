@@ -25,7 +25,7 @@
 				margin-top: 0.31rem;
 			}
 			.login-form{
-				margin-top: 1.17rem;
+				margin-top: 0.8rem;
 			}
 			.login-form:before{
 				display: none;
@@ -50,17 +50,17 @@
 			}
 			.phone-row input{
 				width: 5rem !important;
-				font-size: 0.24rem !important;
+				font-size: 0.3rem !important;
 			}
 			.mui-input-row:after{
 				display: none;
 			}
 			.login-btn{
 				width: 5.2rem;
-				height: 0.66rem;
+				height: 0.76rem;
 				margin:0 auto;
 				padding: 0;
-				font-size: 0.28rem;
+				font-size: 0.3rem;
 				display: flex;
 				align-items: center;
 				justify-content: space-around;
@@ -82,12 +82,12 @@
 				align-items: center;
 			}
 			.radio-wrap input:before{
-				font-size: 0.24rem !important;
+				font-size: 0.3rem !important;
 			}
 			.radio-wrap label{
 				padding-left: 0.3rem !important;
 				color: #9B9B9B;
-				font-size: 0.24rem;
+				font-size: 0.26rem;
 			}
 			.radio-wrap .mui-radio input[type=radio]{
 				top: 8px !important;
@@ -99,7 +99,7 @@
 				width: 100%;
 				text-align: center;
 				margin-top: 15px;
-				font-size: 0.26rem;
+				font-size: 0.3rem;
 			}
 			.link-area a{
 				color: #9B9B9B !important;
@@ -110,7 +110,7 @@
 			}
 			.msg-login,.gener-login{
 				color: #9B9B9B !important;
-				font-size: 0.24rem;
+				font-size: 0.26rem;
 				margin-left: 1.04rem;
 			}
 			.mui-input-row .mui-input-clear~.mui-icon-clear{
@@ -199,7 +199,7 @@
 			</div>
 			<div class="mui-content-padded" id="loginwrap2">
 				<button id='login2' class="mui-btn mui-btn-block mui-btn-royal login-btn">登录</button>
-				<div class="link-area"></span> <a id='forgetPassword'>忘记密码?</a><span>|</span><a id='reg'>注册账号</a> <span class="spliter">
+				<div class="link-area"></span> <a id='forgetPassword1'>忘记密码?</a><span>|</span><a id='reg1'>注册账号</a> <span class="spliter">
 				</div>
 			</div>
 		</div>
@@ -335,6 +335,8 @@
 					var autoLoginButton = doc.getElementById("autoLogin");
 					var regButton = doc.getElementById('reg');
 					var forgetButton = doc.getElementById('forgetPassword');
+					var regButton1 = doc.getElementById('reg1');
+					var forgetButton1 = doc.getElementById('forgetPassword1');
 					$(".smslogin").on("tap",".code-get",function(){
 						var self=this;
 						if(accountBox1.value==""){
@@ -501,6 +503,38 @@
 						});
 					}, false);
 					forgetButton.addEventListener('tap', function(event) {
+						$.openWindow({
+							url: 'forget_password.html',
+							id: 'forget_password',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					regButton1.addEventListener('tap', function(event) {
+						$.openWindow({
+							url: 'reg.html',
+							id: 'reg',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					forgetButton1.addEventListener('tap', function(event) {
 						$.openWindow({
 							url: 'forget_password.html',
 							id: 'forget_password',

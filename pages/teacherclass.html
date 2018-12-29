@@ -289,6 +289,7 @@
 						});
 					});
 					mui("#teacherapp").on("tap",".addinvite",function(){//邀请
+					mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -297,6 +298,7 @@
 							beinvite_id:id,
 						};
 						yyajax('index/index/invite',formdata,function(res){
+							mui.hideLoading();
 							if(res.code==200){
 								mui.toast(res.msg);
 								//$(".addinvite").addClass("");
@@ -306,6 +308,7 @@
 						})
 					});
 					mui("#teacherapp").on("tap",".addcol",function(){//收藏
+						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -315,6 +318,7 @@
 							pid:id,
 						};
 						yyajax('index/index/collection',formdata,function(res){
+							mui.hideLoading();
 							if(res.code==200){
 								mui.toast(res.msg);
 								

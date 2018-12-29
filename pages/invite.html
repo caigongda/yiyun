@@ -96,8 +96,8 @@
 		</header>
 		<div id="app">
 			<div class="col-tab">
-				<div :class="{'tab-active':isinvite}" @tap="isinvite=true">邀请</div>
-				<div :class="{'tab-active':!isinvite}" @tap="isinvite=false">被邀请</div>
+				<div :class="{'tab-active':isinvite}" @tap="isinvite=true">邀请({{leftdata.length}})</div>
+				<div :class="{'tab-active':!isinvite}" @tap="isinvite=false">被邀请({{rightdata.length}})</div>
 			</div>
 			<div class="scroll-parent" v-if="isinvite">
 				<div id="commonListWrap">
@@ -172,8 +172,16 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			};
 			var personinfo=null;
 			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					window.scrollTo(0, 0);//重置滚动条位置
+					location.reload();
+				},false);
 				mui.preload({
 						id: 'personinfo',
 						url: 'personinfo.html'
@@ -190,8 +198,12 @@
 					});
 					mui.openWindow({
 						id:'personinfo',
+						createNew: true,
 						show:{
 							duration:250
+						},
+						styles:{
+							cachemode:"noCache",
 						}
 					});
 				});
@@ -223,40 +235,13 @@
 							user_id:"",
 							user_role:"",
 						},
-						leftdata:[
-							{
-								id:"1",
-								invite_id:"2",
-								beinvite_id:"2",
-								teacher_id:"2",
-								username:"愤怒的小鸟",
-								avatarimage:"../images/user-head.png",
-							}
-						],
-						rightdata:[
-							{
-								id:"1",
-								invite_id:"2",
-								beinvite_id:"2",
-								club_id:"2",
-								username:"愤怒的小鸟",
-								avatarimage:"../images/user-head.png",
-							},
-							{
-								id:"1",
-								invite_id:"2",
-								beinvite_id:"2",
-								club_id:"2",
-								username:"愤怒的小鸟",
-								avatarimage:"../images/user-head.png",
-							}
-						]
+						leftdata:[],
+						rightdata:[]
 					}
 				},
 				methods:{
 					getdata:function(){
 						var self=this;
-						console.log(JSON.stringify(this.query));
 						yyajax('index/user/invitation',this.query,function(res){
 							mui.hideLoading();
 							console.log(JSON.stringify(res));
@@ -266,7 +251,7 @@
 							}else{
 								mui.toast(res.msg);
 							}
-						})
+						});
 					},
 					video:function(){
 						this.curtab=1;

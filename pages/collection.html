@@ -48,8 +48,8 @@
 				<h1 class="mui-title">收藏</h1>
 			</header>
 			<div class="col-tab">
-				<div :class="{'tab-active':isvideo}" @tap="isvideo=true">视频收藏</div>
-				<div :class="{'tab-active':!isvideo}" @tap="isvideo=false">动态收藏</div>
+				<div :class="{'tab-active':isvideo}" @tap="isvideo=true">视频收藏({{videolist.length}})</div>
+				<div :class="{'tab-active':!isvideo}" @tap="isvideo=false">动态收藏({{dynamic.length}})</div>
 			</div>
 			<div class="scroll-parent" v-show="isvideo">
 				<div id="commonListWrap">
@@ -243,7 +243,6 @@
 						},
 						videolist:[],
 						dynamic:[],
-						datalist:[]
 					}
 				},
 				computed:{

@@ -88,83 +88,85 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
-			mui.ready(function() {
-			//初始化区域滚动
-				scroll = mui(".mui-scroll-wrapper").scroll();
-			})
-			mui.back = function() {
-				plus.webview.currentWebview().hide("auto", 300);
-			}
-			var clubdetail = null;
-			mui.plusReady(function(){
-				var self = plus.webview.currentWebview();
-				self.addEventListener("hide",function (e) {
-					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
-					Vm.resetdata();//重置页面数据
-				},false);
-				mui(".mui-input-clear")[0].addEventListener('focus', function(){
-					mui(".mui-icon-clear")[0].addEventListener('tap',function(){
-						Vm.query.keyword="";
+			function events(){
+				mui.ready(function() {
+				//初始化区域滚动
+					scroll = mui(".mui-scroll-wrapper").scroll();
+				})
+				mui.back = function() {
+					plus.webview.currentWebview().hide("auto", 300);
+				}
+				var clubdetail = null;
+				mui.plusReady(function(){
+					var self = plus.webview.currentWebview();
+					self.addEventListener("hide",function (e) {
+						mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
+						location.reload();//重置页面数据
+					},false);
+					mui(".mui-input-clear")[0].addEventListener('focus', function(){
+						mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+							Vm.query.keyword="";
+							Vm.getdata(0);
+						});
+					});
+					mui("#commonListWrap").pullRefresh({
+						down : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								Vm.query.offset=1;
+								Vm.getdata(1);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						},
+						up : {
+							height:50,// 可选.默认50.触发上拉加载拖动距离
+							auto:false,// 可选,默认false.自动上拉加载一次
+							contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
+							contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
+							callback : function() {
+								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+								// 加载更多的内容
+								loadMore(this);
+							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+						}
+					})
+					function loadMore(pullRefresh) {
+						// 如果没有更多数据了，则关闭上拉加载
+						//pullRefresh.endPullupToRefresh(true);
+						Vm.query.offset+=1;
+						Vm.getdata(2);
+						// 如果有更多数据，则继续
+						//pullRefresh.endPullupToRefresh(false);
+					};
+					searchinit("search",function(val){
+						Vm.query.keyword=val;
 						Vm.getdata(0);
 					});
-				});
-				mui("#commonListWrap").pullRefresh({
-					down : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							Vm.query.offset=1;
-							Vm.getdata(1);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					},
-					up : {
-						height:50,// 可选.默认50.触发上拉加载拖动距离
-						auto:false,// 可选,默认false.自动上拉加载一次
-						contentrefresh : "",// 可选，正在加载状态时，上拉加载控件上显示的标题内容
-						contentnomore:'没有更多数据了',// 可选，请求完毕若没有更多数据时显示的提醒内容；
-						callback : function() {
-							var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
-							// 加载更多的内容
-							loadMore(this);
-						} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-					}
-				})
-				function loadMore(pullRefresh) {
-					// 如果没有更多数据了，则关闭上拉加载
-					//pullRefresh.endPullupToRefresh(true);
-					Vm.query.offset+=1;
-					Vm.getdata(2);
-					// 如果有更多数据，则继续
-					//pullRefresh.endPullupToRefresh(false);
-				};
-				searchinit("search",function(val){
-					Vm.query.keyword=val;
-					Vm.getdata(0);
-				});
-				mui.preload({
-						id: 'clubdetail',
-						url: 'clubdetail.html'
-				});
-				mui("#clublist").on("tap",".club-detail",function(){
-					var id = this.dataset.id;
-					if(!clubdetail){
-						clubdetail = plus.webview.getWebviewById('clubdetail');
-					}
-					mui.fire(clubdetail,'clubId',{
-						id:id
+					mui.preload({
+							id: 'clubdetail',
+							url: 'clubdetail.html'
 					});
-					mui.openWindow({
-						id:'clubdetail',
-						show:{
-							duration:250
+					mui("#clublist").on("tap",".club-detail",function(){
+						var id = this.dataset.id;
+						if(!clubdetail){
+							clubdetail = plus.webview.getWebviewById('clubdetail');
 						}
-					});
-				})
-			});
+						mui.fire(clubdetail,'clubId',{
+							id:id
+						});
+						mui.openWindow({
+							id:'clubdetail',
+							show:{
+								duration:250
+							}
+						});
+					})
+				});
+			}
 			var Vm;
 			window.addEventListener('clubmore',function(event){
 				//获得事件参数
@@ -202,6 +204,7 @@
 					},
 					mounted(){
 						this.getdata(0);
+						events();
 					},
 					methods:{
 						getdata:function(type){

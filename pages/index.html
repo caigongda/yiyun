@@ -64,7 +64,7 @@
 											</div>
 										</div>
 									</div>
-									<p class="state-con-info" style="word-wrap:break-word;white-space:normal;" v-if="!!item.content">
+									<p class="state-con-info" style="word-wrap:break-word;white-space:normal;font-size: 0.26rem;" v-if="!!item.content">
 										{{item.content}}
 									</p>
 									<div class="state-img-wrap" v-if="!!item.images">
@@ -263,6 +263,7 @@
 						});
 					}, false);
 					mui("#statelist").on("tap",".addinvite",function(){//邀请
+						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -271,6 +272,7 @@
 							beinvite_id:id,
 						};
 						yyajax('index/index/invite',formdata,function(res){
+							mui.hideLoading();
 							if(res.code==200){
 								mui.toast(res.msg);
 								//$(".addinvite").addClass("");
@@ -280,6 +282,7 @@
 						})
 					});
 					mui("#statelist").on("tap",".addcol",function(){//收藏
+						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -289,6 +292,7 @@
 							pid:id,
 						};
 						yyajax('index/index/collection',formdata,function(res){
+							mui.hideLoading();
 							if(res.code==200){
 								mui.toast(res.msg);
 								
@@ -342,7 +346,6 @@
 					},
 					methods:{
 							getalldata(){
-								this.getbanner();
 								this.getclub();
 								this.getclubstate();
 							},

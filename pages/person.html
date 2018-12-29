@@ -55,7 +55,7 @@
 							<h4 class="mui-ellipsis">{{item.name}}</h4>
 							<p>
 								<img :src="url+item.avatarimage"/>
-								<span class="mui-ellipsis">{{item.clubname}}</span>
+								<span class="mui-ellipsis">{{item.username}}</span>
 							</p>
 						</div>
 					</div>
@@ -74,7 +74,7 @@
 							<h4 class="mui-ellipsis">{{item.name}}</h4>
 							<p>
 								<img :src="url+item.avatarimage"/>
-								<span class="mui-ellipsis">{{item.clubname}}</span>
+								<span class="mui-ellipsis">{{item.username}}</span>
 							</p>
 						</div>
 					</div>
@@ -357,6 +357,7 @@
 							mui.hideLoading();
 							if(res.code==200){
 								var result=res.msg;
+								console.log(JSON.stringify(result));
 								localStorage.setItem('$usermsg', JSON.stringify(result));
 								self.numinfo.works=result.works;
 								self.numinfo.invite=result.invite;

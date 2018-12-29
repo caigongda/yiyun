@@ -179,6 +179,7 @@
 						$(this).parent().remove();
 					});
 					mui(".report-state-wrap").on("tap",".img-sel",function(){
+						$(".introduce").blur();
 						document.getElementById('imgfile').click();
 					});
 					mui(".report-page-header").on("tap",".page-cancel",function(){
@@ -186,14 +187,13 @@
 						mui.back();
 					});
 					mui(".report-page-header").on("tap",".page-fb",function(){
+						$(".introduce").blur();
 						userinfo=app.getSettings();
 						siteinfo=app.getInfo();
 						getschool=app.getSchool();
 						getplace=app.getPlace();
 						mui.showLoading();
-						if( teacherApp.formdata.images.length==0||
-							teacherApp.formdata.content==""||
-							teacherApp.formdata.location_id==""||
+						if(teacherApp.formdata.location_id==""||
 							teacherApp.formdata.home_id==""||
 							teacherApp.formdata.teacheracademy_id==""||
 							teacherApp.formdata.jobcategory==""||
@@ -203,6 +203,11 @@
 							){
 							mui.toast("不能为空哦！");
 						}else{
+							if(teacherApp.formdata.images.length==0&&
+								teacherApp.formdata.content==""){
+								mui.toast("不能为空哦！");
+								return false;
+							}
 							var formdata=teacherApp.formdata;
 							formdata.id=userinfo.id;
 							formdata.role=1;

@@ -23,7 +23,7 @@
 					<div class="teacher-video-wrap">
 						<div>
 							<div class="teacher-video-left">
-								<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
+								<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" :data-id="item.id" v-if="leftvideo.length!=0">
 									<div class="img-wrap">
 										<img :src="url+item.image" />
 										<span class="play-icon"></span>
@@ -32,7 +32,7 @@
 										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
 											<img :src="url+item.avatarimage"/>
-											<span class="mui-ellipsis">{{item.clubname}}</span>
+											<span class="mui-ellipsis">{{item.teachername}}</span>
 										</p>
 									</div>
 								</div>
@@ -42,7 +42,7 @@
 								</div>
 							</div>
 							<div class="teacher-video-right">
-								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index">
+								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
 									<div class="img-wrap">
 										<img :src="url+item.image" />
 										<span class="play-icon"></span>
@@ -51,7 +51,7 @@
 										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
 											<img :src="url+item.avatarimage"/>
-											<span class="mui-ellipsis">{{item.clubname}}</span>
+											<span class="mui-ellipsis">{{item.teachername}}</span>
 										</p>
 									</div>
 								</div>
@@ -132,7 +132,7 @@
 					Vm.getdata(0);
 				});
 				mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
-					var id = this.getAttribute('class');
+					var id = this.dataset.id;
 					if(!videoplay){
 						videoplay = plus.webview.getWebviewById('videoplay');
 					}
@@ -147,6 +147,10 @@
 					});
 				})
 			});
+			function getteachervideocache(){
+				var stateText = localStorage.getItem('$teachervideo') || "[]";
+				return JSON.parse(stateText);
+			}
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
 				userinfo=app.getSettings();
@@ -202,6 +206,7 @@
 						}
 						yyajax('index/index/teachervideo',this.query,function(res){
 							if(res.code==200){
+								//localStorage.setItem('$teachervideo', JSON.stringify(res.msg));
 								if(type==1){
 									self.datalist=res.msg;
 									setTimeout(function () {

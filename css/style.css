@@ -214,7 +214,7 @@ body {
 	margin-left: 0.2rem;
 }
 .state-auth-info p{
-	font-size: 0.28rem;
+	font-size: 0.3rem;
 	color: #333;
 	font-weight: 550;
 }
@@ -230,11 +230,11 @@ body {
 	width: calc(100% - 20px);
 	color: #333;
 	margin: 0.16rem auto;
-	font-size: 0.22rem;
+	font-size: 0.25rem;
 }
 .state-con-info>div{
 	color: #333;
-	font-size: 0.22rem;
+	font-size: 0.25rem;
 }
 .state-img-wrap{
 	width: calc(100% - 20px);
@@ -243,7 +243,7 @@ body {
 	margin:0.16rem auto;
 }
 .state-img-wrap img{
-	flex: 0 0 24%;
+	width: 24%;
 	height: 100%;
 	border-radius: 2px;
 }
@@ -286,32 +286,35 @@ body {
 	border-top-right-radius:10px;
 }
 .teacher-video-right .teacher-video-list:nth-child(1) .img-wrap{
-	height: 3.6rem;
+	height: 3.7rem;
 }
 .auth-wrap{
 	width: 100%;
-	height: 1.08rem;
+	height: 1.18rem;
 }
 .auth-wrap h4{
-	font-size: 0.24rem;
+	font-size: 0.28rem;
 	font-weight: normal;
-	margin: 0.2rem 0 0.2rem 0.2rem;
+	margin: 0.2rem 0 0.1rem 0.2rem;
 	color: #333;
+	height:20px;
+	display: flex;
+	align-items: center;
 }
 .auth-wrap p{
 	margin: 0 0 0.2rem 0.2rem;
 	display: flex;
 	align-items: center;
 	color: #333;
-	font-size: 0.2rem;
+	font-size: 0.25rem;
 }
 .auth-wrap img{
-	width: 0.3rem;
-	height: 0.3rem;
+	width: 0.48rem;
+	height: 0.48rem;
 	border-radius: 50%;
 }
 .auth-wrap span{
-	font-size: 0.2rem;
+	font-size: 0.24rem;
 	margin-left: 0.12rem;
 }
 /* 俱乐部列表 */
@@ -342,14 +345,14 @@ body {
 	}
 	#clublist p{
 		color: #333;
-		font-size: 0.24rem;
+		font-size: 0.25rem;
 		margin-top: 0.05rem;
 		line-height: initial;
 	}
 	#clublist .zpinfo{
 		margin-top: 0.22rem;
-		letter-spacing: 2px;
-		font-size: 0.24rem;
+		letter-spacing: 1px;
+		font-size: 0.25rem;
 	}
 	
 	#club-state-list li{

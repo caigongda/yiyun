@@ -55,7 +55,7 @@ mui.init({
 	}
 });
 //$(function() {
-	var personinfo=null;
+	var memberinfo=null;
 var userinfo=app.getSettings();
 var teachervideo_id;
 var page=1;
@@ -65,8 +65,8 @@ $(function() {
 	}) */
 	mui.plusReady(function(){
 		mui.preload({
-				id: 'personinfo',
-				url: 'personinfo.html'
+				id: 'memberinfo',
+				url: 'memberinfo.html'
 		});
 	});
 	fss = new ddfullscreenslider({
@@ -97,7 +97,7 @@ $(function() {
 		var _video=this.querySelector("video");
 		if(_video.currentTime>0){
 			if (_video.paused || _video.ended){ //当暂停或结束
-					_video.play();
+					_video.play();  
 					this.querySelector(".play").style.opacity=0;    
 			}else{//否则暂停播放 
 					_video.pause();
@@ -114,22 +114,20 @@ $(function() {
 		}else{
 			plus.navigator.setFullscreen(false);
 		}
-		var user_id=this.dataset.userid;
-		if(!personinfo){
-			personinfo = plus.webview.getWebviewById('personinfo');
+		var userid=this.dataset.userid;
+		if(!memberinfo){
+			memberinfo = plus.webview.getWebviewById('memberinfo');
 		}
-		mui.fire(personinfo,'scroll2top',{
-			user_id:user_id,
-			user_role:1,
+		mui.fire(memberinfo,'userId',{
+			userid:userid
 		});
 		mui.openWindow({
-			id:'personinfo',
-			creatnew:true,
+			id:'memberinfo',
 			show:{
 				duration:250
 			}
 		});
-	});
+	})
 	mui(".slidewrapper").on("tap",".addcol",function(event){//点击收藏
 		event.stopPropagation();
 		mui.showLoading();
@@ -149,17 +147,17 @@ $(function() {
 			}else{
 				mui.toast(res.msg);
 			}
-		});
+		})
 	});
-	mui(".slidewrapper").on("tap",".invite",function(event){//点击邀请
+	mui(".slidewrapper").on("tap",".invite",function(event){
 		event.stopPropagation();
 		mui.showLoading();
-		var userid=this.dataset.id;
+		var userid=this.dataset.userid;
 		var formdata={
 			id:userinfo.id,
 			role:userinfo.role,
 			token:userinfo.token,
-			type:1,
+			type:3,
 			pid:userid,
 		};
 		var self=this;
@@ -196,12 +194,12 @@ function parsevideo(data){
 			"username":item.username,
 			"txt":item.name,
 			"head":imgurl+item.avatarimage,
-			"live":"236",
-			"message":"698",
-			"share":"26",
+			"live":"",
+			"message":"",
+			"share":"",
 			"video":item.videourl,
 			"vimg":imgurl+item.image,
-			"teacher_id":item.teacher_id,
+			"club_id":item.club_id,
 			"id":item.id,
 		});
 	});
@@ -213,13 +211,13 @@ function getjson(page,id){
 	  if(page==1){
 			slidewrapper.innerHTML='';
 	  }
-	  mui.ajax(myurl+"index/index/teachervideodetails",{
+	  mui.ajax(myurl+"index/index/clubvideodetails",{
 	  	data:{
 				id:userinfo.id,
 				role:userinfo.role,
 				token:userinfo.token,
 				offset:page,
-				teachervideo_id:id
+				clubvideo_id:id
 			},
 			dataType:'json',//服务器返回json格式数据
 			type:'POST',//HTTP请求类型
@@ -227,12 +225,11 @@ function getjson(page,id){
 			success:function(data){
 			    if(data.code=="200"){
 						var arr=parsevideo(data.msg);
-						console.log(JSON.stringify(arr));
 						mui.each(arr,function(index,tem){
 							var article=document.createElement("article");
 							article.className="slide";
 							article.style.backgroundImage='url('+tem["vimg"]+')';
-							article.innerHTML='<div class="videodiv" data-id="'+tem["id"]+'" data-url="'+tem["video"]+'" data-img="'+tem["vimg"]+'"><div class="spinner"><span class="mui-spinner"></span><span class="ltxt">加载中...</span></div> <div class="right_user"><div class="userhead" data-userid="'+tem["teacher_id"]+'"><img src="'+tem["head"]+'" alt="" /></div><div class="right_ico addcol" data-userid="'+tem["teacher_id"]+'"><img src="../icon/live.png"/><span>'+tem["live"]+'</span></div><div class="right_ico invite" data-userid="'+tem["teacher_id"]+'"><img src="../icon/share.png" /></div></div><img  src="../icon/play.png?p=12" class="play" /><div class="user_name">\<p class="name">@'+tem["username"]+'</p>\<p>'+tem["txt"]+'</p></div></div>';
+							article.innerHTML='<div class="videodiv" data-id="'+tem["id"]+'" data-url="'+tem["video"]+'" data-img="'+tem["vimg"]+'"><div class="spinner"><span class="mui-spinner"></span><span class="ltxt">加载中...</span></div> <div class="right_user"><div class="userhead" data-userid="'+tem["club_id"]+'"><img src="'+tem["head"]+'" alt="" /></div><div class="right_ico addcol" data-userid="'+tem["club_id"]+'"><img src="../icon/live.png"/><span>'+tem["live"]+'</span></div><div class="right_ico invite" data-userid="'+tem["club_id"]+'"><img src="../icon/share.png" /></div></div><img  src="../icon/play.png?p=12" class="play" /><div class="user_name">\<p class="name">@'+tem["username"]+'</p>\<p>'+tem["txt"]+'</p></div></div>';
 							slidewrapper.appendChild(article);	
 						});
 						fss.reloadSlides();
@@ -240,9 +237,9 @@ function getjson(page,id){
 							setVideo(0);
 						}
 			   }else{
-					 if(page>1){
-						 page-=1;
-					 }
+					if(page>1){
+						page-=1;
+					}
 				 }
 			},
 			error:function(xhr,type,errorThrown){

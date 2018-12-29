@@ -20,7 +20,7 @@
 		<div class="btn-wrap" id="container">
 			<button type="button" class="mui-btn mui-btn-royal report-video" id="selectfiles">
 				<span class="iconfont icon-rvideo"></span>发布视频作品</button>
-			<button type="button" class="mui-btn mui-btn-royal report-state">
+			<button type="button" class="mui-btn mui-btn-royal report-state btn-name">
 				<span class="iconfont icon-rstate"></span>发布求职动态</button> 
 		</div>
 		<script src="../js/jquery-1.8.3.min.js"></script>
@@ -63,6 +63,11 @@
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
 				userinfo=app.getSettings();
+				if(userinfo.role==1){
+					$(".btn-name").html('<span class="iconfont icon-rstate"></span>发布求职动态');
+				}else{
+					$(".btn-name").html('<span class="iconfont icon-rstate"></span>发布招聘动态');
+				}
 			});
 			mui.plusReady(function(){
 				var backButtonPress = 0;

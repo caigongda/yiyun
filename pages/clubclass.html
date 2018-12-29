@@ -270,6 +270,7 @@
 						});
 					});
 					mui("#app").on("tap",".addinvite",function(){//邀请
+						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -279,9 +280,17 @@
 						};
 						pubinvite(formdata,function(msg){
 							//邀请成功
+							mui.hideLoading();
+							if(res.code==200){
+								mui.toast(res.msg);
+								
+							}else{
+								mui.toast(res.msg);
+							}
 						});
 					});
 					mui("#app").on("tap",".addcol",function(){//收藏
+						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -292,7 +301,13 @@
 						};
 						pubcol(formdata,function(msg){
 							//收藏成功
-							
+							mui.hideLoading();
+							if(res.code==200){
+								mui.toast(res.msg);
+								
+							}else{
+								mui.toast(res.msg);
+							}
 						});
 					});
 				});

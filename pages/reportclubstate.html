@@ -201,7 +201,6 @@
 						formdata.scale=items[0].value;
 					});
 					mui(".report-state-wrap").on("tap",".del-img",function(){
-						console.log("aaa");
 						$(this).parent().remove();
 					});
 					mui(".report-page-header").on("tap",".page-cancel",function(){
@@ -209,6 +208,7 @@
 						mui.back();
 					});
 					mui(".report-page-header").on("tap",".page-fb",function(){//发布
+						$(".introduce").blur();
 						formdata.content=$(".introduce").val();
 						if(formdata.location_id==''||
 							formdata.setup==''||
@@ -216,11 +216,14 @@
 							formdata.welfare==''||
 							formdata.subsidy==''||
 							formdata.salary==''||
-							formdata.scale==''||
-							formdata.content==''||
-							formdata.images.length==0){
+							formdata.scale==''){
 							mui.toast("不能为空哦！");
 						}else{
+							if(formdata.content==''&&
+							formdata.images.length==0){
+								mui.toast("不能为空哦！");
+								return false;
+							}
 							formdata.id=userinfo.id;
 							formdata.role=2;
 							formdata.token=userinfo.token;
@@ -241,6 +244,7 @@
 						}
 					});
 				mui(".report-state-wrap").on("tap",".img-sel",function(){
+					$(".introduce").blur();
 					document.getElementById('imgfile').click();
 				});
 				function resetdata(data){

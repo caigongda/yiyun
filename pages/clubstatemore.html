@@ -58,7 +58,7 @@
 				<div class="teacher-video-wrap">
 					<div>
 						<div class="teacher-video-left">
-							<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
+							<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0" :data-id="item.id">
 								<div class="img-wrap">
 									<img :src="url+item.image" />
 									<span class="play-icon"></span>
@@ -77,7 +77,7 @@
 							</div>
 						</div>
 						<div class="teacher-video-right">
-							<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index">
+							<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
 								<div class="img-wrap">
 									<img :src="url+item.image" />
 									<span class="play-icon"></span>
@@ -108,7 +108,7 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
-			var videoplay = null;
+			var clubvideoplay = null;
 			var Vm;
 			function events(){
 				mui.ready(function() {
@@ -131,8 +131,8 @@
 						});
 					});
 					mui.preload({
-							id: 'videoplay',
-							url: 'videoplay.html'
+							id: 'clubvideoplay',
+							url: 'clubvideoplay.html'
 					});
 					mui("#commonListWrap").pullRefresh({
 						down : {
@@ -172,15 +172,15 @@
 						Vm.getdata(0);
 					});
 					mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
-						var id = this.getAttribute('class');
-						if(!videoplay){
-							videoplay = plus.webview.getWebviewById('videoplay');
+						var id = this.dataset.id;
+						if(!clubvideoplay){
+							clubvideoplay = plus.webview.getWebviewById('clubvideoplay');
 						}
-						mui.fire(videoplay,'userId',{
+						mui.fire(clubvideoplay,'userId',{
 							id:id
 						});       
 						mui.openWindow({
-							id:'videoplay',
+							id:'clubvideoplay',
 							show:{
 								duration:250
 							}
@@ -195,7 +195,6 @@
 				siteinfo=app.getInfo();
 				getschool=app.getSchool();
 				getplace=app.getPlace();
-				console.log("aaa");
 				/* Vm.initdata();
 				Vm.getdata(); */
 				Vm = new Vue({
