@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/workcenter.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
 		<div id="app" v-cloak>
@@ -17,6 +18,7 @@
 					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
 					<span class="mui-icon mui-icon-search common-search-icon"></span>
 				</div>
+				<div class="backall">全部</div>
 			</header>
 		</form>
 			<div class="work-center">
@@ -50,6 +52,9 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			};
 			var articledetail=null;
 			mui.plusReady(function(){
 				mui(".mui-input-clear")[0].addEventListener('focus', function(){
@@ -58,6 +63,16 @@
 						Vm.getdata(0);
 					});
 				});
+				mui(".backall")[0].addEventListener('tap',function(){
+					document.getElementById("search").value="";
+					Vm.query.keyword="";
+					Vm.getdata(0);
+				});
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					location.reload();
+					mui('#commonListWrap').pullRefresh().scrollTo(0,0,100);//重置滚动条位置
+				},false);
 				mui.preload({
 						id: 'articledetail',
 						url: 'articlesdetail.html'
@@ -132,7 +147,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						query:{
@@ -145,7 +160,7 @@
 						datalist:[]
 					}
 				},
-				mounted(){
+				mounted:function(){
 					//this.getdata(0);
 					//console.log(this.list.length);
 				},

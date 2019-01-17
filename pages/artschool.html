@@ -7,37 +7,39 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/artschool.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
-		<div id="app" v-cloak>
+	<div id="app" v-cloak>
 		<form action="">
 			<header class="mui-bar mui-bar-nav common-header">
 				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 				<div class="mui-input-row common-input" id="inputc">
-					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search" oninput="searchchange(this)">
+					<span class="mui-icon mui-icon-clear" style="display: none;"></span>
 					<span class="mui-icon mui-icon-search common-search-icon"></span>
 				</div>
-				<span class="address-wrap" @click="selcity"><span class="address-name mui-ellipsis">{{curtwo}}</span><span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></span>
+				<span class="address-wrap" @tap="selcity"><span class="address-name mui-ellipsis">{{curtwo}}</span><span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></span>
 				<div id="alladdress" v-show="iscity">
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @tap="selstepone(item.text,index)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:curtwo=='不限'}" @click="selsteptwo('不限','')">不限</li>
-								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selsteptwo(item.text,item.value)">{{item.text}}</li>
+								<li :class="{selone:curtwo=='不限'}" @tap="selsteptwo('不限','')">不限</li>
+								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @tap="selsteptwo(item.text,item.value)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 			</header>
 		</form>
-			<div class="shade-bg" v-if="iscity" @click="iscity=false;"></div>
+			<div class="shade-bg" v-if="iscity" @tap="iscity=false;"></div>
 			<div class="scroll-parent">
 				<div id="commonListWrap" :class="{'school-list':iscard,'school-list-line':!iscard}">
 					<div>
@@ -60,7 +62,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="toggle-list"><span class="iconfont" :class="{'icon-card':!iscard,'icon-list':iscard}" @click="iscard=!iscard"></span></div>
+			<div class="toggle-list"><span class="iconfont" :class="{'icon-card':!iscard,'icon-list':iscard}" @tap="iscard=!iscard"></span></div>
 		</div>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
@@ -73,6 +75,13 @@
 			mui.init({
 				swipeBack:true //启用右滑关闭功能
 			});
+			function searchchange(self){
+				if(self.value==''){
+					mui(".mui-icon-clear")[0].style.display='none';
+				}else{
+					mui(".mui-icon-clear")[0].style.display='';
+				}
+			}
 			function events(){
 				mui.ready(function() {
 				//初始化区域滚动
@@ -84,6 +93,8 @@
 				mui.plusReady(function(){
 					mui(".mui-input-clear")[0].addEventListener('focus', function(){
 						mui(".mui-icon-clear")[0].addEventListener('tap',function(){
+							document.getElementById("search").value="";
+							mui(".mui-icon-clear")[0].style.display='none';
 							Vm.query.keyword="";
 							Vm.getdata(0);
 						});
@@ -164,7 +175,7 @@
 				//Vm.getdata(0);
 				Vm = new Vue({
 					el: '#app',
-					data(){
+					data:function(){
 						return{
 							url:imgurl,
 							cityone:getplace,
@@ -185,14 +196,14 @@
 						}
 					},
 					filters:{
-						parseaddress(val){
+						parseaddress:function(val){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
 							});
 							return address[0].name;
 						}
 					},
-					mounted(){
+					mounted:function(){
 						this.getdata(0);
 						events();
 					},

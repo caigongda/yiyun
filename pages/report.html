@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/report.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
 		<div class="img-wrap">
@@ -16,7 +17,6 @@
 				</div>
 			</div>
 		</div>
-		<input type="file" name="videofile" class="hidden" id="videofile" accept="video/*"/>
 		<div class="btn-wrap" id="container">
 			<button type="button" class="mui-btn mui-btn-royal report-video" id="selectfiles">
 				<span class="iconfont icon-rvideo"></span>发布视频作品</button>
@@ -62,6 +62,7 @@
 			var userinfo=app.getSettings();
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
+				uploader.refresh();
 				userinfo=app.getSettings();
 				if(userinfo.role==1){
 					$(".btn-name").html('<span class="iconfont icon-rstate"></span>发布求职动态');

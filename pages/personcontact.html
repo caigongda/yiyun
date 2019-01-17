@@ -9,6 +9,7 @@
 		<title></title>
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<style>
 		body{background: #EEEEF3;}
@@ -147,7 +148,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						query:{
@@ -179,6 +180,7 @@
 				methods:{
 					getdata:function(){
 						var self=this;
+						console.log(JSON.stringify(this.query));
 						yyajax('index/user/showcontact',this.query,function(res){
 							mui.hideLoading();
 							if(res.code==200){

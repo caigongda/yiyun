@@ -7,15 +7,17 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/teacher.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
-		<div id="teacher">
+		<div id="teacher" v-cloak>
 			<form action="">
 				<header class="mui-bar mui-bar-nav common-header">
 					<div class="mui-input-row common-input" id="inputc">
 						<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
 						<span class="mui-icon mui-icon-search common-search-icon"></span>
 					</div>
+					<div class="backall">全部</div>
 				</header>
 			</form>
 			<div class="scroll-parent">
@@ -93,6 +95,12 @@
 							Vm.getdata(0);
 						});
 					});
+					mui(".backall")[0].addEventListener('tap',function(){
+						document.getElementById("search").value="";
+						Vm.query.keyword="";
+						Vm.getdata(0);
+					});
+					var curtime=+new Date();
 					mui.preload({
 							id: 'videoplay',
 							url: 'videoplay.html'
@@ -174,7 +182,7 @@
 			var player = null;
 			var Vm = new Vue({
 				el: '#teacher',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						datalist:[],
@@ -188,18 +196,18 @@
 					}
 				},
 				computed:{
-					leftvideo(){
+					leftvideo:function(){
 						return this.datalist.filter(function(item,index){
 							return index%2==0;
 						});
 					},
-					rightvideo(){
+					rightvideo:function(){
 						return this.datalist.filter(function(item,index){
 							return index%2!=0;
 						});
 					}
 				},
-				mounted(){
+				mounted:function(){
 					//events();
 					//this.getdata(0);
 				},

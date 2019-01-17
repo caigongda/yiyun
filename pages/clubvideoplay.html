@@ -42,8 +42,7 @@ var fss;
 mui.init({
 	swipeBack:true,
 	beforeback: function(){
-		var slidewrapper=document.querySelector(".slidewrapper");
-		slidewrapper.innerHTML='';
+		$(".slidewrapper").html("");
 		var video=document.querySelectorAll("video");
 		mui.each(video,function(index,tem){	
 			if(tem.currentTime>0){
@@ -57,11 +56,14 @@ mui.init({
 				plus.navigator.setFullscreen(false);
 			}
 		});
+		page=1;
+		isperson=0;
+		clubpersoninfo=null;
 		return true;
 	}
 });
 //$(function() {
-	var clubpersoninfo=null;
+var clubpersoninfo=null;
 var userinfo=app.getSettings();
 var teachervideo_id;
 var page=1;
@@ -146,10 +148,11 @@ $(function() {
 			id:userinfo.id,
 			role:userinfo.role,
 			token:userinfo.token,
-			beinvite_id:userid,
+			type:3,
+			pid:userid,
 		};
 		var self=this;
-		yyajax('index/index/invite',formdata,function(res){
+		yyajax('index/index/collection',formdata,function(res){
 			mui.hideLoading();
 			if(res.code==200){
 				mui.toast(res.msg);
@@ -161,7 +164,6 @@ $(function() {
 	});
 	mui(".slidewrapper").on("tap",".invite",function(event){
 		event.stopPropagation();
-		mui.showLoading();
 		var userid=this.dataset.userid;
 		var formdata={
 			id:userinfo.id,
@@ -170,8 +172,13 @@ $(function() {
 			type:3,
 			pid:userid,
 		};
+		if(userinfo.role==1){
+			mui.toast("此角色无法邀请！");
+			return;
+		}
 		var self=this;
-		yyajax('index/index/collection',formdata,function(res){
+		mui.showLoading();
+		yyajax('index/index/invite',formdata,function(res){
 			mui.hideLoading();
 			if(res.code==200){
 				mui.toast(res.msg);
@@ -185,7 +192,6 @@ $(function() {
 });
 window.addEventListener('userId',function(event){
 	var vid=event.detail.id;
-	console.log(vid);
 	isperson=event.detail.isperson;
 	userinfo=app.getSettings();
 	mui.plusReady(function() {
@@ -281,11 +287,26 @@ function setVideo(index){
 			vid.setAttribute("preload","auto");
 			vid.setAttribute("webkit-playsinline","webkit-playsinline");
 			vid.setAttribute("playsinline","playsinline");
+			vid.setAttribute("webkit-playsinline","true");
+			vid.setAttribute("playsinline","true");
 			vid.setAttribute("controlslist","nodownload");
 			vid.setAttribute("loop","loop");
 			vid.setAttribute("autoplay","autoplay");
 			var sssrc=videodiv[index].getAttribute("data-url");
 			vid.setAttribute("src",sssrc);
+			vid.addEventListener("timeupdate",function(){
+				//用秒数来显示当前播放进度
+				if(vid.currentTime>0){
+					if(vid.videoWidth>vid.videoHeight){
+						var swidth=plus.screen.resolutionHeight*plus.screen.scale;
+						var vwidth=videodiv[index].querySelector(".video").videoWidth;
+						var vheight=videodiv[index].querySelector(".video").videoHeight;
+						//videodiv[index].querySelector(".video").setAttribute('style', 'top: -20%;');
+					}else{
+						videodiv[index].querySelector(".video").setAttribute('style', 'object-fit: fill;');
+					}
+				}
+			},false);
 			vid.addEventListener("playing", function(){
 				 videodiv[index].querySelector(".spinner").style.display="none";       		            
 			});
@@ -295,6 +316,9 @@ function setVideo(index){
 			videodiv[index].querySelector(".play").style.opacity=0;
 			videodiv[index].querySelector("video").currentTime=0;
 			videodiv[index].querySelector("video").play();
+			videodiv[index].querySelector("video").addEventListener("playing", function(){
+				videodiv[index].querySelector(".spinner").style.display="none";       		            
+			});
 		}
 }
 </script>

@@ -8,13 +8,30 @@
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/person.css" rel="stylesheet" />
 		<link href="../css/previewimage.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
+		<style>
+			#club-state-list .mui-active{
+				background: #fff !important;
+			}
+			.person-del-state{
+				right: 0.2rem;
+				top: 0.1rem;
+			}
+			.teacher-video-list{
+				position: relative;
+			}
+			.person-del-video{
+				right: 0.2rem;
+				bottom: 0.3rem;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="video" v-cloak>
 			<div class="person-header-bg"></div>
 			<div class="person-info-card">
 				<div class="person-info-top">
-					<img :src="url+uinfo.avatarimage"/>
+					<img :src="url+uinfo.avatarimage" id="personhead"/>
 					<div>
 						<p id="personsetting" v-if="query.role==1"><span class="person-name">{{uinfo.username}}</span><span class="person-setting">个人设置</span></p>
 						<p v-if="query.role==2"><span class="person-name">{{uinfo.name}}</span></p>
@@ -38,10 +55,10 @@
 					</div>
 				</div>
 				<div class="person-prod-tab">
-					<div v-bind:class="{curactiveTab:curtab=='1'}" @click="video">
+					<div v-bind:class="{curactiveTab:curtab=='1'}" @tap="video">
 							视频
 					</div>
-					<div v-bind:class="{curactiveTab:curtab=='2'}" @click="state">
+					<div v-bind:class="{curactiveTab:curtab=='2'}" @tap="state">
 							动态
 					</div>
 				</div>
@@ -49,7 +66,7 @@
 			<div class="video-wrap" v-show="curtab=='1'">
 				<div class="teacher-video-left">
 					<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" :data-id="item.id" v-if="leftvideo.length!=0">
-						<div class="img-wrap">
+						<div class="img-wrap video-list-play" :data-id="item.id">
 							<img :src="url+item.image" />
 							<span class="play-icon"></span>
 						</div>
@@ -60,6 +77,7 @@
 								<span class="mui-ellipsis">{{item.username}}</span>
 							</p>
 						</div>
+						<span class="person-del-video pub_del_style" @tap="delvideo(item.id)"></span>
 					</div>
 					<div class="bshadow" v-if="leftvideo.length==0">
 						<div class="video-nodata"></div>
@@ -68,7 +86,7 @@
 				</div>
 				<div class="teacher-video-right">
 					<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
-						<div class="img-wrap">
+						<div class="img-wrap video-list-play" :data-id="item.id">
 							<img :src="url+item.image" />
 							<span class="play-icon"></span>
 						</div>
@@ -79,6 +97,7 @@
 								<span class="mui-ellipsis">{{item.username}}</span>
 							</p>
 						</div>
+						<span class="person-del-video pub_del_style" @tap="delvideo(item.id)"></span>
 					</div>
 				</div>
 			</div>
@@ -86,11 +105,12 @@
 				<div id="club-state-list">
 					<ul class="mui-table-view" id="person-state-list">
 						<li class="mui-table-view-cell mui-media" v-for="(item,index) in dynamiclist" :key="index" v-if="dynamiclist.length!=0">
-							<a href="javascript:;">
+							<a href="javascript:;" style="position: relative;">
+								<span class="person-del-state pub_del_style" @tap="delstate(item.id)"></span>
 								<div class="state-top">
 									<img :src="url+item.avatarimage" id="club-index">
 									<div class="state-auth-info">
-										<p>{{item.username}}</p> 
+										<p>{{item.username}}<small class="state_small_time">{{item.createtime | parseTime}}</small></p> 
 										<div style="display: flex;" v-if="query.user_role==1&&!!item.major">
 											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
 												{{siteinfo.major[val]}}
@@ -125,7 +145,7 @@
 									<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
 								</div>
 								<div class="state-img-wrap" v-if="!!item.images">
-									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
+									<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" data-preview-src="" :data-preview-group="item.id"/>
 								</div>
 							</a>
 						</li>
@@ -191,6 +211,7 @@
 			var tvideoplay = null;
 			var cvideoplay=null;
 			var personcontact = null;//联系方式
+			var curtime=+new Date()+22222;
 			mui.plusReady(function() {
 				mui.preload({
 						id: 'invite',
@@ -264,7 +285,7 @@
 						}
 					});
 				});
-				mui("#video").on("tap",".teacher-video-list",function(){
+				mui("#video").on("tap",".video-list-play",function(){
 					var id = this.dataset.id;
 					console.log(Vm.query.user_role);
 					if(Vm.query.user_role==1){
@@ -326,9 +347,8 @@
 			};
 			window.addEventListener('refresh', function(e) {
 				//执行刷新
-				Vm.$set(Vm.uinfo,'avatarimage',e.detail.avatarimage);
-				Vm.$set(Vm.uinfo,'username',e.detail.username);
-				Vm.$set(Vm.uinfo,'id',e.detail.id);
+				$("#personhead").attr('src',e.detail.avatarimage);
+				$(".person-name").text(e.detail.username);
 			});
 			window.addEventListener('scroll2top',function(event){
 				//获得事件参数
@@ -339,7 +359,6 @@
 				getplace=app.getPlace();
 				getalladdress=app.getalladdress();
 				getorschool=app.getorschool();
-				mui.showLoading();
 				Vm.uinfo=userinfo;
 				Vm.siteinfo=siteinfo;
 				Vm.query.id=userinfo.id;
@@ -356,7 +375,7 @@
 			});
 			var Vm = new Vue({
 				el: '#video',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						siteinfo:siteinfo,
@@ -379,7 +398,14 @@
 					}
 				},
 				filters:{
-					parseaddress(val){
+					parseTime:function(val){
+						if(val!=""){
+							return timestampToTime(val);
+						}else{
+							return "";
+						}
+					},
+					parseaddress:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -389,49 +415,49 @@
 							return "";
 						}
 					},
-					parsesetup(val){
+					parsesetup:function(val){
 						if(val!=''){
 							return siteinfo.setup[val];
 						}else{
 							return "";
 						}
 					},
-					parseposition(val){
+					parseposition:function(val){
 						if(val!==''){
 							return siteinfo.position[val];
 						}else{
 							return "";
 						}
 					},
-					parsewelfare(val){
+					parsewelfare:function(val){
 						if(val!==''){
 							return siteinfo.welfare[val];
 						}else{
 							return "";
 						}
 					},
-					parsesubsidy(val){
+					parsesubsidy:function(val){
 						if(val!==''){
 							return siteinfo.subsidy[val];
 						}else{
 							return "";
 						}
 					},
-					parsesalary(val){
+					parsesalary:function(val){
 						if(val!==''){
 							return siteinfo.salary[val];
 						}else{
 							return "";
 						}
 					},
-					parsescale(val){
+					parsescale:function(val){
 						if(val!==''){
 							return siteinfo.scale[val];
 						}else{
 							return "";
 						}
 					},
-					parsehome(val){
+					parsehome:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -441,7 +467,7 @@
 							return "";
 						}
 					},
-					parseschool(val){
+					parseschool:function(val){
 						if(val!=""){
 							var address=getorschool.filter(function (x) {
 								return x['id']==val;
@@ -451,14 +477,14 @@
 							return "";
 						}
 					},
-					parsejob(val){
+					parsejob:function(val){
 						if(val!=""){
 							return siteinfo.jobcategory[val];
 						}else{
 							return "";
 						}
 					},
-					parsework(val){
+					parsework:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -468,14 +494,14 @@
 							return "";
 						}
 					},
-					parsemajor(val){
+					parsemajor:function(val){
 						if(val!=""){
 							return siteinfo.parsemajor[val];
 						}else{
 							return "";
 						}
 					},
-					parseexp(val){
+					parseexp:function(val){
 						if(val!=""){
 							return siteinfo.experience[val];
 						}else{
@@ -484,7 +510,7 @@
 					},
 				},
 				computed:{
-					leftvideo(){
+					leftvideo:function(){
 						if(this.videolist.length!=0){
 							return this.videolist.filter(function(item,index){
 								return index%2==0;
@@ -493,7 +519,7 @@
 							return [];
 						}
 					},
-					rightvideo(){
+					rightvideo:function(){
 						if(this.videolist.length!=0){
 							return this.videolist.filter(function(item,index){
 								return index%2!=0;
@@ -503,13 +529,15 @@
 						}
 					}
 				},
-				mounted(){
+				mounted:function(){
 					//this.getalldata();
 				},
 				methods:{
 					getalldata:function(){
 						var self=this;
+						mui.showLoading();
 						yyajax('index/user/index',this.query,function(res){
+							console.log(JSON.stringify(res));
 							mui.hideLoading();
 							if(res.code==200){
 								var result=res.msg;
@@ -522,6 +550,26 @@
 							}else{
 								mui.toast(res.msg);
 							}
+						})
+					},
+					delstate:function(id){
+						var self=this;
+						app.del(function(){//确定回调
+							yyajax("",{},function(res){
+								
+							})
+						},function(){//取消回调
+							
+						})
+					},
+					delvideo:function(id){
+						var self=this;
+						app.del(function(){//确定回调
+							yyajax("",{},function(res){
+								
+							})
+						},function(){//取消回调
+							
 						})
 					},
 					video:function(){

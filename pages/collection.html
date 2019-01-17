@@ -2,12 +2,12 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width user-scalable='no'"> 
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title></title>
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/teacher.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			.col-tab{
 				width: 95%;
@@ -39,10 +39,24 @@
 			#state-col{
 				padding-bottom: 50px;
 			}
+			.teacher-video-list{
+				position: relative;
+			}
+			.person-del-video{
+				right: 0.2rem;
+				bottom: 0.3rem;
+			}
+			#state-col .mui-active{
+				background: #fff !important;
+			}
+			.person-del-state{
+				right: 0.2rem;
+				top: 0.4rem;
+			}
 		</style>
 	</head>
 	<body>
-		<div id="app">
+		<div id="app" v-cloak>
 			<header class="mui-bar mui-bar-nav common-header">
 				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 				<h1 class="mui-title">收藏</h1>
@@ -56,8 +70,8 @@
 					<div class="teacher-video-wrap">
 						<div>
 							<div class="teacher-video-left">
-								<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0">
-									<div class="img-wrap">
+								<div class="teacher-video-list" v-for="(item,index) in leftvideo" :key="index" v-if="leftvideo.length!=0" :data-id="item.id">
+									<div class="img-wrap video-list-play" :data-id="item.id">
 										<img :src="url+item.image" />
 										<span class="play-icon"></span>
 									</div>
@@ -65,9 +79,10 @@
 										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
 											<img :src="url+item.avatarimage"/>
-											<span class="mui-ellipsis">{{item.clubname}}</span>
+											<span class="mui-ellipsis">{{item.username}}</span>
 										</p>
 									</div>
+									<span class="person-del-video pub_del_style" @tap="delvideo(item.id)"></span>
 								</div>
 								<div class="bshadow" v-if="leftvideo.length==0">
 									<div class="video-nodata"></div>
@@ -75,8 +90,8 @@
 								</div>
 							</div>
 							<div class="teacher-video-right">
-								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index">
-									<div class="img-wrap">
+								<div class="teacher-video-list" v-for="(item,index) in rightvideo" :key="index" :data-id="item.id">
+									<div class="img-wrap video-list-play" :data-id="item.id">
 										<img :src="url+item.image" />
 										<span class="play-icon"></span>
 									</div>
@@ -84,9 +99,10 @@
 										<h4 class="mui-ellipsis">{{item.name}}</h4>
 										<p>
 											<img :src="url+item.avatarimage"/>
-											<span class="mui-ellipsis">{{item.clubname}}</span>
+											<span class="mui-ellipsis">{{item.username}}</span>
 										</p>
 									</div>
+									<span class="person-del-video pub_del_style" @tap="delvideo(item.id)"></span>
 								</div>
 							</div>
 						</div>
@@ -99,19 +115,20 @@
 						<div id="state-col">
 							<ul class="mui-table-view">
 								<li class="mui-table-view-cell mui-media teacherdetail" v-for="(item,index) in dynamic" :key="index">
-									<a href="javascript:;">
+									<a href="javascript:;" style="position: relative;">
+										<span class="person-del-state pub_del_style" @tap="delstate(item.id)"></span>
 										<div class="state-top">
 											<img :src="url+item.avatarimage" id="club-index">
 											<div class="state-auth-info">
-												<p>{{item.name}}</p>
+												<p>{{item.username}}</p>
 												<div style="display: flex;" v-if="query.user_role==1&&!!item.major">
 													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
-														{{siteinfo.major[val]}}
+														{{val | parsemajor}}
 													</span>
 												</div>
 												<div style="display: flex;" v-if="query.user_role==2&&!!item.setup">
 													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
-														{{siteinfo.setup[val]}}
+														{{val | parsesetup}}
 													</span>
 												</div>
 											</div>
@@ -167,6 +184,8 @@
 				plus.webview.currentWebview().hide("auto", 300);
 			};
 			var videoplay = null;
+			var clubvideoplay=null;
+			var curtime=+new Date()+33333;
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
 				self.addEventListener("hide",function (e) {
@@ -176,6 +195,10 @@
 				mui.preload({
 						id: 'videoplay',
 						url: 'videoplay.html'
+				});
+				mui.preload({
+						id: 'clubvideoplay',
+						url: 'clubvideoplay.html'
 				});
 				mui(".state-col").pullRefresh({
 					up : {
@@ -221,20 +244,38 @@
 					// 如果有更多数据，则继续
 					//pullRefresh.endPullupToRefresh(false);
 				};
-				mui(".teacher-video-wrap").on("tap",".teacher-video-list",function(){
-					var id = this.getAttribute('class');
-					if(!videoplay){
-						videoplay = plus.webview.getWebviewById('videoplay');
-					}
-					mui.fire(videoplay,'userId',{
-						id:id
-					});       
-					mui.openWindow({
-						id:'videoplay',
-						show:{
-							duration:250
+				mui(".teacher-video-wrap").on("tap",".video-list-play",function(){
+					var id = this.dataset.id;
+					console.log(Vm.query.user_role);
+					if(Vm.query.user_role==1){
+						if(!clubvideoplay){
+							clubvideoplay = plus.webview.getWebviewById('clubvideoplay');
 						}
-					});
+						mui.fire(clubvideoplay,'userId',{
+							id:id,
+							isperson:1,
+						});
+						mui.openWindow({
+							id:'clubvideoplay',
+							show:{
+								duration:250
+							}
+						});
+					}else{
+						if(!videoplay){
+							videoplay = plus.webview.getWebviewById('videoplay');
+						}
+						mui.fire(videoplay,'userId',{
+							id:id,
+							isperson:1,
+						});
+						mui.openWindow({
+							id:'videoplay',
+							show:{
+								duration:250
+							}
+						});
+					}
 				})
 			});
 			window.addEventListener('userId',function(event){
@@ -255,7 +296,7 @@
 			var player = null;
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						siteinfo:siteinfo,
@@ -272,7 +313,7 @@
 					}
 				},
 				filters:{
-					parseaddress(val){
+					parseaddress:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -282,49 +323,49 @@
 							return "";
 						}
 					},
-					parsesetup(val){
+					parsesetup:function(val){
 						if(val!=''){
 							return siteinfo.setup[val];
 						}else{
 							return "";
 						}
 					},
-					parseposition(val){
+					parseposition:function(val){
 						if(val!==''){
 							return siteinfo.position[val];
 						}else{
 							return "";
 						}
 					},
-					parsewelfare(val){
+					parsewelfare:function(val){
 						if(val!==''){
 							return siteinfo.welfare[val];
 						}else{
 							return "";
 						}
 					},
-					parsesubsidy(val){
+					parsesubsidy:function(val){
 						if(val!==''){
 							return siteinfo.subsidy[val];
 						}else{
 							return "";
 						}
 					},
-					parsesalary(val){
+					parsesalary:function(val){
 						if(val!==''){
 							return siteinfo.salary[val];
 						}else{
 							return "";
 						}
 					},
-					parsescale(val){
+					parsescale:function(val){
 						if(val!==''){
 							return siteinfo.scale[val];
 						}else{
 							return "";
 						}
 					},
-					parsehome(val){
+					parsehome:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -334,7 +375,7 @@
 							return "";
 						}
 					},
-					parseschool(val){
+					parseschool:function(val){
 						if(val!=""){
 							var address=getorschool.filter(function (x) {
 								return x['id']==val;
@@ -344,14 +385,14 @@
 							return "";
 						}
 					},
-					parsejob(val){
+					parsejob:function(val){
 						if(val!=""){
 							return siteinfo.jobcategory[val];
 						}else{
 							return "";
 						}
 					},
-					parsework(val){
+					parsework:function(val){
 						if(val!=""){
 							var address=getalladdress.filter(function (x) {
 								return x['id']==val;
@@ -361,14 +402,14 @@
 							return "";
 						}
 					},
-					parsemajor(val){
+					parsemajor:function(val){
 						if(val!=""){
-							return siteinfo.parsemajor[val];
+							return siteinfo.major[val];
 						}else{
 							return "";
 						}
 					},
-					parseexp(val){
+					parseexp:function(val){
 						if(val!=""){
 							return siteinfo.experience[val];
 						}else{
@@ -377,7 +418,7 @@
 					},
 				},
 				computed:{
-					leftvideo(){
+					leftvideo:function(){
 						if(this.videolist.length!=0){
 							return this.videolist.filter(function(item,index){
 								return index%2==0;
@@ -386,7 +427,7 @@
 							return [];
 						}
 					},
-					rightvideo(){
+					rightvideo:function(){
 						if(this.videolist.length!=0){
 							return this.videolist.filter(function(item,index){
 								return index%2!=0;
@@ -397,9 +438,10 @@
 					}
 				},
 				methods:{
-					getdata(){
+					getdata:function(){
 						var self=this;
 						yyajax('index/user/collection',this.query,function(res){
+							console.log(JSON.stringify(res));
 							mui.hideLoading();
 							if(res.code==200){
 								self.videolist=res.msg.video;
@@ -407,6 +449,26 @@
 							}else{
 								mui.toast(res.msg);
 							}
+						})
+					},
+					delvideo:function(id){
+						var self=this;
+						app.del(function(){//确定回调
+							yyajax("",{},function(res){
+								
+							})
+						},function(){//取消回调
+							
+						})
+					},
+					delstate:function(id){
+						var self=this;
+						app.del(function(){//确定回调
+							yyajax("",{},function(res){
+								
+							})
+						},function(){//取消回调
+							
 						})
 					}
 				}

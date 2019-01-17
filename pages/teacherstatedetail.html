@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubstatedetail.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
 	<div id="app" v-cloak>
@@ -78,7 +79,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						deatailurl:"",
@@ -92,7 +93,7 @@
 					}
 				},
 				filters:{
-					parseTime(val){
+					parseTime:function(val){
 						if(val!=""){
 							var date = new Date(val * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
 							var Y = date.getFullYear() + '-';
@@ -107,7 +108,7 @@
 						}
 					}
 				},
-				mounted(){
+				mounted:function(){
 				},
 				methods:{
 					getdata:function(){

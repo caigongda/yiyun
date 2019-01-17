@@ -115,7 +115,7 @@ var uploader = new plupload.Uploader({
 	container: document.getElementById('container'),
 	flash_swf_url : 'lib/plupload-2.1.2/js/Moxie.swf',
 	filters: [
-		{title : "mp4 files", extensions: "mp4"}
+		{title : "mp4 files", extensions: "mp4,mov"}
 	],
 	silverlight_xap_url : 'lib/plupload-2.1.2/js/Moxie.xap',
     url : 'http://oss.aliyuncs.com',

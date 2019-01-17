@@ -8,6 +8,7 @@
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/report.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+<script src="https://cdn.bootcss.com/babel-polyfill/7.0.0-beta.49/polyfill.min.js"></script>
 	</head>
 	<style>
 		.form-item{
@@ -192,7 +193,6 @@
 						siteinfo=app.getInfo();
 						getschool=app.getSchool();
 						getplace=app.getPlace();
-						mui.showLoading();
 						if(teacherApp.formdata.location_id==""||
 							teacherApp.formdata.home_id==""||
 							teacherApp.formdata.teacheracademy_id==""||
@@ -202,12 +202,14 @@
 							teacherApp.formdata.experience==""
 							){
 							mui.toast("不能为空哦！");
+							return false;
 						}else{
 							if(teacherApp.formdata.images.length==0&&
 								teacherApp.formdata.content==""){
 								mui.toast("不能为空哦！");
 								return false;
 							}
+							mui.showLoading();
 							var formdata=teacherApp.formdata;
 							formdata.id=userinfo.id;
 							formdata.role=1;
@@ -268,7 +270,7 @@
 				getplace=app.getPlace();
 				teacherApp = new Vue({
 					el: '#teacherApp',
-					data(){
+					data:function(){
 						return{
 							formdata:{
 								//name:"",

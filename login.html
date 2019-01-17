@@ -17,7 +17,7 @@
 				border-radius: 50%;
 				background: #B387FF;
 				margin:0 auto;
-				background: url('./images/yylogo1.png');
+				background: url('./images/yylogo.jpg');
 				background-size: cover;
 			}
 			.logo-title{
@@ -301,8 +301,9 @@
 					//检查 "登录状态/锁屏状态" 开始
 					if (settings.token) {//自动登录判断
 						mui.showLoading();
-						if(settings.username){
+						if(settings.name){
 							getinfo(function(){
+								plus.navigator.closeSplashscreen();
 								var id = setInterval(function () {
 									if(main_loaded_flag){
 										mui.hideLoading();

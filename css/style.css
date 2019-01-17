@@ -34,12 +34,32 @@ body {
 .icon-rstate:before { content: "\e61d"; }
 .icon-card:before { content: "\e741"; }
 .icon-list:before { content: "\e609"; }
-
+.backall{
+	width: 12%;
+	text-align: center;
+	font-size: 0.26rem;
+	color: #C8ACF8;
+}
+.pub_del_style{
+	position: absolute;
+	display: inline-block;
+	background: url(../images/pdel.svg);
+	width: 0.34rem;
+	height: 0.34rem;
+	background-size: cover;
+}
+.state_small_time{
+	margin-left: 10px;color: gray;font-weight: normal;
+}
 .mcolor{color:#C8ACF8 !impotant}/* 主色 */
 .scolor{color: #6E4FC4;}/* 深色 */
 .mui-pull-left{color: #6E4FC4;}
-
-
+.mui-icon-arrowup{
+	color: #6E4FC4;
+}
+.condseled{
+	color: #6E4FC4;
+}
 .main-wrap{
 		width: calc(100% - 20px);
 		margin: 0 auto;
@@ -253,7 +273,7 @@ body {
 	border-radius: 2px;
 	margin-bottom: 0.16rem;
 }
-.state-img-wrap img:not(:nth-child(4)){
+.state-img-wrap img:not(:nth-child(4n)){
 	margin-right: calc(4%/3);
 }
 /* 视频列表样式 */

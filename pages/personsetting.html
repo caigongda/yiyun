@@ -10,6 +10,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<style>
 		body{background: #EEEEF3;}
@@ -152,7 +153,7 @@
 					<p class="mui-input-row"><input type="text" id="qq" v-model="form.qq" class="mui-input-clear" placeholder="请输入您的QQ"/></p>
 				</div>
 			</div>
-			<button type="button" class="mui-btn mui-btn-purple mui-btn-block btn-padding" id="setting-create" @click="saveinfo">提交</button>
+			<button type="button" class="mui-btn mui-btn-purple mui-btn-block btn-padding" id="setting-create" @tap="saveinfo">提交</button>
 			<!-- <button type="button" class="mui-btn mui-btn-red mui-btn-block btn-padding" id="loginout">退出登录</button> -->
 		</div>
 		<script src="../js/jquery-1.8.3.min.js"></script>
@@ -173,17 +174,33 @@
 			mui.init({
 				swipeBack:true ,//启用右滑关闭功能,
 				beforeback: function() {
-            //获得父页面的webview
-						var Scanner = plus.webview.getWebviewById('person');　
-            //触发父页面的自定义事件(refresh),从而进行刷新
-            mui.fire(Scanner, 'refresh',{
-							avatarimage:app.getSettings().avatarimage,
-							name:app.getSettings().username,
-							id:app.getSettings().id,
-						});
-            //返回true,继续页面关闭逻辑
-            return true;
-        },
+            		//获得父页面的webview
+					var Scanner = plus.webview.getWebviewById('person');　
+		            //触发父页面的自定义事件(refresh),从而进行刷新
+		            mui.fire(Scanner, 'refresh',{
+						avatarimage:app.getSettings().avatarimage,
+						username:app.getSettings().username,
+						id:app.getSettings().id,
+					});
+		            //返回true,继续页面关闭逻辑
+		            return true;
+			    },
+			});
+			mui.back = function() {
+				plus.webview.currentWebview().hide("auto", 300);
+			};
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				self.addEventListener("hide",function (e) {
+					var Scanner = plus.webview.getWebviewById('person');　
+		            //触发父页面的自定义事件(refresh),从而进行刷新
+		            mui.fire(Scanner, 'refresh',{
+						avatarimage:imgurl+app.getSettings().avatarimage,
+						username:app.getSettings().username,
+						id:app.getSettings().id,
+					});
+					location.reload();
+				},false);
 			});
 			function pubpicker(elem,type,data,callback){
 				var cityPicker = new mui.PopPicker({
@@ -306,7 +323,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						islogin:false,
@@ -323,10 +340,10 @@
 						}
 					}
 				},
-				mounted(){
+				mounted:function(){
 				},
 				methods:{
-					saveinfo(){
+					saveinfo:function(){
 						var self=this;
 						var userinfo=app.getSettings();
 						for(key in this.form ){   //variable 为属性名

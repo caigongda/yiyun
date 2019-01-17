@@ -109,12 +109,13 @@
         "statusbar" : {
             "background" : "#FFF"
         },
+        "allowsInlineMediaPlayback":true,
         "splashscreen" : {
             "autoclose" : false, /*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
             "waiting" : true,
             "delay" : 3000
         },
-        "popGesture" : "close", /*设置应用默认侧滑返回关闭Webview窗口，"none"为无侧滑返回功能，"hide"为侧滑隐藏Webview窗口。参考http://ask.dcloud.net.cn/article/102*/
+        "popGesture" : "none", /*设置应用默认侧滑返回关闭Webview窗口，"none"为无侧滑返回功能，"hide"为侧滑隐藏Webview窗口。参考http://ask.dcloud.net.cn/article/102*/
         "runmode" : "normal", /*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
         "signature" : "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==", /*可选，保留给应用签名，暂不使用*/
         "distribute" : {
@@ -202,7 +203,7 @@
                         "spotlight" : "unpackage/res/icons/40x40.png",
                         "spotlight@2x" : "unpackage/res/icons/80x80.png"
                     },
-                    "appstore" : "C:/Users/jftz/Desktop/yylogo.png"
+                    "appstore" : "C:/Users/jftz/Desktop/艺芸logo1024x1024-02-02.png"
                 },
                 "android" : {
                     "mdpi" : "unpackage/res/icons/48x48.png", /*普通屏程序图标，分辨率：48x48*/
@@ -254,61 +255,220 @@
         }
     },
     "dependencies" : {
-        "pages" : {
-            "index.html" : {
-                "resources" : [
-                    "js/mui.min.js",
-                    "css/mui.min.css",
-                    "html/tab-webview-subpage-about.html",
-                    "fonts/mui.ttf",
-                    "fonts/iconfont.ttf",
-                    "html/tab-webview-subpage-chat.html",
-                    "js/util.js"
-                ],
-                "refer" : [ "html/tab-webview-subpage-contact.html", "html/new-webview.html" ],
-                "priority" : 0
-            },
-            "launch.html" : {
-                "resources" : [
-                    "js/mui.min.js",
-                    "css/mui.min.css",
-                    "html/tab-webview-subpage-about.html"
-                ],
-                "refer" : [
-                    "html/tab-webview-subpage-setting.html",
-                    "html/tab-webview-subpage-chat.html",
-                    "html/tab-webview-subpage-contact.html"
-                ],
-                "priority" : 0
-            },
-            "html/tab-webview-subpage-setting.html" : {
-                "resources" : [ "fonts/mui.ttf", "css/mui.min.css", "js/mui.min.js" ],
-                "refer" : [],
-                "priority" : 0
-            },
-            "html/tab-webview-subpage-about.html" : {
-                "resources" : [ "css/mui.min.css", "js/mui.min.js", "js/util.js" ],
-                "refer" : [],
-                "priority" : 0
-            },
-            "html/tab-webview-subpage-chat.html" : {
-                "resources" : [ "fonts/mui.ttf", "js/mui.min.js", "css/mui.min.css" ],
-                "refer" : [],
-                "priority" : 0
-            },
-            "html/tab-webview-subpage-contact.html" : {
-                "resources" : [ "images/60x60.gif", "js/mui.min.js", "css/mui.min.css" ],
-                "refer" : [],
-                "priority" : 0
-            },
-            "html/new-webview.html" : {
-                "resources" : [ "css/mui.min.css", "js/mui.min.js", "fonts/mui.ttf" ],
-                "refer" : [],
-                "priority" : 0
-            }
-        },
-        "idle" : {
-            "resources" : [ "js/mui.js", "css/mui.css" ]
-        }
-    }
+		"pages": {
+			"index.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"html/tab-webview-subpage-about.html",
+					"fonts/mui.ttf",
+					"fonts/iconfont.ttf",
+					"html/tab-webview-subpage-chat.html",
+					"js/util.js"
+				],
+				"refer": [
+					"html/tab-webview-subpage-contact.html",
+					"html/new-webview.html"
+				],
+				"priority": 0
+			},
+			"launch.html": {
+				"resources": [
+					"js/mui.min.js",
+					"css/mui.min.css",
+					"html/tab-webview-subpage-about.html"
+				],
+				"refer": [
+					"html/tab-webview-subpage-setting.html",
+					"html/tab-webview-subpage-chat.html",
+					"html/tab-webview-subpage-contact.html"
+				],
+				"priority": 0
+			},
+			"html/tab-webview-subpage-setting.html": {
+				"resources": [
+					"fonts/mui.ttf",
+					"css/mui.min.css",
+					"js/mui.min.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"html/tab-webview-subpage-about.html": {
+				"resources": [
+					"css/mui.min.css",
+					"js/mui.min.js",
+					"js/util.js"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"html/tab-webview-subpage-chat.html": {
+				"resources": [
+					"fonts/mui.ttf",
+					"js/mui.min.js",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"html/tab-webview-subpage-contact.html": {
+				"resources": [
+					"images/60x60.gif",
+					"js/mui.min.js",
+					"css/mui.min.css"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"html/new-webview.html": {
+				"resources": [
+					"css/mui.min.css",
+					"js/mui.min.js",
+					"fonts/mui.ttf"
+				],
+				"refer": [],
+				"priority": 0
+			},
+			"main.html": {
+				"resources": [
+					"pages/index.html"
+				],
+				"refer": [
+					"pages/report.html",
+					"pages/person.html",
+					"pages/allclass.html",
+					"pages/teacher.html"
+				],
+				"priority": 0
+			},
+			"pages/report.html": {
+				"resources": [],
+				"refer": [
+					"pages/reportvideo.html",
+					"pages/reportteacherstate.html",
+					"pages/reportclubstate.html"
+				],
+				"priority": 0
+			},
+			"pages/index.html": {
+				"resources": [],
+				"refer": [
+					"pages/clubmore.html",
+					"pages/personinfo.html",
+					"pages/clubstatemore.html",
+					"pages/clubdetail.html",
+					"pages/clubstatedetail.html"
+				],
+				"priority": 0
+			},
+			"pages/person.html": {
+				"resources": [],
+				"refer": [
+					"pages/invite.html",
+					"pages/collection.html",
+					"pages/personcontact.html",
+					"pages/videoplay.html",
+					"pages/clubvideoplay.html"
+				],
+				"priority": 0
+			},
+			"login.html": {
+				"resources": [],
+				"refer": [
+					"main.html",
+					"pages/personsetting.html"
+				],
+				"priority": 0
+			},
+			"pages/allclass.html": {
+				"resources": [],
+				"refer": [
+					"pages/clubclass.html",
+					"pages/teacherclass.html",
+					"pages/workcenter.html",
+					"pages/gamecontact.html",
+					"pages/artschool.html"
+				],
+				"priority": 0
+			},
+			"pages/collection.html": {
+				"resources": [],
+				"refer": [
+					"pages/videoplay.html",
+					"pages/clubvideoplay.html"
+				],
+				"priority": 0
+			},
+			"pages/workcenter.html": {
+				"resources": [],
+				"refer": [
+					"pages/articlesdetail.html"
+				],
+				"priority": 0
+			},
+			"pages/clubvideoplay.html": {
+				"resources": [],
+				"refer": [
+					"pages/personinfo.html"
+				],
+				"priority": 0
+			},
+			"pages/gamecontact.html": {
+				"resources": [],
+				"refer": [
+					"pages/articlesdetail.html"
+				],
+				"priority": 0
+			},
+			"pages/teacherclass.html": {
+				"resources": [],
+				"refer": [
+					"pages/teacherstatedetail.html"
+				],
+				"priority": 0
+			},
+			"pages/clubdetail.html": {
+				"resources": [],
+				"refer": [
+					"pages/clubvideoplay.html"
+				],
+				"priority": 0
+			},
+			"pages/clubstatemore.html": {
+				"resources": [],
+				"refer": [
+					"pages/clubvideoplay.html"
+				],
+				"priority": 0
+			},
+			"pages/teacher.html": {
+				"resources": [],
+				"refer": [
+					"pages/videoplay.html"
+				],
+				"priority": 0
+			},
+			"pages/invite.html": {
+				"resources": [],
+				"refer": [
+					"pages/personinfo.html"
+				],
+				"priority": 0
+			},
+			"pages/artschool.html": {
+				"resources": [],
+				"refer": [
+					"pages/artschooldetail.html"
+				],
+				"priority": 0
+			}
+		},
+		"idle": {
+			"resources": [
+				"js/mui.js",
+				"css/mui.css"
+			]
+		}
+	}
 }

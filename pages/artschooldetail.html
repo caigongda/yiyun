@@ -8,6 +8,7 @@
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/artschooldetail.css" rel="stylesheet" />
 		<link href="../css/previewimage.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
 		<div id="app">
@@ -65,7 +66,7 @@
 			});
 			var Vm = new Vue({
 					el: '#app',
-					data(){
+					data:function(){
 						return{
 							url:imgurl,
 							alladdress:getalladdress,
@@ -86,7 +87,7 @@
 						} 
 					},
 					filters:{
-						parseaddress(val){
+						parseaddress:function(val){
 							if(val!=""){
 								var address=getalladdress.filter(function (x) {
 									return x['id']==val;
@@ -97,7 +98,7 @@
 							}
 						}
 					},
-					mounted(){
+					mounted:function(){
 						//this.getdata();
 					},
 					methods:{

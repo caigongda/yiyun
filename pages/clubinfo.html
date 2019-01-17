@@ -10,6 +10,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<style>
 		body{background: #EEEEF3;}
@@ -212,7 +213,7 @@
 			})
 			var app = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						form:{
 							username:"",

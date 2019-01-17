@@ -8,12 +8,37 @@
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/index.css" rel="stylesheet" />
 		<link href="../css/previewimage.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			#club-state-list .mui-active{
 				background: #fff !important;
 			}
 			#club-state-list li:after{
 				display: none;
+			}
+			.isloading_state{
+				color: gray;
+				text-align: center;
+				display: none;
+				margin-bottom: 5px;
+				transition: 0.5s;
+			}
+			@-moz-keyframes rotateload{
+				from{transform: rotate(0deg);}
+				to{transform: rotate(180deg);}
+			}
+			@-webkit-keyframes rotateload{
+				from{transform: rotate(0deg);}
+				to{transform: rotate(180deg);}
+			}
+			@keyframes rotateload{
+				from{transform: rotate(0deg);}
+				to{transform: rotate(180deg);}
+			}
+			.isloading_state span{
+				font-size: 0.35rem;
+				margin-right: 3px;
+				animation: rotateload 0.5s infinite linear;
 			}
 		</style>
 	</head>
@@ -48,57 +73,54 @@
 					<span id="clubdetail-more">更多<span class="mui-icon mui-icon-arrowright"></span></span>
 				</div>
 			<div id="club-state-list">
-				<div class="scroll-parent">
-					<div id="commonListWrap">
-						<ul class="mui-table-view" id="statelist">
-							<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="item.id">
-								<a href="javascript:;">
-									<div class="state-top">
-										<img :src="url+item.avatarimage" class="club-index" :data-id="item.club_id" :data-role="2">
-										<div class="state-auth-info">
-											<p>{{item.clubname}}</p>
-											<div style="display: flex;" v-if="!!item.setup">
-												<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
-													{{otherinfo.setup[val]}}
-												</span>
-											</div>
-										</div>
+				<ul class="mui-table-view" id="statelist">
+					<li class="mui-table-view-cell mui-media statedetail" v-for="(item,index) in statelist" :key="index" :data-id="item.id">
+						<a href="javascript:;">
+							<div class="state-top">
+								<img :src="url+item.avatarimage" class="club-index" :data-id="item.club_id" :data-role="2">
+								<div class="state-auth-info">
+									<p>{{item.clubname}}<small class="state_small_time">{{item.createtime | parseTime}}</small></p>
+									<div style="display: flex;" v-if="!!item.setup">
+										<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
+											{{otherinfo.setup[val]}}
+										</span>
 									</div>
-									<p class="state-con-info" v-if="!!item.content">
-										{{item.content}}
-									</p>
-									<div class="state-con-info sother-info">
-										<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
-										<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
-										<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
-										<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
-										<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
-										<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
-										<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+								</div>
+							</div>
+							<p class="state-con-info" v-if="!!item.content">
+								{{item.content}}
+							</p>
+							<div class="state-con-info sother-info">
+								<div style="width: 100%;" v-if="!!item.location_id">所在地：{{item.location_id | parseaddress}}</div>
+								<div style="width: 50%;" v-if="!!item.setup">开设专业：{{item.setup | parsesetup}}</div>
+								<div style="width: 50%;" v-if="!!item.position">职位类别：{{item.position | parseposition}}</div>
+								<div style="width: 50%;" v-if="!!item.welfare">福利：{{item.welfare | parsewelfare}}</div>
+								<div style="width: 50%;" v-if="!!item.subsidy">课时费(元)：{{item.subsidy | parsesubsidy}}</div>
+								<div style="width: 50%;" v-if="!!item.salary">月薪待遇(元)：{{item.salary | parsesalary}}</div>
+								<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
+							</div>
+							<div class="state-img-wrap" v-if="!!item.images">
+								<img v-for="value in item.images.split(',')" :src="url+value" data-preview-src="" :data-preview-group="item.id"/>
+							</div>
+							<div class="action-wrap">
+								<div>
+									<div class="addinvite" :data-id="item.club_id">
+										<div class="noinvite"></div>
+										<div>邀请</div>
 									</div>
-									<div class="state-img-wrap" v-if="!!item.images">
-										<img v-for="value in item.images.split(',')" :src="url+value"/>
+								</div>
+								<div>
+									<div class="addcol" :data-id="item.id">
+										<div class="nocol"></div>
+										<div>收藏</div>
 									</div>
-									<div class="action-wrap">
-										<div>
-											<div class="addinvite" :data-id="item.club_id">
-												<div class="noinvite"></div>
-												<div>邀请</div>
-											</div>
-										</div>
-										<div>
-											<div class="addcol" :data-id="item.id">
-												<div class="nocol"></div>
-												<div>收藏</div>
-											</div>
-										</div>
-									</div>
-									<div class="cross-line" style=""></div>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
+								</div>
+							</div>
+							<div class="cross-line" style=""></div>
+						</a>
+					</li>
+				</ul>
+				<div class="isloading_state"><span class="mui-icon mui-icon-spinner-cycle mui-spin"></span><small>正在加载···</small></div>
 			</div>
 	</div>
 		<script src="../js/jquery-1.8.3.min.js"></script>
@@ -145,7 +167,23 @@
 							ws.endPullToRefresh();
 						},1000);
 					}
-					mui("#commonListWrap").pullRefresh({
+					$(window).scroll(function(){
+						 var scrollTop = $(this).scrollTop();    //滚动条距离顶部的高度
+						 var scrollHeight = $(document).height();   //当前页面的总高度
+						 var clientHeight = $(this).height();    //当前可视的页面高度
+						 // console.log("top:"+scrollTop+",doc:"+scrollHeight+",client:"+clientHeight);
+						 if(scrollTop + clientHeight >= scrollHeight){   //距离顶部+当前高度 >=文档总高度 即代表滑动到底部 
+							 //滚动条到达底部
+							 //alert(3)
+							 $(".isloading_state").fadeIn();
+						 	loadMore();
+						 }else if(scrollTop<=0){
+							//滚动条到达顶部
+							 //alert(4)
+							//滚动条距离顶部的高度小于等于0 TODO
+						 }
+					 });
+					/*mui("#commonListWrap").pullRefresh({
 						up : {
 							height:50,// 可选.默认50.触发上拉加载拖动距离
 							auto:false,// 可选,默认false.自动上拉加载一次
@@ -157,16 +195,18 @@
 								loadMore(this);
 							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 						}
-					})
-					function loadMore(pullRefresh) {
+					})*/
+					function loadMore() {
 						// 如果没有更多数据了，则关闭上拉加载
 						//pullRefresh.endPullupToRefresh(true);
 						// 如果有更多数据，则继续
 						Vm.page.offset+=1;
 						Vm.getclubstate(function(){
-							mui('#commonListWrap').pullRefresh().endPullupToRefresh();
+							$(".isloading_state").fadeOut();
 						},function(){
-							mui('#commonListWrap').pullRefresh().endPullupToRefresh(true);
+							setTimeout(function(){
+								$(".isloading_state").fadeOut();
+							},2000)
 							Vm.page.offset-=1;
 						});
 						/* setTimeout(function () {
@@ -193,7 +233,7 @@
 					mui.preload({
 						id: 'personinfo',
 						url: 'personinfo.html'
-				  });
+				  	});
 					var clubMore = document.getElementById('club-more');
 					var clubdetailMore = document.getElementById('clubdetail-more');
 					mui("#clublist").on("tap",".club-detail",function(){//精选俱乐部详情
@@ -206,7 +246,7 @@
 						});
 						mui.openWindow({
 							id:'clubdetail',
-							show:{
+							show:{ 
 								duration:250
 							}
 						});
@@ -225,6 +265,7 @@
 								duration:250
 							}
 						});
+						
 					}, false);
 					/* mui("#statelist").on("tap",".statedetail",function(){//俱乐部动态详情
 						var id = this.dataset.id;
@@ -274,7 +315,6 @@
 						});
 					}, false);
 					mui("#statelist").on("tap",".addinvite",function(){//邀请
-						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -283,9 +323,18 @@
 							beinvite_id:id,
 						};
 						var self=this;
+						if(userinfo.role==2){
+							mui.toast("此角色无法邀请！");
+							return;
+						}
+						mui.showLoading();
 						pubinvite(formdata,function(msg){
 							//邀请成功
-							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							if($(self).children(".noinvite").hasClass("noinvite")){
+								$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							}else{
+								$(self).children(".noinvite").addClass("noinvite").removeClass("invited");
+							}
 							mui.hideLoading();
 						});
 					});
@@ -303,10 +352,15 @@
 						pubcol(formdata,function(msg){
 							//收藏成功
 							mui.hideLoading();
-							$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							if($(self).children(".nocol").hasClass('nocol')){
+								$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							}else{
+								$(self).children(".nocol").addClass("nocol").removeClass("coled");
+							}
 						});
 					});
 				});
+				
 				function getbannercache(){
 					var stateText = localStorage.getItem('$banner') || "[]";
 					return JSON.parse(stateText);
@@ -335,7 +389,7 @@
 				});
 				var Vm = new Vue({
 					el: '#app-index',
-					data(){
+					data:function(){
 						return{
 							url:imgurl,
 							otherinfo:app.getInfo(),
@@ -348,7 +402,14 @@
 						}
 					},
 					filters:{
-						parseaddress(val){
+						parseTime:function(val){
+							if(val!=""){
+								return timestampToTime(val);
+							}else{
+								return "";
+							}
+						},
+						parseaddress:function(val){
 							if(val!=""){
 								var address=getalladdress.filter(function (x) {
 									return x['id']==val;
@@ -358,42 +419,42 @@
 								return "";
 							}
 						},
-						parsesetup(val){
+						parsesetup:function(val){
 							if(val!=''){
 								return otherinfo.setup[val];
 							}else{
 								return "";
 							}
 						},
-						parseposition(val){
+						parseposition:function(val){
 							if(val!==''){
 								return otherinfo.position[val];
 							}else{
 								return "";
 							}
 						},
-						parsewelfare(val){
+						parsewelfare:function(val){
 							if(val!==''){
 								return otherinfo.welfare[val];
 							}else{
 								return "";
 							}
 						},
-						parsesubsidy(val){
+						parsesubsidy:function(val){
 							if(val!==''){
 								return otherinfo.subsidy[val];
 							}else{
 								return "";
 							}
 						},
-						parsesalary(val){
+						parsesalary:function(val){
 							if(val!==''){
 								return otherinfo.salary[val];
 							}else{
 								return "";
 							}
 						},
-						parsescale(val){
+						parsescale:function(val){
 							if(val!==''){
 								return otherinfo.scale[val];
 							}else{
@@ -401,16 +462,16 @@
 							}
 						},
 					},
-					mounted(){
+					mounted:function(){
 							//var self=this;
 						  //this.getalldata();
 					},
 					methods:{
-							getalldata(){
+							getalldata:function(){
 								this.getclub();
 								this.getclubstate();
 							},
-							getbanner(){
+							getbanner:function(){
 								var self=this;
 								yyajax('index/index/banner',{type:1},function(res){
 									if(res.code==200){
@@ -427,7 +488,7 @@
 									}
 								})
 							},
-							getclub(){
+							getclub:function(){
 								var self=this;
 								var userinfo=app.getSettings();
 								yyajax('index/index/homeclub',{id:userinfo.id,role:userinfo.role,token:userinfo.token},function(res){
@@ -439,13 +500,16 @@
 									}
 								})
 							},
-							getclubstate(cb,err){
+							getclubstate:function(cb,err){
 								var self=this;
 								var userinfo=app.getSettings();
+								if(JSON.stringify(userinfo)=='{}'){
+									return;
+								};
 								yyajax('index/index/clubdynamic',{id:userinfo.id,role:userinfo.role,token:userinfo.token,offset:this.page.offset},function(res){
+									console.log(JSON.stringify(res));
 									if(res.code==200){
 										if(res.msg.length!=0){
-											console.log(JSON.stringify(res.msg));
 											localStorage.setItem('$getclubstate', JSON.stringify(res.msg));
 											var alldata=self.statelist.concat(res.msg);
 											self.statelist=alldata;
@@ -462,6 +526,7 @@
 					}
 				});
 		</script>
+<script src="https://cdn.bootcss.com/babel-polyfill/7.0.0-beta.49/polyfill.min.js"></script>
 	</body>
 
 </html>

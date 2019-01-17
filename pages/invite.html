@@ -6,6 +6,7 @@
 		<title></title>
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			.invitelist{
 				margin-top: 10px;
@@ -24,6 +25,9 @@
 			.invitelist li>div{
 				display: flex;
 				align-items: center;
+			}
+			.invitelist .mui-active{
+				background: #fff !important;
 			}
 			.invitelist li>div>span{
 				font-size: 0.26rem;
@@ -87,6 +91,10 @@
 			#state-col{
 				padding-bottom: 50px;
 			}
+			.invite-del-p{
+				right: 0.2rem;
+				top: 0.3rem;
+			}
 		</style>
 	</head>
 	<body>
@@ -94,7 +102,7 @@
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">邀请</h1>
 		</header>
-		<div id="app">
+		<div id="app" v-cloak>
 			<div class="col-tab">
 				<div :class="{'tab-active':isinvite}" @tap="isinvite=true">邀请({{leftdata.length}})</div>
 				<div :class="{'tab-active':!isinvite}" @tap="isinvite=false">被邀请({{rightdata.length}})</div>
@@ -103,10 +111,11 @@
 				<div id="commonListWrap">
 					<ul class="mui-table-view invitelist">
 						<li class="mui-table-view-cell" v-for="(item,index) in leftdata" :key="index" :data-id="item.user_id" :data-role="item.user_role">
-							<div>
+							<div class="view-invite-per" :data-id="item.user_id" :data-role="item.user_role">
 								<img :src="url+item.avatarimage"/>
 								<span>{{item.username}}</span>
 							</div>
+							<span class="invite-del-p pub_del_style" @tap="delinvite(item.id)"></span>
 							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
 						</li>
 					</ul>
@@ -120,12 +129,14 @@
 								<img :src="url+item.avatarimage"/>
 								<span>{{item.username}}</span>
 							</div>
+							<span class="invite-del-p pub_del_style" @tap="delinvite(item.id)"></span>
 							<!-- <span class="mui-icon mui-icon-arrowright"></span> -->
 						</li>
 					</ul>
 				</div>
 			</div>
 		</div>
+		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
 		<script src="../js/vue.js"></script>
@@ -186,7 +197,7 @@
 						id: 'personinfo',
 						url: 'personinfo.html'
 				});
-				mui('.invitelist').on('tap','li',function(){
+				mui('.invitelist').on('tap','.view-invite-per',function(){
 					var id = this.dataset.id;
 					var role = this.dataset.role;
 					if(!personinfo){
@@ -223,7 +234,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						isinvite:true,
@@ -242,6 +253,7 @@
 				methods:{
 					getdata:function(){
 						var self=this;
+						console.log(JSON.stringify(this.query));
 						yyajax('index/user/invitation',this.query,function(res){
 							mui.hideLoading();
 							console.log(JSON.stringify(res));
@@ -252,6 +264,16 @@
 								mui.toast(res.msg);
 							}
 						});
+					},
+					delinvite:function(id){
+						var self=this;
+						app.del(function(){//确定回调
+							yyajax("",{},function(res){
+								
+							})
+						},function(){//取消回调
+							
+						})
 					},
 					video:function(){
 						this.curtab=1;

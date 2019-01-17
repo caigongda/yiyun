@@ -5,18 +5,50 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title></title>
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
+		<style>
+			.mui-bar-nav{
+				background: rgba(255,255,255,0);
+			}
+		</style>
 	</head>
 	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title"></h1>
+		</header>
 	<script src="../js/mui.min.js"></script>
 	<script>
-		mui.plusReady(function(){
-			var self = plus.webview.currentWebview();
-			url = self.url;
-			mui.openWindow({
-				url: url,
-				id:'newview',
-			});
+		var cururl;
+		var self;
+		mui.init({
+			swipeBack:true,
+			beforeback: function(){
+				plus.nativeUI.closeWaiting();
+				return true;
+			}
 		});
+		mui.plusReady(function(){
+			self = plus.webview.currentWebview();
+			cururl = self.url;
+			self.addEventListener('show',createEmbed,false);
+		});
+		// 创建子Webview
+		function createEmbed(){
+			var topoffset='45px';
+			if(plus.navigator.isImmersedStatusbar()){// 兼容immersed状态栏模式
+				topoffset=(Math.round(plus.navigator.getStatusbarHeight())+45)+'px';
+			}
+			plus.nativeUI.showWaiting('',{style:'black',modal:false,background:'rgba(0,0,0,0)'});
+			embed=plus.webview.create(cururl,'embed',{top:topoffset,bottom:'0px',position:'dock',dock:'bottom',bounce:'vertical'});
+			self.append(embed);
+			embed.addEventListener('loaded',function(){
+				plus.nativeUI.closeWaiting();
+			},false);
+			embed.addEventListener('loading',function(){
+				plus.nativeUI.showWaiting('',{style:'black',modal:false,background:'rgba(0,0,0,0)'});
+			},false);
+		}
 	</script>
 	</body>
 </html>

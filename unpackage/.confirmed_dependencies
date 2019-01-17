@@ -1,0 +1,117 @@
+{
+	"main.html": {
+		"resources": [
+			"pages/index.html"
+		],
+		"refer": [
+			"pages/report.html",
+			"pages/index.html",
+			"pages/person.html",
+			"pages/allclass.html",
+			"pages/teacher.html"
+		]
+	},
+	"pages/report.html": {
+		"refer": [
+			"pages/reportvideo.html",
+			"pages/reportteacherstate.html",
+			"pages/reportclubstate.html"
+		],
+		"resources": []
+	},
+	"pages/index.html": {
+		"refer": [
+			"pages/clubmore.html",
+			"pages/personinfo.html",
+			"pages/clubstatemore.html",
+			"pages/clubdetail.html",
+			"pages/clubstatedetail.html"
+		],
+		"resources": []
+	},
+	"pages/person.html": {
+		"refer": [
+			"pages/invite.html",
+			"pages/collection.html",
+			"pages/personcontact.html",
+			"pages/videoplay.html",
+			"pages/clubvideoplay.html"
+		],
+		"resources": []
+	},
+	"login.html": {
+		"refer": [
+			"main.html",
+			"pages/personsetting.html"
+		],
+		"resources": []
+	},
+	"pages/allclass.html": {
+		"refer": [
+			"pages/clubclass.html",
+			"pages/teacherclass.html",
+			"pages/workcenter.html",
+			"pages/gamecontact.html",
+			"pages/artschool.html"
+		],
+		"resources": []
+	},
+	"pages/collection.html": {
+		"refer": [
+			"pages/videoplay.html",
+			"pages/clubvideoplay.html"
+		],
+		"resources": []
+	},
+	"pages/workcenter.html": {
+		"refer": [
+			"pages/articlesdetail.html"
+		],
+		"resources": []
+	},
+	"pages/clubvideoplay.html": {
+		"refer": [
+			"pages/personinfo.html"
+		],
+		"resources": []
+	},
+	"pages/gamecontact.html": {
+		"refer": [
+			"pages/articlesdetail.html"
+		],
+		"resources": []
+	},
+	"pages/teacherclass.html": {
+		"refer": [
+			"pages/teacherstatedetail.html"
+		],
+		"resources": []
+	},
+	"pages/clubdetail.html": {
+		"refer": [
+			"pages/clubvideoplay.html"
+		],
+		"resources": []
+	},
+	"pages/clubstatemore.html": {
+		"refer": [
+			"pages/clubvideoplay.html"
+		],
+		"resources": []
+	},
+	"pages/teacher.html": {
+		"refer": [
+			"pages/videoplay.html"
+		]
+	},
+	"pages/invite.html": {
+		"refer": [
+			"pages/personinfo.html"
+		]
+	},
+	"pages/artschool.html": {
+		"refer": [
+			"pages/artschooldetail.html"
+		]
+	}
+}

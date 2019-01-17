@@ -1,5 +1,6 @@
 .common-input{
-	width: 100%;
+	width: calc(100% - 50px);
+	margin-left: 0.35rem;
 }
 .scroll-parent{
 	position: absolute;

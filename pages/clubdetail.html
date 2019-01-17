@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubdetail.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			#club-state-list .mui-active{
 				background: #fff !important;
@@ -33,10 +34,10 @@
 				<div class="club-desc" v-html="clubinfo.abstract"></div>
 				<div class="clubdetail-introd" v-html="clubinfo.content"></div>
 				<div class="person-prod-tab">
-					<div v-bind:class="{curactiveTab:curtab=='1'}" @click="video">
+					<div v-bind:class="{curactiveTab:curtab=='1'}" @tap="video">
 							视频
 					</div>
-					<div v-bind:class="{curactiveTab:curtab=='2'}" @click="state">
+					<div v-bind:class="{curactiveTab:curtab=='2'}" @tap="state">
 							动态
 					</div>
 				</div>
@@ -85,7 +86,7 @@
 								<div class="state-top">
 									<img :src="url+item.avatarimage">
 									<div class="state-auth-info">
-										<p>{{item.username}}</p>
+										<p>{{item.username}}<small class="state_small_time">{{item.createtime | parseTime}}</small></p>
 										<div style="display: flex;">
 											<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup">
 												{{val}}
@@ -188,7 +189,6 @@
 						});
 					});
 					mui("#detail").on("tap",".addinvite",function(){//邀请
-						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:VmClub.userinfo.id,
@@ -197,9 +197,18 @@
 							beinvite_id:id,
 						};
 						var self=this;
+						if(VmClub.userinfo.role==2){
+							mui.toast("此角色无法邀请！");
+							return;
+						}
+						mui.showLoading();
 						pubinvite(formdata,function(msg){
 							//邀请成功
-							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							if($(self).children(".noinvite").hasClass("noinvite")){
+								$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							}else{
+								$(self).children(".noinvite").addClass("noinvite").removeClass("invited");
+							}
 							mui.hideLoading();
 						});
 					});
@@ -217,7 +226,11 @@
 						pubcol(formdata,function(msg){
 							//收藏成功
 							mui.hideLoading();
-							$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							if($(self).children(".nocol").hasClass('nocol')){
+								$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							}else{
+								$(self).children(".nocol").addClass("nocol").removeClass("coled");
+							}
 						});
 					});
 				});
@@ -235,7 +248,7 @@
 				VmClub.userinfo=app.getSettings(); */
 				VmClub = new Vue({
 					el: '#detail',
-					data(){
+					data:function(){
 						return{
 							url:imgurl,
 							otherinfo:app.getInfo(),
@@ -254,7 +267,14 @@
 						}
 					},
 					filters:{
-						parseaddress(val){
+						parseTime:function(val){
+							if(val!=""){
+								return timestampToTime(val);
+							}else{
+								return "";
+							}
+						},
+						parseaddress:function(val){
 							if(val!=""){
 								var address=getalladdress.filter(function (x) {
 									return x['id']==val;
@@ -264,42 +284,42 @@
 								return "";
 							}
 						},
-						parsesetup(val){
+						parsesetup:function(val){
 							if(val!=''){
 								return siteinfo.setup[val];
 							}else{
 								return "";
 							}
 						},
-						parseposition(val){
+						parseposition:function(val){
 							if(val!==''){
 								return siteinfo.position[val];
 							}else{
 								return "";
 							}
 						},
-						parsewelfare(val){
+						parsewelfare:function(val){
 							if(val!==''){
 								return siteinfo.welfare[val];
 							}else{
 								return "";
 							}
 						},
-						parsesubsidy(val){
+						parsesubsidy:function(val){
 							if(val!==''){
 								return siteinfo.subsidy[val];
 							}else{
 								return "";
 							}
 						},
-						parsesalary(val){
+						parsesalary:function(val){
 							if(val!==''){
 								return siteinfo.salary[val];
 							}else{
 								return "";
 							}
 						},
-						parsescale(val){
+						parsescale:function(val){
 							if(val!==''){
 								return siteinfo.scale[val];
 							}else{
@@ -308,23 +328,23 @@
 						},
 					},
 					computed:{
-						leftvideo(){
+						leftvideo:function(){
 							return this.videolist.filter(function(item,index){
 								return index%2==0;
 							});
 						},
-						rightvideo(){
+						rightvideo:function(){
 							return this.videolist.filter(function(item,index){
 								return index%2!=0;
 							});
 						}
 					},
-					mounted(){
+					mounted:function(){
 						this.getclubdetail();
 						events();
 					},
 					methods:{
-						getclubdetail(){
+						getclubdetail:function(){
 							var self=this;
 							var postdata={
 								id:this.userinfo.id,
@@ -347,7 +367,7 @@
 						state:function(){
 							this.curtab=2;
 						},
-						resetdata(){
+						resetdata:function(){
 							for(var i in this.clubinfo){
 								this.clubinfo[i]="";
 							}

@@ -74,7 +74,7 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						deatailurl:"",
@@ -88,7 +88,7 @@
 					}
 				},
 				filters:{
-					parseTime(val){
+					parseTime:function(val){
 						if(val!=""){
 							var date = new Date(val * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
 							var Y = date.getFullYear() + '-';
@@ -103,7 +103,7 @@
 						}
 					}
 				},
-				mounted(){
+				mounted:function(){
 				},
 				methods:{
 					getdata:function(){

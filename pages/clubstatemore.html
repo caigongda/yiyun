@@ -7,36 +7,37 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubstatemore.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
+	<form action="">
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="mui-input-row common-input" id="inputc">
+				<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+				<span class="mui-icon mui-icon-search common-search-icon"></span>
+			</div>
+		</header>
+	</form>
 	<div id="app" v-cloak>
-		<form action="">
-			<header class="mui-bar mui-bar-nav common-header">
-				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-				<div class="mui-input-row common-input" id="inputc">
-					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
-					<span class="mui-icon mui-icon-search common-search-icon"></span>
-				</div>
-			</header>
-		</form>
 		<div class="common-condition-wrap" v-if="false">
 			<div class="condition-wrap">
-				<div class="selcity" @click="selcity">所在城市<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
-				<div class="seldance" @click="seldance">所交舞种<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+				<div class="selcity" :class="{'condseled':iscity,'condnoseled':!iscity}" @tap="selcity">所在城市<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
+				<div class="seldance" :class="{'condseled':isdance,'condnoseled':!isdance}" @tap="seldance">所交舞种<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
 			</div>
 			<div class="city-wrap" id="scroll-ul" v-show="iscity">
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata1">
-							<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
+							<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @tap="selstepone(item.text,index)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata2">								
-							<li :class="{selone:curtwo=='不限'}" @click="selsteptwo('不限','')">不限</li>
-							<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selsteptwo(item.text,item.value)">{{item.text}}</li>
+							<li :class="{selone:curtwo=='不限'}" @tap="selsteptwo('不限','')">不限</li>
+							<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @tap="selsteptwo(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
@@ -45,14 +46,14 @@
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="dancedata">
-							<li :class="{selone:curdance=='不限'}" @click="seldanceone('不限','')">不限</li>
-							<li v-for="(item,index) in dancelist" :key="index" :class="{selone:curdance==item}" @click="seldanceone(item,index)">{{item}}</li>
+							<li :class="{selone:curdance=='不限'}" @tap="seldanceone('不限','')">不限</li>
+							<li v-for="(item,index) in dancelist" :key="index" :class="{selone:curdance==item}" @tap="seldanceone(item,index)">{{item}}</li>
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="shade-bg" v-if="iscity||isdance" @click="closeall"></div>
+		<div class="shade-bg" v-if="iscity||isdance" @tap="closeall"></div>
 		<div class="scroll-parent" style="top: 55px;height: calc(100% - 55px);">
 			<div id="commonListWrap" class="mui-content mui-scroll-wrapper">
 				<div class="mui-scroll">
@@ -132,6 +133,7 @@
 							Vm.getdata(0);
 						});
 					});
+					var curtime=+new Date()+44444;
 					mui.preload({
 							id: 'clubvideoplay',
 							url: 'clubvideoplay.html'
@@ -201,7 +203,7 @@
 				Vm.getdata(); */
 				Vm = new Vue({
 					el: '#app',
-					data(){
+					data:function(){
 						return{
 							url:imgurl,
 							cityone:getplace,
@@ -223,18 +225,18 @@
 						}
 					},
 					computed:{
-						leftvideo(){
+						leftvideo:function(){
 							return this.datalist.filter(function(item,index){
 								return index%2==0;
 							});
 						},
-						rightvideo(){
+						rightvideo:function(){
 							return this.datalist.filter(function(item,index){
 								return index%2!=0;
 							});
 						}
 					},
-					mounted(){
+					mounted:function(){
 						this.getdata(0);
 						events();
 					},

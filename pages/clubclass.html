@@ -7,6 +7,8 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/clubclass.css" rel="stylesheet" />
+		<link href="../css/previewimage.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			#commonListWrap .mui-active{
 				background: #fff !important;
@@ -17,35 +19,36 @@
 		</style>
 	</head>
 	<body>
+	<form action="">
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="mui-input-row common-input" id="inputc">
+				<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+				<span class="mui-icon mui-icon-search common-search-icon"></span>
+			</div>
+				<div class="backall">全部</div>
+		</header>
+	</form>
 	<div id="app" v-cloak>
-		<form action="">
-			<header class="mui-bar mui-bar-nav common-header">
-				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-				<div class="mui-input-row common-input" id="inputc">
-					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
-					<span class="mui-icon mui-icon-search common-search-icon"></span>
-				</div>
-			</header>
-		</form>
 			<div class="common-condition-wrap">
 				<div class="condition-wrap">
-					<div class="selcity" @click="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
-					<div class="seldance" @click="seldance">{{curpos}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
-					<div class="morecond" @click="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
+					<div class="selcity" :class="{'condseled':iscity,'condnoseled':!iscity}" @tap="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
+					<div class="seldance" :class="{'condseled':isdance,'condnoseled':!isdance}" @tap="seldance">{{curpos}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+					<div class="morecond" :class="{'condseled':morecond,'condnoseled':!morecond}" @tap="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
 				</div>
 				<div class="city-wrap" id="scroll-ul" v-show="iscity">
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
+								<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @tap="selstepone(item.text,index)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:curtwo=='不限地区'}" @click="selcurcity('不限地区','')">不限地区</li>
-								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selcurcity(item.text,item.value)">{{item.text}}</li>
+								<li :class="{selone:curtwo=='不限地区'}" @tap="selcurcity('不限地区','')">不限地区</li>
+								<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @tap="selcurcity(item.text,item.value)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
@@ -54,8 +57,8 @@
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li :class="{selone:curpos=='不限'}" @click="selposone('不限','')">不限</li>
-								<li v-for="(item,index) in positions" :key="index" :class="{selone:curpos==item}" @click="selposone(item,index)">{{item}}</li>
+								<li :class="{selone:curpos=='不限'}" @tap="selposone('不限','')">不限</li>
+								<li v-for="(item,index) in positions" :key="index" :class="{selone:curpos==item}" @tap="selposone(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
@@ -64,53 +67,53 @@
 					<div class="mui-scroll-wrapper">
 						<div class="mui-scroll">
 							<ul id="citydata1">
-								<li v-for="(item,index) in moreconds" :key="index" :class="{selone:conone==item.text}" @click="selcontype(item.text,item.value)">{{item.text}}</li>
+								<li v-for="(item,index) in moreconds" :key="index" :class="{selone:conone==item.text}" @tap="selcontype(item.text,item.value)">{{item.text}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition=='1'">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:consetup=='不限'}" @click="selconsetup('不限','')">不限</li>
-								<li v-for="(item,index) in setups" :key="index" :class="{selone:consetup==item}" @click="selconsetup(item,index)">{{item}}</li>
+								<li :class="{selone:consetup=='不限'}" @tap="selconsetup('不限','')">不限</li>
+								<li v-for="(item,index) in setups" :key="index" :class="{selone:consetup==item}" @tap="selconsetup(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==2">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:confare=='不限'}" @click="selconwelfare('不限','')">不限</li>
-								<li v-for="(value, key) in welfare" :key="key" :class="{selone:confare==value}" @click="selconwelfare(value,key)">{{value}}</li>
+								<li :class="{selone:confare=='不限'}" @tap="selconwelfare('不限','')">不限</li>
+								<li v-for="(value, key) in welfare" :key="key" :class="{selone:confare==value}" @tap="selconwelfare(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition=='3'">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:consubsidy=='不限'}" @click="selconsubsidys('不限','')">不限</li>
-								<li v-for="(item,index) in subsidys" :key="index" :class="{selone:consubsidy==item}" @click="selconsubsidys(item,index)">{{item}}</li>
+								<li :class="{selone:consubsidy=='不限'}" @tap="selconsubsidys('不限','')">不限</li>
+								<li v-for="(item,index) in subsidys" :key="index" :class="{selone:consubsidy==item}" @tap="selconsubsidys(item,index)">{{item}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==4">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:consalary=='不限'}" @click="selconsalarys('不限','')">不限</li>
-								<li v-for="(value, key) in salarys" :key="key" :class="{selone:consalary==value}" @click="selconsalarys(value,key)">{{value}}</li>
+								<li :class="{selone:consalary=='不限'}" @tap="selconsalarys('不限','')">不限</li>
+								<li v-for="(value, key) in salarys" :key="key" :class="{selone:consalary==value}" @tap="selconsalarys(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
 					<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==5">
 						<div class="mui-scroll">
 							<ul id="citydata2">
-								<li :class="{selone:conscale=='不限'}" @click="selconscales('不限','')">不限</li>
-								<li v-for="(value, key) in scales" :key="key" :class="{selone:conscale==value}" @click="selconscales(value,key)">{{value}}</li>
+								<li :class="{selone:conscale=='不限'}" @tap="selconscales('不限','')">不限</li>
+								<li v-for="(value, key) in scales" :key="key" :class="{selone:conscale==value}" @tap="selconscales(value,key)">{{value}}</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="shade-bg" v-if="iscity||isdance||morecond" @click="closeall"></div>
+			<div class="shade-bg" v-if="iscity||isdance||morecond" @tap="closeall"></div>
 			<div id="club-state-list">
 				<div class="scroll-parent">
 					<div id="commonListWrap">
@@ -121,7 +124,7 @@
 										<div class="state-top" style="width: calc(100% - 35px);">
 											<img :src="url+item.avatarimage" class="club-index" :data-id="item.club_id" :data-role="2">
 											<div class="state-auth-info">
-												<p>{{item.clubname}}</p>
+												<p>{{item.clubname}}<small class="state_small_time">{{item.createtime | parseTime}}</small></p>
 												<div style="display: flex;" v-if="!!item.setup">
 													<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.setup.split(',')">
 														{{siteinfo.setup[val]}}
@@ -142,7 +145,7 @@
 											<div style="width: 50%;" v-if="!!item.scale">机构规模(m2)：{{item.scale | parsescale}}</div>
 										</div>
 										<div class="state-img-wrap" style="width: calc(100% - 35px);" v-if="!!item.images">
-											<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" />
+											<img v-for="value in item.images.split(',').slice(0,3)" :src="url+value" data-preview-src="" :data-preview-group="item.id"/>
 										</div>
 										<div class="action-wrap" style="width: calc(100% - 35px);">
 											<div>
@@ -170,6 +173,8 @@
 		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
 			var userinfo=app.getSettings();
@@ -183,6 +188,7 @@
 				swipeBack:true //启用右滑关闭功能
 			});
 			function events(){
+				mui.previewImage({issave:true});
 				mui.ready(function() {
 				//初始化区域滚动
 					var scroll = mui(".mui-scroll-wrapper").scroll();
@@ -204,6 +210,11 @@
 							Vm.query.keyword="";
 							Vm.getclubdata(0);
 						});
+					});
+					mui(".backall")[0].addEventListener('tap',function(){
+						document.getElementById("search").value="";
+						Vm.query.keyword="";
+						Vm.getclubdata(0);
 					});
 					var self = plus.webview.currentWebview();
 					self.addEventListener("hide",function (e) {
@@ -232,11 +243,11 @@
 							callback : function() {
 								var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
 								// 加载更多的内容
-								loadMore(this);
+								loadMoreclub(this);
 							} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
 						}
 					});
-					function loadMore(pullRefresh) {
+					function loadMoreclub(pullRefresh) {
 						// 如果没有更多数据了，则关闭上拉加载
 						//pullRefresh.endPullupToRefresh(true);
 						// 如果有更多数据，则继续
@@ -281,7 +292,6 @@
 						});
 					});
 					mui("#app").on("tap",".addinvite",function(){//邀请
-						mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -290,9 +300,18 @@
 							beinvite_id:id,
 						};
 						var self=this;
+						if(userinfo.role==2){
+							mui.toast("此角色无法邀请！");
+							return;
+						}
+						mui.showLoading();
 						pubinvite(formdata,function(msg){
 							//邀请成功
-							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							if($(self).children(".noinvite").hasClass("noinvite")){
+								$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							}else{
+								$(self).children(".noinvite").addClass("noinvite").removeClass("invited");
+							}
 							mui.hideLoading();
 						});
 					});
@@ -310,7 +329,11 @@
 						pubcol(formdata,function(msg){
 							//收藏成功
 							mui.hideLoading();
-							$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							if($(self).children(".nocol").hasClass('nocol')){
+								$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							}else{
+								$(self).children(".nocol").addClass("nocol").removeClass("coled");
+							}
 						});
 					});
 				});
@@ -325,7 +348,7 @@
 				getplace=app.getPlace();
 				Vm = new Vue({
 					el: '#app',
-					data(){
+					data:function(){
 						return{
 							siteinfo:siteinfo,
 							url:imgurl,
@@ -386,7 +409,14 @@
 						}
 					},
 					filters:{
-						parseaddress(val){
+						parseTime:function(val){
+							if(val!=""){
+								return timestampToTime(val);
+							}else{
+								return "";
+							}
+						},
+						parseaddress:function(val){
 							if(val!=""){
 								var address=getalladdress.filter(function (x) {
 									return x['id']==val;
@@ -396,42 +426,42 @@
 								return "";
 							}
 						},
-						parsesetup(val){
+						parsesetup:function(val){
 							if(val!=''){
 								return siteinfo.setup[val];
 							}else{
 								return "";
 							}
 						},
-						parseposition(val){
+						parseposition:function(val){
 							if(val!==''){
 								return siteinfo.position[val];
 							}else{
 								return "";
 							}
 						},
-						parsewelfare(val){
+						parsewelfare:function(val){
 							if(val!==''){
 								return siteinfo.welfare[val];
 							}else{
 								return "";
 							}
 						},
-						parsesubsidy(val){
+						parsesubsidy:function(val){
 							if(val!==''){
 								return siteinfo.subsidy[val];
 							}else{
 								return "";
 							}
 						},
-						parsesalary(val){
+						parsesalary:function(val){
 							if(val!==''){
 								return siteinfo.salary[val];
 							}else{
 								return "";
 							}
 						},
-						parsescale(val){
+						parsescale:function(val){
 							if(val!==''){
 								return siteinfo.scale[val];
 							}else{
@@ -439,7 +469,7 @@
 							}
 						},
 					},
-					mounted(){
+					mounted:function(){
 						this.getclubdata(0);
 						events();
 					},

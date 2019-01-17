@@ -5,10 +5,10 @@
  **/
  var uploadurl="http://www.woaiyiyun.com/";
  var myurl="http://admin.woaiyiyun.com/";
- var imgurl="http://admin.woaiyiyun.com/";
- function yyajax(url,data,callback){
+ var imgurl="http://admin.woaiyiyun.com";
+ function yyajax(url,pdata,callback){
 	 mui.ajax(myurl+url,{
-		data:data,
+		data:pdata,
 		dataType:'json',//服务器返回json格式数据
 		type:'post',//HTTP请求类型
 		timeout:10000,//超时时间设置为10秒；
@@ -168,11 +168,31 @@ function pubcol(formdata,cb){
 		}
 	});
 }
+function timestampToTime(timestamp) {
+	function add0(m){return m<10?'0'+m:m };
+    var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var Y = date.getFullYear() + '-';
+    var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+    var D = add0(date.getDate()) + ' ';
+    var h = add0(date.getHours()) + ':';
+    var m = add0(date.getMinutes()) + ':';
+    var s = add0(date.getSeconds());
+    return Y+M+D+h+m+s;
+}
 (function($, owner) {
 	/**
 	 * 用户登录
 	 **/
-	 
+	 owner.del=function(cb,errcb){
+	 	var btnArray = ['取消', '确认'];
+        mui.confirm('确认删除吗？', '提示', btnArray, function(e) {
+            if (e.index == 1) {
+                cb();
+            } else {
+                errcb();
+            }
+        },"div")
+	 };
 	owner.login = function(loginInfo, callback) {
 		callback = callback || $.noop;
 		loginInfo = loginInfo || {};

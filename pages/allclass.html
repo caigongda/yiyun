@@ -8,6 +8,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/allclass.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<body>
 		<div id="app" v-cloak>
@@ -115,7 +116,7 @@
 				var artSchool = document.getElementById('artschool');
 				var workCenter = document.getElementById('workcenter');
 				var gameContact = document.getElementById('gamecontact');
-				teacherClass.addEventListener('tap', function(event) {
+				mui("#app").on("tap","#teacherclass",function(event) {
 					var id = this.getAttribute('id');
 					if(!teacherclass){
 						teacherclass = plus.webview.getWebviewById('teacherclass');
@@ -129,8 +130,8 @@
 							duration:250
 						}
 					});
-				}, false);
-				clubClass.addEventListener('tap', function(event) {
+				});
+				mui("#app").on("tap","#clubclass", function(event) {
 					var id = this.getAttribute('id');
 					if(!clubclass){
 						clubclass = plus.webview.getWebviewById('clubclass');
@@ -144,8 +145,8 @@
 							duration:250
 						}
 					});
-				}, false);
-				artSchool.addEventListener('tap', function(event) {
+				});
+				mui("#app").on("tap","#artschool",function(event) {
 					var id = this.getAttribute('id');
 					if(!artschool){
 						artschool = plus.webview.getWebviewById('artschool');
@@ -160,7 +161,7 @@
 						}
 					});
 				}, false);
-				workCenter.addEventListener('tap', function(event) {
+				mui("#app").on("tap","#workcenter",function(event) {
 					var id = this.getAttribute('id');
 					if(!workcenter){
 						workcenter = plus.webview.getWebviewById('workcenter');
@@ -174,8 +175,8 @@
 							duration:250
 						}
 					});
-				}, false);
-				gameContact.addEventListener('tap', function(event) {
+				});
+				mui("#app").on("tap","#gamecontact", function(event) {
 					var id = this.getAttribute('id');
 					if(!gamecontact){
 						gamecontact = plus.webview.getWebviewById('gamecontact');
@@ -189,7 +190,7 @@
 							duration:250
 						}
 					});
-				}, false);
+				});
 				mui("#app").on('tap','.jumpurl',function(){
 					var url=this.dataset.url;
 					mui.openWindow({
@@ -207,19 +208,19 @@
 			});
 			var Vm = new Vue({
 				el: '#app',
-				data(){
+				data:function(){
 					return{
 						url:imgurl,
 						bannerlist:[],
 						datalist:{},
 					}
 				},
-				mounted(){
+				mounted:function(){
 					this.getdata();
 					this.getbanner();
 				},
 				methods:{
-					getbanner(){
+					getbanner:function(){
 						var self=this;
 						yyajax('index/index/banner',{type:3},function(res){
 							if(res.code==200){
@@ -235,7 +236,7 @@
 							}
 						})
 					},
-					getdata(){
+					getdata:function(){
 						var self=this;
 						yyajax('index/index/advert',{},function(res){
 							if(res.code==200){

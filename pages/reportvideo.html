@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/report.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			#uploadfile{
 				position: absolute;z-index:-10;width: 0;height: 0;
@@ -23,15 +24,19 @@
 				<p>我的视频</p>
 				<div class="video-wrap">
 					<div>
-						<video src="" preload="auto" autoplay="autoplay" loop="loop"></video>
-						<div class="post-img-wrap">
-							<!-- <div class="toggleimg">切换</div> -->
+						<video id="up_video" src="" preload="auto" autoplay="autoplay" webkit-playsinline></video>
+						<!-- <div class="post-img-wrap_a">
 							<img src=""/>
-						</div>
+						</div> -->
 						<!-- <div class="reupload">重新上传视频</div> -->
 					</div>
-					<div class="post-img ripple" title="选择封面">
-						<span class="mui-icon mui-icon-plusempty"></span>
+					<div style="width: 35%;">
+						<div class="post-img ripple" title="选择封面">
+							<span class="mui-icon mui-icon-plusempty"></span>
+						</div>
+						<div class="post-img-wrap_a" style="display: none;">
+							<img src="" style="margin-top: 0.1rem;" width="100%" height="calc(100% - 2.1rem)"/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -70,8 +75,41 @@
 				videosize=(+otherinfo.size)/1024/1024+"M";
 				videoformat=otherinfo.type;
 				if(mui.os.android){
-					$(".video-wrap video").css("transform","rotate(180deg)");
+					$(".video-wrap video").css("transform","rotate(360deg)");
 				}
+				//监听播放时间
+				var video = document.getElementById('up_video');
+				video.addEventListener('loadeddata',function(){
+					var vwidth=video.videoWidth;
+					var vheight=video.videoHeight;
+						console.log(vwidth);
+						console.log(vheight);
+					if(vwidth>vheight){//横屏视频
+						
+					}else{
+						console.log("aaa");
+						$(".video-wrap video").css({'object-fit':'fill'});
+					}
+					/* var canvas = document.createElement("canvas"); // 创建一个画布
+					var scale=0.8;
+					console.log(video.videoWidth);
+					canvas.width = video.videoWidth * scale;
+					canvas.height = video.videoHeight * scale;
+					canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height); // getContext:设置画布环境；drawImage:画画 
+					var cursrc = canvas.toDataURL("image/png"); // 获取图片的url
+					console.log(cursrc);
+					var videoheight=$("#up_video").height();
+					var img_up_btn=$(".post-img").height();
+					$(".post-img-wrap_a img").css({'height':(videoheight-img_up_btn-10)+'px'});
+					$(".post-img-wrap_a img").attr("src",cursrc); */
+				});
+				//使用事件监听方式捕捉事件
+				video.addEventListener("timeupdate",function(){
+					//用秒数来显示当前播放进度
+					if(video.currentTime>0){
+						video.pause();
+					}
+				},false);
 			});
 			mui.plusReady(function(){
 				var self = plus.webview.currentWebview();
@@ -103,8 +141,8 @@
 				mui(".report-page-header").on("tap",".page-cancel",function(){//取消
 					$(".repot-content").val("");
 					$(".video-wrap video").attr("src","");
-					$(".post-img-wrap").hide();
-					$(".post-img-wrap img").attr("src","");
+					$(".post-img-wrap_a").hide();
+					$(".post-img-wrap_a img").attr("src","");
 					mui.back();
 				});
 				mui(".report-page-header").on("tap",".page-fb",function(){//发表
@@ -145,12 +183,16 @@
 				});
 				$("#uploadfile").live('change', function(){
 					mui.showLoading();
+					var videowidth=$("#up_video").width();
+					var videoheight=$("#up_video").height();
+					var img_up_btn=$(".post-img").height();
 					uploadhead("uploadfile",function(res){
 						$('#uploadfile').replaceWith('<input type="file" id="uploadfile" accept="image/*" multiple=""/>');
-						$(".post-img-wrap img").attr("src",myurl+res);
+						$(".post-img-wrap_a img").css({'height':(videoheight-img_up_btn-10)+'px'});
+						$(".post-img-wrap_a img").attr("src",myurl+res);
 						imagesrc=res;
 						$(".post-img").attr("title","更换封面");
-						$(".post-img-wrap").show();
+						$(".post-img-wrap_a").show();
 						mui.hideLoading();
 					},function(){mui.hideLoading();})
 				});

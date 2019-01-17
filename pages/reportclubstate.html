@@ -8,6 +8,7 @@
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/report.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 	</head>
 	<style>
 		.form-item{
@@ -213,22 +214,22 @@
 						if(formdata.location_id==''||
 							formdata.setup==''||
 							formdata.position==''||
-							formdata.welfare==''||
 							formdata.subsidy==''||
 							formdata.salary==''||
 							formdata.scale==''){
 							mui.toast("不能为空哦！");
+							return false;
 						}else{
 							if(formdata.content==''&&
 							formdata.images.length==0){
 								mui.toast("不能为空哦！");
 								return false;
 							}
+							mui.showLoading();
 							formdata.id=userinfo.id;
 							formdata.role=2;
 							formdata.token=userinfo.token;
 							formdata.images=formdata.images.toString();
-							console.log(JSON.stringify(formdata));
 							yyajax("index/index/publishdynamic",formdata,function(res){
 								mui.hideLoading();
 								if(res.code==200){

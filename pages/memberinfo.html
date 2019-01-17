@@ -7,6 +7,7 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/person.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			.person-header-bg{
 				top: 44px;
@@ -46,10 +47,10 @@
 					</div>
 				</div>
 				<div class="person-prod-tab">
-					<div v-bind:class="{curactiveTab:curtab=='1'}" @click="video">
+					<div v-bind:class="{curactiveTab:curtab=='1'}" @tap="video">
 							视频
 					</div>
-					<div v-bind:class="{curactiveTab:curtab=='2'}" @click="state">
+					<div v-bind:class="{curactiveTab:curtab=='2'}" @tap="state">
 							动态
 					</div>
 				</div>
@@ -203,6 +204,7 @@
 			var personsetting = null;
 			var videoplay = null;
 			var personcontact = null;//联系方式
+			var curtime=+new Date()+55555;
 			mui.plusReady(function() {
 				mui.preload({
 						id: 'invite',
@@ -302,7 +304,7 @@
 			})
 			var app = new Vue({
 				el: '#video',
-				data(){
+				data:function(){
 					return{
 						curtab: '1'
 					}

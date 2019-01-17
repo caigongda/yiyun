@@ -7,6 +7,8 @@
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link href="../css/style.css" rel="stylesheet" />
 		<link href="../css/teacherclass.css" rel="stylesheet" />
+		<link href="../css/previewimage.css" rel="stylesheet" />
+		<script src="https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js"></script>
 		<style>
 			#commonListWrap .mui-active{
 				background: #fff !important;
@@ -14,38 +16,40 @@
 			#commonListWrap li:after{
 				display: none;
 			}
+			
 		</style>
 	</head>
 	<body>
+	<form action="">
+		<header class="mui-bar mui-bar-nav common-header">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="mui-input-row common-input" id="inputc">
+				<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
+				<span class="mui-icon mui-icon-search common-search-icon"></span>
+			</div>
+				<div class="backall">全部</div>
+		</header>
+	</form>
 	<div id="teacherapp" v-cloak>
-		<form action="">
-			<header class="mui-bar mui-bar-nav common-header">
-				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-				<div class="mui-input-row common-input" id="inputc">
-					<input type="search" class="mui-input-clear" placeholder="请输入关键字搜索" id="search">
-					<span class="mui-icon mui-icon-search common-search-icon"></span>
-				</div>
-			</header>
-		</form>
 		<div class="common-condition-wrap">
 			<div class="condition-wrap">
-				<div class="selcity" @click="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
-				<div class="seldance" @click="seldance">{{hometwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
-				<div class="morecond" @click="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
+				<div class="selcity" :class="{'condseled':iscity,'condnoseled':!iscity}" @tap="selcity">{{curtwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':iscity,'mui-icon-arrowdown':!iscity}"></span></div>
+				<div class="seldance" :class="{'condseled':isdance,'condnoseled':!isdance}" @tap="seldance">{{hometwo}}<span class="mui-icon" :class="{'mui-icon-arrowup':isdance,'mui-icon-arrowdown':!isdance}"></span></div>
+				<div class="morecond" :class="{'condseled':morecond,'condnoseled':!morecond}" @tap="selmorecond">更多筛选<span class="mui-icon" :class="{'mui-icon-arrowup':morecond,'mui-icon-arrowdown':!morecond}"></span></div>
 			</div>
 			<div class="city-wrap" id="scroll-ul" v-show="iscity">
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata1">
-							<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @click="selstepone(item.text,index)">{{item.text}}</li>
+							<li v-for="(item,index) in cityone" :key="index" :class="{selone:curone==item.text}" @tap="selstepone(item.text,index)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:hometwo=='不限地区'}" @click="selcurcity('不限地区','')">不限地区</li>
-							<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @click="selcurcity(item.text,item.value)">{{item.text}}</li>
+							<li :class="{selone:hometwo=='不限地区'}" @tap="selcurcity('不限地区','')">不限地区</li>
+							<li v-for="(item,index) in citytwo" :key="index" :class="{selone:curtwo==item.text}" @tap="selcurcity(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
@@ -54,15 +58,15 @@
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata1">
-							<li v-for="(item,index) in homeplace" :key="index" :class="{selone:homeone==item.text}" @click="selhomeone(item.text,index)">{{item.text}}</li>
+							<li v-for="(item,index) in homeplace" :key="index" :class="{selone:homeone==item.text}" @tap="selhomeone(item.text,index)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:hometwo=='不限地区'}" @click="selhometwo('不限地区','')">不限地区</li>
-							<li v-for="(item,index) in homeplacetwo" :key="index" :class="{selone:hometwo==item.text}" @click="selhometwo(item.text,item.value)">{{item.text}}</li>
+							<li :class="{selone:hometwo=='不限地区'}" @tap="selhometwo('不限地区','')">不限地区</li>
+							<li v-for="(item,index) in homeplacetwo" :key="index" :class="{selone:hometwo==item.text}" @tap="selhometwo(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
@@ -71,67 +75,67 @@
 				<div class="mui-scroll-wrapper">
 					<div class="mui-scroll">
 						<ul id="citydata1">
-							<li v-for="(item,index) in moreconds" :key="index" :class="{selone:conone==item.text}" @click="selcontype(item.text,item.value)">{{item.text}}</li>
+							<li v-for="(item,index) in moreconds" :key="index" :class="{selone:conone==item.text}" @tap="selcontype(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" v-if="condition=='1'">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li v-for="(item,index) in conschools" :key="index" :class="{selone:conscone==item.text}" @click="selconschool(item.text,index)">{{item.text}}</li>
+							<li v-for="(item,index) in conschools" :key="index" :class="{selone:conscone==item.text}" @tap="selconschool(item.text,index)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" v-if="condition=='1'">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:consctwo=='不限地区'}" @click="selconschooltwo('不限地区','')">不限地区</li>
-							<li v-for="(item,index) in conschoolstwo" :key="index" :class="{selone:consctwo==item.text}" @click="selconschooltwo(item.text,item.value)">{{item.text}}</li>
+							<li :class="{selone:consctwo=='不限地区'}" @tap="selconschooltwo('不限地区','')">不限地区</li>
+							<li v-for="(item,index) in conschoolstwo" :key="index" :class="{selone:consctwo==item.text}" @tap="selconschooltwo(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==2">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:conjob=='不限'}" @click="selconjob('不限','')">不限</li>
-							<li v-for="(value, key) in jobs" :key="key" :class="{selone:conjob==value}" @click="selconjob(value,key)">{{value}}</li>
+							<li :class="{selone:conjob=='不限'}" @tap="selconjob('不限','')">不限</li>
+							<li v-for="(value, key) in jobs" :key="key" :class="{selone:conjob==value}" @tap="selconjob(value,key)">{{value}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" v-if="condition=='3'">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li v-for="(item,index) in conlikeplace" :key="index" :class="{selone:conlikeone==item.text}" @click="selconlplace(item.text,index)">{{item.text}}</li>
+							<li v-for="(item,index) in conlikeplace" :key="index" :class="{selone:conlikeone==item.text}" @tap="selconlplace(item.text,index)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" v-if="condition=='3'">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:conliketwo=='不限地区'}" @click="selconlplacetwo('不限地区','')">不限地区</li>
-							<li v-for="(item,index) in conlikeplacetwo" :key="index" :class="{selone:conliketwo==item.text}" @click="selconlplacetwo(item.text,item.value)">{{item.text}}</li>
+							<li :class="{selone:conliketwo=='不限地区'}" @tap="selconlplacetwo('不限地区','')">不限地区</li>
+							<li v-for="(item,index) in conlikeplacetwo" :key="index" :class="{selone:conliketwo==item.text}" @tap="selconlplacetwo(item.text,item.value)">{{item.text}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==4">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:conmajor=='不限'}" @click="selconmajor('不限','')">不限</li>
-							<li v-for="(value, key) in majors" :key="key" :class="{selone:conmajor==value}" @click="selconmajor(value,key)">{{value}}</li>
+							<li :class="{selone:conmajor=='不限'}" @tap="selconmajor('不限','')">不限</li>
+							<li v-for="(value, key) in majors" :key="key" :class="{selone:conmajor==value}" @tap="selconmajor(value,key)">{{value}}</li>
 						</ul>
 					</div>
 				</div>
 				<div class="mui-scroll-wrapper" style="width: 67%;" v-if="condition==5">
 					<div class="mui-scroll">
 						<ul id="citydata2">
-							<li :class="{selone:conexp=='不限'}" @click="selconexp('不限','')">不限</li>
-							<li v-for="(value, key) in exps" :key="key" :class="{selone:conexp==value}" @click="selconexp(value,key)">{{value}}</li>
+							<li :class="{selone:conexp=='不限'}" @tap="selconexp('不限','')">不限</li>
+							<li v-for="(value, key) in exps" :key="key" :class="{selone:conexp==value}" @tap="selconexp(value,key)">{{value}}</li>
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="shade-bg" v-if="iscity||isdance||morecond" @click="closeall"></div>
+		<div class="shade-bg" v-if="iscity||isdance||morecond" @tap="closeall"></div>
 		<div id="club-state-list">
 			<div class="scroll-parent">
 				<div id="commonListWrap">
@@ -142,7 +146,7 @@
 									<div class="state-top" style="width: calc(100% - 35px);">
 										<img :src="url+item.avatarimage" class="club-index" :data-id="item.teacher_id" :data-role="1">
 										<div class="state-auth-info">
-											<p>{{item.teachername}}</p>
+											<p>{{item.teachername}}<small class="state_small_time">{{item.createtime | parseTime}}</small></p>
 											<div style="display: flex;" v-if="!!item.major">
 												<span class="mui-badge mui-badge-success" style="display: inline-block;margin-right: 5px;" v-for="val in item.major.split(',')">
 													{{siteinfo.major[val]}}
@@ -163,7 +167,7 @@
 										<div style="width: 50%;" v-if="!!item.experience">教学经验：{{item.experience | parseexp}}</div>
 									</div>
 									<div class="state-img-wrap" style="width: calc(100% - 35px);" v-if="!!item.images">
-										<img v-for="value in item.images.split(',')" :src="url+value" />
+										<img v-for="value in item.images.split(',')" :src="url+value" data-preview-src="" :data-preview-group="item.id"/>
 									</div>
 									<div class="action-wrap" style="width: calc(100% - 35px);">
 										<div>
@@ -191,6 +195,8 @@
 		<script src="../js/jquery-1.8.3.min.js"></script>
 		<script src="../js/mui.js"></script>
 		<script src="../js/app.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
 		<script src="../js/vue.js"></script>
 		<script>
 			var userinfo=app.getSettings();
@@ -202,6 +208,7 @@
 			var teacherstatedetail=null;
 			var personinfo=null;
 			function events(){
+				mui.previewImage({issave:true});
 				mui.init({
 					swipeBack:true //启用右滑关闭功能
 				});
@@ -215,6 +222,11 @@
 							teacherapp.query.keyword="";
 							teacherapp.getteacherdata(0);
 						});
+					});
+					mui(".backall")[0].addEventListener('tap',function(){
+						document.getElementById("search").value="";
+						teacherapp.query.keyword="";
+						teacherapp.getteacherdata(0);
 					});
 					var self = plus.webview.currentWebview();
 					self.addEventListener("hide",function (e) {
@@ -263,10 +275,6 @@
 						// 如果有更多数据，则继续
 						//pullRefresh.endPullupToRefresh(false);
 					};
-					searchinit("search",function(val){
-						teacherapp.query.keyword=val;
-						teacherapp.getteacherdata(0);
-					});
 					/* mui("#teacherapp").on("tap",".teacherdetail",function(){
 						var id = this.dataset.id;
 						if(!teacherstatedetail){
@@ -301,7 +309,6 @@
 						});
 					});
 					mui("#teacherapp").on("tap",".addinvite",function(){//邀请
-					mui.showLoading();
 						var id = this.dataset.id;
 						var formdata={
 							id:userinfo.id,
@@ -310,9 +317,18 @@
 							beinvite_id:id,
 						};
 						var self=this;
+						if(userinfo.role==1){
+							mui.toast("此角色无法邀请！");
+							return;
+						}
+						mui.showLoading();
 						pubinvite(formdata,function(msg){
 							//邀请成功
-							$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							if($(self).children(".noinvite").hasClass("noinvite")){
+								$(self).children(".noinvite").addClass("invited").removeClass("noinvite");
+							}else{
+								$(self).children(".noinvite").addClass("noinvite").removeClass("invited");
+							}
 							mui.hideLoading();
 						});
 					});
@@ -329,12 +345,20 @@
 						var self=this;
 						pubcol(formdata,function(msg){
 							//收藏成功
-							$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							if($(self).children(".nocol").hasClass('nocol')){
+								$(self).children(".nocol").addClass("coled").removeClass("nocol");
+							}else{
+								$(self).children(".nocol").addClass("nocol").removeClass("coled");
+							}
 							mui.hideLoading();
 						});
 					});
 				});
-			}
+			};
+			searchinit("search",function(val){
+				teacherapp.query.keyword=val;
+				teacherapp.getteacherdata(0);
+			});
 			var teacherapp;
 			window.addEventListener('clubId',function(event){
 				//获得事件参数
@@ -348,7 +372,7 @@
 				//teacherapp.getteacherdata(0);
 				teacherapp = new Vue({
 					el: '#teacherapp',
-					data(){
+					data:function(){
 						return{
 							siteinfo:siteinfo,
 							url:imgurl,
@@ -415,6 +439,13 @@
 						}
 					},
 					filters:{
+						parseTime:function(val){
+							if(val!=""){
+								return timestampToTime(val);
+							}else{
+								return "";
+							}
+						},
 						parseaddress:function(val){
 							if(val!=""){
 								var address=getalladdress.filter(function (x) {
@@ -477,7 +508,7 @@
 							}
 						},
 					},
-					mounted(){
+					mounted:function(){
 						
 					},
 					methods:{
